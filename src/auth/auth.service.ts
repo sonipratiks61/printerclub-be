@@ -10,12 +10,14 @@ import { Prisma } from '@prisma/client';
 
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { MailService } from 'src/mail/mail.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwtService: JwtService,
+    private mailService: MailService,
   ) {}
 
   async signUp(user: CreateUserDto): Promise<void> {
@@ -127,6 +129,51 @@ export class AuthService {
     return this.jwtService.sign(payload, {
       secret: process.env.JWT_ACCESS_TOKEN_SECRET,
       expiresIn: '24h',
+    });
+  }
+
+  async forgotPassword(email: string): Promise<void> {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      throw new Error('User with this email does not exist.');
+    }
+
+    const resetToken = this.jwtService.sign(
+      { email: user.email, sub: user.id },
+      { secret: process.env.JWT_REFRESH_TOKEN_SECRET, expiresIn: '1h' },
+    );
+
+    const resetPasswordUrl = `${process.env.RESET_PASSWORD_LINK}?token=${resetToken}`;
+
+    await this.mailService.sendMail(
+      email,
+      'Reset Password',
+      `Please use the following link to reset your password: ${resetPasswordUrl}`,
+    );
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<void> {
+    let payload: any;
+    try {
+      payload = this.jwtService.verify(token, {
+        secret: process.env.JWT_REFRESH_TOKEN_SECRET,
+      });
+    } catch (e) {
+      throw new Error('Invalid or expired reset token');
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: payload.sub },
+    });
+
+    if (!user) {
+      throw new Error('User does not exist');
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 8);
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: { password: hashedPassword },
     });
   }
 }

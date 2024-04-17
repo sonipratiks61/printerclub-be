@@ -67,4 +67,31 @@ export class AuthController {
       );
     }
   }
+
+  @Post('forgot-password')
+  async forgotPassword(@Body('email') email: string): Promise<any> {
+    try {
+      await this.authService.forgotPassword(email);
+      return { message: 'Reset password link has been sent to your email.' };
+    } catch (error) {
+      console.error(error);
+      return { message: 'Reset password link has been sent to your email.' };
+    }
+  }
+
+  @Post('reset-password')
+  async resetPassword(
+    @Body() body: { password: string },
+    @Headers('authorization') token: string,
+  ): Promise<any> {
+    try {
+      await this.authService.resetPassword(token, body.password);
+      return { message: 'Password has been successfully reset.' };
+    } catch (error) {
+      throw new HttpException(
+        error.message || 'Failed to reset password',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
 }
