@@ -9,7 +9,7 @@ import * as bcrypt from 'bcrypt';
 import { Prisma } from '@prisma/client';
 
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { MailService } from 'src/mail/mail.service';
 
 @Injectable()

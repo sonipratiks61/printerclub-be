@@ -10,7 +10,7 @@ import {
   HttpException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 
