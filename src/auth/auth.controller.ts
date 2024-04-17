@@ -1,7 +1,18 @@
-import { Body, Controller, Post, Res, HttpStatus } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  Res,
+  Headers,
+  HttpStatus,
+  UseGuards,
+  Get,
+  HttpException,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { Response } from 'express';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('auth')
 export class AuthController {
@@ -32,6 +43,29 @@ export class AuthController {
       response
         .status(HttpStatus.UNAUTHORIZED)
         .json({ message: 'Authentication failed' });
+    }
+  }
+
+  @Get('refresh-token')
+  @UseGuards(AuthGuard('jwt-refresh')) // Use the custom refresh guard
+  async refreshToken(
+    @Headers('authorization') refreshToken: string,
+    @Res() response: Response,
+  ) {
+    console.log(refreshToken);
+    try {
+      const user = await this.authService.validateRefreshToken(refreshToken);
+      if (!user) {
+        throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
+      }
+      const accessToken = await this.authService.createAccessToken(user);
+      response.setHeader('X-Access-Token', accessToken);
+      response.status(HttpStatus.OK).json();
+    } catch (error) {
+      throw new HttpException(
+        'Token refresh failed',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }

@@ -2,6 +2,7 @@ import {
   ConflictException,
   Injectable,
   InternalServerErrorException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -89,5 +90,43 @@ export class AuthService {
       refreshToken,
       user,
     };
+  }
+
+  async validateRefreshToken(token: string): Promise<any> {
+    try {
+      // Remove 'Bearer ' prefix if present
+      token = token.startsWith('Bearer ') ? token.slice(7) : token;
+
+      // Verify the token and extract the payload
+      const payload = this.jwtService.verify(token, {
+        secret: process.env.JWT_REFRESH_TOKEN_SECRET,
+      });
+
+      // Check in the database if the token is still valid (not revoked, still active)
+      const user = await this.prisma.user.findUnique({
+        where: { id: payload.sub, isActive: true },
+      });
+
+      if (!user || !user.isActive) {
+        throw new UnauthorizedException(
+          'Refresh token is invalid or has been revoked.',
+        );
+      }
+
+      return { userId: payload.sub, username: payload.username };
+    } catch (error) {
+      if (error instanceof JwtService || error.status === 401) {
+        throw new UnauthorizedException('Refresh token validation failed.');
+      }
+      throw error;
+    }
+  }
+
+  async createAccessToken(user: any): Promise<string> {
+    const payload = { username: user.username, sub: user.userId };
+    return this.jwtService.sign(payload, {
+      secret: process.env.JWT_ACCESS_TOKEN_SECRET,
+      expiresIn: '24h',
+    });
   }
 }
