@@ -10,6 +10,7 @@ import { JwtRefreshTokenStrategy } from './auth/jwt-refresh.strategy';
 import { MailService } from './mail/mail.service';
 import { JwtStrategy } from './auth/jwt.strategy';
 import { UserController } from './user/user.controller';
+import { UserService } from './user/user.service';
 
 @Module({
   imports: [JwtModule.register({})],
@@ -21,6 +22,7 @@ import { UserController } from './user/user.controller';
     JwtRefreshTokenStrategy,
     MailService,
     JwtStrategy,
+    UserService,
   ],
 })
 export class AppModule {}
