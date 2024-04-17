@@ -19,9 +19,13 @@ export class AuthController {
   ) {
     const user = await this.authService.validateUser(body.email, body.password);
     if (user) {
-      const { access_token, user: userData } =
-        await this.authService.login(user);
-      response.setHeader('Authorization', `Bearer ${access_token}`);
+      const {
+        accessToken,
+        refreshToken,
+        user: userData,
+      } = await this.authService.login(user);
+      response.setHeader('X-Access-Token', accessToken);
+      response.setHeader('X-Refresh-Token', refreshToken);
       response.status(HttpStatus.OK).json(userData);
     } else {
       // To maintain consistency in the response, even when authentication fails
