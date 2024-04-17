@@ -52,7 +52,6 @@ export class AuthController {
     @Headers('authorization') refreshToken: string,
     @Res() response: Response,
   ) {
-    console.log(refreshToken);
     try {
       const user = await this.authService.validateRefreshToken(refreshToken);
       if (!user) {
