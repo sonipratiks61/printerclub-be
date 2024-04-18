@@ -6,6 +6,10 @@ import {
   Request,
   HttpException,
   HttpStatus,
+  Patch,
+  Param,
+  Body,
+  ForbiddenException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { UserService } from './user.service';
@@ -35,5 +39,20 @@ export class UserController {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+
+  @Patch(':id/active')
+  @UseGuards(AuthGuard('jwt')) // Assuming JWT is used for authentication
+  async setActiveStatus(
+    @Param('id') id: string,
+    @Body('isActive') isActive: boolean,
+    @Request() req: any,
+  ) {
+    // Prevent users from changing their own active status
+    if (req.user.id === Number(id)) {
+      throw new ForbiddenException('You cannot change your own active status.');
+    }
+
+    return this.userService.setActiveStatus(Number(id), isActive);
   }
 }

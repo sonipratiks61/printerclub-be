@@ -29,4 +29,11 @@ export class UserService {
       },
     });
   }
+
+  async setActiveStatus(userId: number, isActive: boolean) {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { isActive },
+    });
+  }
 }
