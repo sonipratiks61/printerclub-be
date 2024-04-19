@@ -92,57 +92,53 @@ model RoleAndCapabilityMapping {
   @@id([capabilityId, roleId])
 }
 
- model Category{
-  id     Int  @id @default(autoincrement())
-  name   String 
-  description  String
-  product  Product[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
+model Category {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String
+  product     Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
-model Product{
-  id     Int  @id @default(autoincrement())
-  categoryId Int
-  productName String
-  cost  String
-  gst    String
-  category  Category  @relation(fields: [categoryId], references: [id])
-  attributes  Attribute[]
-  AmountPayable  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Product {
+  id            Int         @id @default(autoincrement())
+  categoryId    Int
+  productName   String
+  cost          String
+  gst           String
+  category      Category    @relation(fields: [categoryId], references: [id])
+  attributes    Attribute[]
+  AmountPayable String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 }
 
-model Attribute{
-  id     Int  @id @default(autoincrement())
-  productId Int
-  quanitity   Int 
-  product  Product  @relation(fields: [productId], references: [id])       
-  printing   String    
-  dieShape   String    
-  textureType  String    
-  paperQuality  String    
-  colour    String    
-  paperQuanlity    String    
-  pocket  String    
-  binding String    
-  envelopeCode String    
-  flapOpening  String    
-  windowCutting   String     
-  paperType     String        
-  size     String        
-  lamination     String        
-  halfCut     String        
-  firstPaperQuality     String        
-  secondCopyPaperColor     String        
-  thirdCopyPaperColor     String        
-  stickersCountPerSheet String        
-  penType     String   
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
+model Attribute {
+  id                    Int      @id @default(autoincrement())
+  productId             Int
+  quanitity             Int
+  product               Product  @relation(fields: [productId], references: [id])
+  printing              String
+  dieShape              String
+  textureType           String
+  paperQuality          String
+  colour                String
+  paperQuanlity         String
+  pocket                String
+  binding               String
+  envelopeCode          String
+  flapOpening           String
+  windowCutting         String
+  paperType             String
+  size                  String
+  lamination            String
+  halfCut               String
+  firstPaperQuality     String
+  secondCopyPaperColor  String
+  thirdCopyPaperColor   String
+  stickersCountPerSheet String
+  penType               String
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 }
-
-
