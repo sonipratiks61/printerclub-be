@@ -29,6 +29,8 @@ model User {
   isActive     Boolean      @default(false) // for admin approval
   createdAt    DateTime     @default(now())
   updatedAt    DateTime     @updatedAt
+  categories   Category[]
+  products     Product[]
 }
 
 model Address {
@@ -94,9 +96,11 @@ model RoleAndCapabilityMapping {
 
 model Category {
   id          Int       @id @default(autoincrement())
+  userId      Int
   name        String
   description String
   product     Product[]
+  user        User      @relation(fields: [userId], references: [id])
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
@@ -112,6 +116,8 @@ model Product {
   AmountPayable String
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
+  User          User        @relation(fields: [userId], references: [id])
+  userId        Int
 }
 
 model Attribute {

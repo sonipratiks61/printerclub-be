@@ -23,6 +23,9 @@ import { RoleController } from './role/role.controller';
 import { RoleService } from './role/role.service';
 import { RoleAndCapabilityController } from './role-and-capability/role-and-capability.controller';
 import { RoleAndCapabilityService } from './role-and-capability/role-and-capability.service';
+import { CategoryController } from './category/category.controller';
+import { CategoryService } from './category/category.service';
+
 @Module({
   imports: [
     JwtModule.register({}),
@@ -39,6 +42,7 @@ import { RoleAndCapabilityService } from './role-and-capability/role-and-capabil
     GeoLocationController,
     RoleController,
     RoleAndCapabilityController,
+    CategoryController,
   ],
   providers: [
     AppService,
@@ -53,6 +57,7 @@ import { RoleAndCapabilityService } from './role-and-capability/role-and-capabil
     GeoLocationService,
     RoleService,
     RoleAndCapabilityService,
+    CategoryService,
   ],
 })
 export class AppModule {

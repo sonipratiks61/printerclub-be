@@ -7,7 +7,6 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { Prisma } from '@prisma/client';
-
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { MailService } from 'src/mail/mail.service';
@@ -90,6 +89,7 @@ export class AuthService {
         role: true,
       },
     });
+    console.log(user);
     if (user && (await bcrypt.compare(pass, user.password))) {
       const { password: _password, ...result } = user;
       return result;
@@ -121,7 +121,8 @@ export class AuthService {
 
       // Verify the token and extract the payload
       const payload = this.jwtService.verify(token, {
-        secret: process.env.JWT_REFRESH_TOKEN_SECRET,
+        secret:
+          process.env.JWT_REFRESH_TOKEN_SECRET || 'JWT_REFRESH_TOKEN_SECRET',
       });
 
       // Check in the database if the token is still valid (not revoked, still active)
@@ -147,7 +148,7 @@ export class AuthService {
   async createAccessToken(user: any): Promise<string> {
     const payload = { username: user.username, sub: user.userId };
     return this.jwtService.sign(payload, {
-      secret: process.env.JWT_ACCESS_TOKEN_SECRET,
+      secret: process.env.JWT_ACCESS_TOKEN_SECRET || 'JWT_ACCESS_TOKEN_SECRET',
       expiresIn: '24h',
     });
   }
