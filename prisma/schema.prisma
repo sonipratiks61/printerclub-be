@@ -97,6 +97,7 @@ model RoleAndCapabilityMapping {
 model Category {
   id          Int       @id @default(autoincrement())
   userId      Int
+  subCategory String
   name        String
   description String
   product     Product[]
@@ -124,6 +125,7 @@ model Attribute {
   id                    Int      @id @default(autoincrement())
   productId             Int
   quanitity             Int
+  service               Boolean
   product               Product  @relation(fields: [productId], references: [id])
   printing              String
   dieShape              String

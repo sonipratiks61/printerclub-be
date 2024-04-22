@@ -7,18 +7,13 @@ export class CategoryService {
   constructor(private prisma: PrismaService) {}
 
   async create(user: CreateCategoryDto, userId: number): Promise<void> {
-    try {
-      await this.prisma.category.create({
-        data: {
-          name: user.name,
-          description: user.description,
-          userId: userId,
-        },
-      });
-    } catch (error) {
-      console.error('Error creating category:', error);
-      throw new Error('Failed to create category');
-    }
+    await this.prisma.category.create({
+      data: {
+        name: user.name,
+        description: user.description,
+        userId: userId,
+      },
+    });
   }
 
   async findAllCategories() {

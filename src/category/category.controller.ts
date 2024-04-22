@@ -25,13 +25,14 @@ export class CategoryController {
   async create(
     @Body() createCategoryDto: CreateCategoryDto,
     @Req() req,
-  ): Promise<{ success: boolean; message: string }> {
+  ): Promise<{ success: boolean; message: string; statusCode: number }> {
     const userId = req.user.id; // Access req.user.id from the request object
     try {
       await this.categoryService.create(createCategoryDto, userId);
       return {
         success: true,
         message: 'Category created successfully',
+        statusCode: HttpStatus.OK,
       };
     } catch (error) {
       throw new HttpException(
@@ -63,18 +64,32 @@ export class CategoryController {
       const categoryId = parseInt(id, 10);
       const category = await this.categoryService.findOne(categoryId);
       if (!category) {
-        throw new NotFoundException('Category not found');
+        throw new NotFoundException('Invalid CategoryId');
       }
-      return category;
+      return {
+        status: HttpStatus.OK,
+        message: 'Fetch Successfully ',
+        data: category,
+      };
     } catch (error) {
       console.log(error);
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: 'There was a problem accessing data',
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      if (error instanceof NotFoundException) {
+        throw new HttpException(
+          {
+            status: HttpStatus.NOT_FOUND,
+            error: error.message,
+          },
+          HttpStatus.NOT_FOUND,
+        );
+      } else {
+        throw new HttpException(
+          {
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            error: 'There was a problem accessing data',
+          },
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     }
   }
 
@@ -83,24 +98,40 @@ export class CategoryController {
     @Param('id') id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
   ) {
-    const categoryId = parseInt(id, 10);
     try {
+      const categoryId = parseInt(id, 10);
+      const category = await this.categoryService.findOne(categoryId);
+      if (!category) {
+        throw new NotFoundException('Invalid CategoryId');
+      }
       const updatedCategory = await this.categoryService.update(
         categoryId,
         updateCategoryDto,
       );
-      if (!updatedCategory) {
-        throw new NotFoundException('Category not found');
-      }
-      return updatedCategory;
+      return {
+        status: HttpStatus.OK,
+        message: 'Category updated successfully',
+        data: updatedCategory,
+      };
     } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: 'There was a problem accessing data',
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      console.log(error);
+      if (error instanceof NotFoundException) {
+        throw new HttpException(
+          {
+            status: HttpStatus.NOT_FOUND,
+            error: error.message,
+          },
+          HttpStatus.NOT_FOUND,
+        );
+      } else {
+        throw new HttpException(
+          {
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            error: 'There was a problem accessing data',
+          },
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     }
   }
 
@@ -108,19 +139,34 @@ export class CategoryController {
   async remove(@Param('id') id: string) {
     const categoryId = parseInt(id, 10);
     try {
-      const deletedCategory = await this.categoryService.remove(categoryId);
-      if (!deletedCategory) {
-        throw new NotFoundException('Category not found');
+      const category = await this.categoryService.findOne(categoryId);
+      if (!category) {
+        throw new NotFoundException('Invalid CategoryId');
       }
-      return { message: 'Category deleted successfully' };
+      await this.categoryService.remove(categoryId);
+      return {
+        status: HttpStatus.OK,
+        message: 'Category deleted successfully',
+      };
     } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: 'There was a problem accessing data',
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      console.log(error);
+      if (error instanceof NotFoundException) {
+        throw new HttpException(
+          {
+            status: HttpStatus.NOT_FOUND,
+            error: error.message,
+          },
+          HttpStatus.NOT_FOUND,
+        );
+      } else {
+        throw new HttpException(
+          {
+            status: HttpStatus.INTERNAL_SERVER_ERROR,
+            error: 'There was a problem accessing data',
+          },
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     }
   }
 }

@@ -89,7 +89,6 @@ export class AuthService {
         role: true,
       },
     });
-    console.log(user);
     if (user && (await bcrypt.compare(pass, user.password))) {
       const { password: _password, ...result } = user;
       return result;
