@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  HttpStatus,
   Injectable,
   InternalServerErrorException,
   UnauthorizedException,
@@ -20,7 +21,7 @@ export class AuthService {
     private mailService: MailService,
   ) {}
 
-  async signUp(user: CreateUserDto): Promise<void> {
+  async signUp(user: CreateUserDto) {
     const hashedPassword = await bcrypt.hash(user.password, 8);
     try {
       await this.prisma.user.create({
@@ -38,6 +39,10 @@ export class AuthService {
           isActive: false, // User needs admin approval to activate
         },
       });
+      return {
+        success: true,
+        message: 'User signed up successfully.',
+      };
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&

@@ -28,21 +28,44 @@ export class AuthController {
     @Body() body: { email: string; password: string },
     @Res() response: Response,
   ) {
-    const user = await this.authService.validateUser(body.email, body.password);
-    if (user) {
-      const {
-        accessToken,
-        refreshToken,
-        user: userData,
-      } = await this.authService.login(user);
-      response.setHeader('X-Access-Token', accessToken);
-      response.setHeader('X-Refresh-Token', refreshToken);
-      response.status(HttpStatus.OK).json(userData);
-    } else {
-      // To maintain consistency in the response, even when authentication fails
-      response
-        .status(HttpStatus.UNAUTHORIZED)
-        .json({ message: 'Authentication failed' });
+    try {
+      const user = await this.authService.validateUser(
+        body.email,
+        body.password,
+      );
+
+      if (!user) {
+        response.status(HttpStatus.UNAUTHORIZED).json({
+          success: false,
+          message: 'The email or password you entered is Wrong',
+        });
+        return;
+      }
+      if (user) {
+        const {
+          accessToken,
+          refreshToken,
+          user: userData,
+        } = await this.authService.login(user);
+        response.setHeader('X-Access-Token', accessToken);
+        response.setHeader('X-Refresh-Token', refreshToken);
+        response
+          .status(HttpStatus.OK)
+          .json({ success: true, message: 'Login Successfully', data: userData });
+      } else {
+        response
+          .status(HttpStatus.UNAUTHORIZED)
+          .json({ success: false, message: 'Authentication failed' });
+      }
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      } else {
+        throw new HttpException(
+          'Internal server error',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     }
   }
 
