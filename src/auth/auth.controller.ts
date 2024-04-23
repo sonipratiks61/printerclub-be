@@ -51,7 +51,7 @@ export class AuthController {
         response.setHeader('X-Refresh-Token', refreshToken);
         response
           .status(HttpStatus.OK)
-          .json({ success: true, message: 'Login Successfully', userData });
+          .json({ success: true, message: 'Login Successfully', data: userData });
       } else {
         response
           .status(HttpStatus.UNAUTHORIZED)
