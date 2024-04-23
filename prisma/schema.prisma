@@ -95,17 +95,20 @@ model RoleAndCapabilityMapping {
 }
 
 model Category {
-  id          Int       @id @default(autoincrement())
-  userId      Int
-  subCategory String
-  name        String
-  description String
-  product     Product[]
-  user        User      @relation(fields: [userId], references: [id])
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id            Int          @id @default(autoincrement())
+  userId        Int
+  parentId      Int
+  category      Category     @relation("subCategories", fields: [parentId], references: [id])
+  subCategories Category[]   @relation("subCategories")
+  name          String
+  description   String
+  product       Product[]
+  user          User         @relation(fields: [userId], references: [id])
+  type          CategoryType                                      
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
 }
-
+ 
 model Product {
   id            Int         @id @default(autoincrement())
   categoryId    Int
@@ -149,4 +152,9 @@ model Attribute {
   penType               String
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
+}
+
+  enum CategoryType {
+  service
+  physical
 }
