@@ -1,8 +1,7 @@
 import {
-  ConflictException,
+  HttpException,
   HttpStatus,
   Injectable,
-  InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -12,6 +11,7 @@ import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { MailService } from 'src/mail/mail.service';
+import { ResponseInterface } from 'utils/response/interface';
 
 @Injectable()
 export class AuthService {
@@ -21,7 +21,7 @@ export class AuthService {
     private mailService: MailService,
   ) {}
 
-  async signUp(user: CreateUserDto) {
+  async signUp(user: CreateUserDto): Promise<ResponseInterface> {
     const hashedPassword = await bcrypt.hash(user.password, 8);
     try {
       await this.prisma.user.create({
@@ -58,16 +58,19 @@ export class AuthService {
             // Handle single string target
             targetDescription = error.meta.target;
           }
-          throw new ConflictException(
-            `A user with this ${targetDescription} already exists.`,
-          );
-        } else {
-          throw new ConflictException(
-            'Unique constraint failed on unspecified fields.',
+          throw new HttpException(
+            {
+              success: false,
+              message: `A user with this ${targetDescription} already exists.`,
+            },
+            HttpStatus.CONFLICT,
           );
         }
       }
-      throw new InternalServerErrorException('Failed to register user.');
+      throw new HttpException(
+        { success: false, message: 'Failed to register user.' },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
