@@ -14,32 +14,32 @@ export class CreateUserDto {
     description: 'The business name of the user',
     example: 'Acme Corp',
   })
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmpty({ message: 'businessName cannot be empty.' })
+  @IsString({ message: 'businessName must be a string' })
   businessName: string;
 
   @ApiProperty({
     description: 'The full name of the user',
     example: 'John Doe',
   })
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmpty({ message: 'name cannot be empty.' })
+  @IsString({ message: 'name must be a string' })
   name: string;
 
   @ApiProperty({
     description: 'The email address of the user',
     example: 'john.doe@example.com',
   })
-  @IsEmail()
   @IsNotEmpty()
+  @IsEmail({}, { message: 'Please provide a valid email address.' })
   email: string;
 
   @ApiProperty({
     description: 'The mobile phone number of the user',
     example: '123-456-7890',
   })
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmpty({ message: 'Mobile number must not be empty' })
+  @IsString({ message: 'Mobile number must be a string' })
   mobileNumber: string;
 
   @ApiProperty({
@@ -47,8 +47,8 @@ export class CreateUserDto {
     example: 'strongPassword123!',
     minLength: 8,
   })
-  @IsNotEmpty()
   @MinLength(8)
+  @IsNotEmpty({ message: 'Password cannot be empty.' })
   password: string;
 
   @ApiProperty({

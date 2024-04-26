@@ -70,7 +70,7 @@ export class AuthController {
         throw error;
       } else {
         throw new HttpException(
-          'Internal server error',
+          { success: false, message: 'Internal server error' },
           HttpStatus.INTERNAL_SERVER_ERROR,
         );
       }

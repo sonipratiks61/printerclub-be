@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import * as fs from 'fs';
+import { AppModule } from './app.module';
+import { ValidationFunctionPipe } from 'utils/validationFunction';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -22,11 +22,9 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, options);
 
-  // Write OpenAPI JSON to file
-  fs.writeFileSync('./openapi.json', JSON.stringify(document, null, 2));
-
   SwaggerModule.setup('api', app, document);
 
+  app.useGlobalPipes(ValidationFunctionPipe());
   await app.listen(3000);
 }
 bootstrap();
