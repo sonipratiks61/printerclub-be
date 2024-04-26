@@ -49,9 +49,11 @@ export class AuthController {
         } = await this.authService.login(user);
         response.setHeader('X-Access-Token', accessToken);
         response.setHeader('X-Refresh-Token', refreshToken);
-        response
-          .status(HttpStatus.OK)
-          .json({ success: true, message: 'Login Successfully', data: userData });
+        response.status(HttpStatus.OK).json({
+          success: true,
+          message: 'Login Successfully',
+          data: userData,
+        });
       } else {
         response
           .status(HttpStatus.UNAUTHORIZED)
@@ -62,7 +64,7 @@ export class AuthController {
         throw error;
       } else {
         throw new HttpException(
-          'Internal server error',
+          { success: false, message: 'Internal server error' },
           HttpStatus.INTERNAL_SERVER_ERROR,
         );
       }
