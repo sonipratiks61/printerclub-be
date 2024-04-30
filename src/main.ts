@@ -4,12 +4,12 @@ import { AppModule } from './app.module';
 import { ValidationFunctionPipe } from 'utils/validationFunction';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { cors: true });
 
   app.enableCors({
     origin: '*', // Allows all origins
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Allowed methods
-    allowedHeaders: 'Content-Type, Accept', // Custom headers you wish to allow
+    allowedHeaders: '*', // Custom headers you wish to allow
     credentials: true, // Supports credentials like cookies
   });
 
