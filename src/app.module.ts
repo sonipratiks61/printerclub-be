@@ -11,10 +11,17 @@ import { MailService } from './mail/mail.service';
 import { JwtStrategy } from './auth/jwt.strategy';
 import { UserController } from './user/user.controller';
 import { UserService } from './user/user.service';
+import { GeoLocationController } from './geolocation/geolocation.controller';
+import { GeoLocationService } from './geolocation/geolocation.service';
 
 @Module({
   imports: [JwtModule.register({})],
-  controllers: [AppController, AuthController, UserController],
+  controllers: [
+    AppController,
+    AuthController,
+    UserController,
+    GeoLocationController,
+  ],
   providers: [
     AppService,
     AuthService,
@@ -23,6 +30,7 @@ import { UserService } from './user/user.service';
     MailService,
     JwtStrategy,
     UserService,
+    GeoLocationService,
   ],
 })
 export class AppModule {}
