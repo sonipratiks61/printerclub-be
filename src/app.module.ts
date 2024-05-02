@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 
 import { AppController } from './app.controller';
@@ -11,16 +11,26 @@ import { MailService } from './mail/mail.service';
 import { JwtStrategy } from './auth/jwt.strategy';
 import { UserController } from './user/user.controller';
 import { UserService } from './user/user.service';
-import { GeoLocationController } from './geolocation/geolocation.controller';
+import { AttachmentService } from './attachment/attachment.service';
+import { AttachmentController } from './attachment/attachment.controller';
+import { MulterModule } from '@nestjs/platform-express';
+import { FileUploadMiddleware } from 'utils/ImageUploadFunction/ImageUploadFunction';
 import { GeoLocationService } from './geolocation/geolocation.service';
+import { GeoLocationController } from './geolocation/geolocation.controller';
 
 @Module({
-  imports: [JwtModule.register({})],
+  imports: [
+    JwtModule.register({}),
+    MulterModule.register({
+      dest: './uploads',
+    }),
+  ],
   controllers: [
     AppController,
     AuthController,
     UserController,
     GeoLocationController,
+    AttachmentController,
   ],
   providers: [
     AppService,
@@ -31,6 +41,11 @@ import { GeoLocationService } from './geolocation/geolocation.service';
     JwtStrategy,
     UserService,
     GeoLocationService,
+    AttachmentService,
   ],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(FileUploadMiddleware).forRoutes('attachments'); // Apply middleware to specific routes
+  }
+}
