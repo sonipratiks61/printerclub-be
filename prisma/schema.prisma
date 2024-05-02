@@ -22,6 +22,7 @@ model User {
   name          String
   gstNumber     String?
   addresses     Address[]
+  attachments    Attachment[]
   acceptTerms   Boolean
   isActive      Boolean   @default(false) // for admin approval
   createdAt     DateTime @default(now())
@@ -56,4 +57,13 @@ model Capability {
   role      Role      @relation(fields: [roleId], references: [id]) // Explicit relation to Role
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+}
+model Attachment {
+  id Int @id @default(autoincrement())
+  path String
+  attachmentType String
+  userId  Int
+  user      User   @relation(fields: [userId], references: [id])
+  
+
 }
