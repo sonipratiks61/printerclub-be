@@ -19,6 +19,8 @@ import { AddressController } from './address/address.controller';
 import { AddressService } from './address/address.service';
 import { GeoLocationController } from './geolocation/geolocation.controller';
 import { GeoLocationService } from './geolocation/geolocation.service';
+import { RoleController } from './role/role.controller';
+import { RoleService } from './role/role.service';
 
 @Module({
   imports: [
@@ -34,6 +36,7 @@ import { GeoLocationService } from './geolocation/geolocation.service';
     AttachmentController,
     AddressController,
     GeoLocationController,
+    RoleController,
   ],
   providers: [
     AppService,
@@ -46,6 +49,7 @@ import { GeoLocationService } from './geolocation/geolocation.service';
     AttachmentService,
     AddressService,
     GeoLocationService,
+    RoleService,
   ],
 })
 export class AppModule {
