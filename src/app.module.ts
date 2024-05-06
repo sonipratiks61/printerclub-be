@@ -15,6 +15,8 @@ import { AttachmentService } from './attachment/attachment.service';
 import { AttachmentController } from './attachment/attachment.controller';
 import { MulterModule } from '@nestjs/platform-express';
 import { FileUploadMiddleware } from 'utils/ImageUploadFunction/ImageUploadFunction';
+import { RoleController } from './role/role.controller';
+import { RoleService } from './role/role.service';
 
 @Module({
   imports: [
@@ -28,6 +30,7 @@ import { FileUploadMiddleware } from 'utils/ImageUploadFunction/ImageUploadFunct
     AuthController,
     UserController,
     AttachmentController,
+    RoleController,
   ],
   providers: [
     AppService,
@@ -38,6 +41,7 @@ import { FileUploadMiddleware } from 'utils/ImageUploadFunction/ImageUploadFunct
     JwtStrategy,
     UserService,
     AttachmentService,
+    RoleService,
   ],
 })
 export class AppModule {

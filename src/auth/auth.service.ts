@@ -24,6 +24,12 @@ export class AuthService {
   async signUp(user: CreateUserDto): Promise<ResponseInterface> {
     const hashedPassword = await bcrypt.hash(user.password, 8);
     try {
+      const defaultRole = await this.prisma.role.findUnique({
+        where: { name: 'user' },
+      });
+      if (!defaultRole) {
+        throw new Error('Default role not found in database');
+      }
       await this.prisma.user.create({
         data: {
           email: user.email,
@@ -36,9 +42,11 @@ export class AuthService {
           addresses: {
             create: user.addresses, // Assuming addresses is an array of address data
           },
+          roleId: defaultRole.id,
           isActive: false, // User needs admin approval to activate
         },
       });
+
       return {
         success: true,
         message: 'User signed up successfully.',
@@ -77,6 +85,9 @@ export class AuthService {
   async validateUser(email: string, pass: string): Promise<any> {
     const user = await this.prisma.user.findUnique({
       where: { email, isActive: true },
+      include: {
+        role: true,
+      },
     });
     if (user && (await bcrypt.compare(pass, user.password))) {
       const { password: _password, ...result } = user;
