@@ -14,7 +14,6 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { UserService } from './user.service';
 import { ApiBearerAuth, ApiOkResponse, ApiResponse } from '@nestjs/swagger';
-
 import { CreateUserDto } from './dto/create-user.dto';
 
 @Controller('user')

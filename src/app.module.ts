@@ -21,7 +21,8 @@ import { GeoLocationController } from './geolocation/geolocation.controller';
 import { GeoLocationService } from './geolocation/geolocation.service';
 import { RoleController } from './role/role.controller';
 import { RoleService } from './role/role.service';
-
+import { RoleAndCapabilityController } from './role-and-capability/role-and-capability.controller';
+import { RoleAndCapabilityService } from './role-and-capability/role-and-capability.service';
 @Module({
   imports: [
     JwtModule.register({}),
@@ -37,6 +38,7 @@ import { RoleService } from './role/role.service';
     AddressController,
     GeoLocationController,
     RoleController,
+    RoleAndCapabilityController,
   ],
   providers: [
     AppService,
@@ -50,6 +52,7 @@ import { RoleService } from './role/role.service';
     AddressService,
     GeoLocationService,
     RoleService,
+    RoleAndCapabilityService,
   ],
 })
 export class AppModule {

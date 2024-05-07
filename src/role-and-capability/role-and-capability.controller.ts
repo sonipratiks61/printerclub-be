@@ -9,19 +9,20 @@ import {
   Body,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiResponse } from '@nestjs/swagger';
-import { CreateRoleDto } from './dto/create-role.dto';
-import { RoleService } from './role.service';
+import { RoleAndCapabilityService } from './role-and-capability.service';
+import { RoleAndCapabilityDto } from './dto/role-and-capability.dto';
 
-@Controller('role')
-export class RoleController {
-  constructor(private readonly roleService: RoleService) {}
+@Controller('roleAndCapability')
+export class RoleAndCapabilityController {
+  constructor(
+    private readonly roleAndCapabilityService: RoleAndCapabilityService,
+  ) {}
 
   @Get()
   @UseGuards(AuthGuard('jwt'))
   async fetchAll() {
     try {
-      return await this.roleService.findAll();
+      return await this.roleAndCapabilityService.findAll();
     } catch (error) {
       throw new HttpException(
         {
@@ -34,17 +35,13 @@ export class RoleController {
   }
 
   @Post()
-  @ApiResponse({
-    status: 200,
-    description: 'The user has been successfully created.',
-    type: CreateRoleDto,
-  })
-  async createAttachment(@Body() createRoleDto: CreateRoleDto) {
+  @UseGuards(AuthGuard('jwt'))
+  async createAttachment(@Body() roleAndCapabilityDto: RoleAndCapabilityDto) {
     try {
-      await this.roleService.createRole(createRoleDto);
-      return { success: true, message: 'create Successfully' };
+      await this.roleAndCapabilityService.create(roleAndCapabilityDto);
+      return { success: true, message: 'Created Successfully' };
     } catch (error) {
-      console.error('Error occurred while:', error);
+      console.error('Error occurred while :', error);
       throw new HttpException(
         { success: false, message: error.message },
         HttpStatus.INTERNAL_SERVER_ERROR,
