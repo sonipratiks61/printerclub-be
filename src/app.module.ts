@@ -15,7 +15,10 @@ import { AttachmentService } from './attachment/attachment.service';
 import { AttachmentController } from './attachment/attachment.controller';
 import { MulterModule } from '@nestjs/platform-express';
 import { FileUploadMiddleware } from 'utils/ImageUploadFunction/ImageUploadFunction';
+import { AddressController } from './address/address.controller';
+import { AddressService } from './address/address.service';
 
+import { ValidationFunctionPipe } from 'utils/validationFunction';
 @Module({
   imports: [
     JwtModule.register({}),
@@ -28,6 +31,7 @@ import { FileUploadMiddleware } from 'utils/ImageUploadFunction/ImageUploadFunct
     AuthController,
     UserController,
     AttachmentController,
+    AddressController,
   ],
   providers: [
     AppService,
@@ -38,10 +42,11 @@ import { FileUploadMiddleware } from 'utils/ImageUploadFunction/ImageUploadFunct
     JwtStrategy,
     UserService,
     AttachmentService,
+    AddressService,
   ],
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(FileUploadMiddleware).forRoutes('attachments'); // Apply middleware to specific routes
+    consumer.apply(FileUploadMiddleware).forRoutes('attachments');
   }
 }
