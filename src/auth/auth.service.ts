@@ -36,7 +36,7 @@ export class AuthService {
           addresses: {
             create: user.addresses, // Assuming addresses is an array of address data
           },
-          isActive: false, // User needs admin approval to activate
+          isActive: true, // User needs admin approval to activate
         },
       });
       return {

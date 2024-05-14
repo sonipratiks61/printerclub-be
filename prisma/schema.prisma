@@ -64,5 +64,4 @@ model Attachment {
   attachmentType String
   userId  Int
   user      User   @relation(fields: [userId], references: [id])
-
 }
