@@ -16,6 +16,5 @@ export const ValidationFunctionPipe = () =>
     },
     stopAtFirstError: true,
     whitelist: true, // Strips non-whitelisted properties
-    forbidNonWhitelisted: true, // Throws error for non-whitelisted properties
     transform: true,
   });
