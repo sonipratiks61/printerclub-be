@@ -17,6 +17,8 @@ import { MulterModule } from '@nestjs/platform-express';
 import { FileUploadMiddleware } from 'utils/ImageUploadFunction/ImageUploadFunction';
 import { AddressController } from './address/address.controller';
 import { AddressService } from './address/address.service';
+import { GeoLocationController } from './geolocation/geolocation.controller';
+import { GeoLocationService } from './geolocation/geolocation.service';
 
 import { ValidationFunctionPipe } from 'utils/validationFunction';
 @Module({
@@ -32,6 +34,7 @@ import { ValidationFunctionPipe } from 'utils/validationFunction';
     UserController,
     AttachmentController,
     AddressController,
+    GeoLocationController,
   ],
   providers: [
     AppService,
@@ -43,6 +46,7 @@ import { ValidationFunctionPipe } from 'utils/validationFunction';
     UserService,
     AttachmentService,
     AddressService,
+    GeoLocationService,
   ],
 })
 export class AppModule {
