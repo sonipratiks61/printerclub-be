@@ -15,6 +15,8 @@ import { AttachmentService } from './attachment/attachment.service';
 import { AttachmentController } from './attachment/attachment.controller';
 import { MulterModule } from '@nestjs/platform-express';
 import { FileUploadMiddleware } from 'utils/ImageUploadFunction/ImageUploadFunction';
+import { GeoLocationController } from './geolocation/geolocation.controller';
+import { GeoLocationService } from './geolocation/geolocation.service';
 
 @Module({
   imports: [
@@ -28,6 +30,7 @@ import { FileUploadMiddleware } from 'utils/ImageUploadFunction/ImageUploadFunct
     AuthController,
     UserController,
     AttachmentController,
+    GeoLocationController,
   ],
   providers: [
     AppService,
@@ -38,6 +41,7 @@ import { FileUploadMiddleware } from 'utils/ImageUploadFunction/ImageUploadFunct
     JwtStrategy,
     UserService,
     AttachmentService,
+    GeoLocationService,
   ],
 })
 export class AppModule {
