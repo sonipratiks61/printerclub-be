@@ -6,32 +6,32 @@ export class CreateAddressDto {
     description: 'The country where the user resides',
     example: 'United States',
   })
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmpty({ message: 'country cannot be empty.' })
+  @IsString({ message: 'country must be a string' })
   country: string;
 
   @ApiProperty({
     description: 'The state or province where the user resides',
     example: 'California',
   })
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmpty({ message: 'state cannot be empty.' })
+  @IsString({ message: 'state must be a string' })
   state: string;
 
   @ApiProperty({
     description: 'The city where the user resides',
     example: 'San Francisco',
   })
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmpty({ message: 'city cannot be empty.' })
+  @IsString({ message: 'city must be a string' })
   city: string;
 
   @ApiProperty({
     description: "The postal code of the user's address",
-    example: '94103',
+    example: '941038',
   })
-  @IsPostalCode()
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'pinCode cannot be empty.' })
+  @IsPostalCode('IN')
   pinCode: string;
 
   @ApiProperty({
@@ -39,7 +39,7 @@ export class CreateAddressDto {
       'The full address line including street name, building number, etc.',
     example: '123 Main St, Apt 101',
   })
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmpty({ message: 'address cannot be empty.' })
+  @IsString({ message: 'address must be a string' })
   address: string;
 }

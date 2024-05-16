@@ -36,7 +36,7 @@ export class AuthService {
           addresses: {
             create: user.addresses, // Assuming addresses is an array of address data
           },
-          isActive: false, // User needs admin approval to activate
+          isActive: true, // User needs admin approval to activate
         },
       });
       return {
@@ -44,6 +44,7 @@ export class AuthService {
         message: 'User signed up successfully.',
       };
     } catch (error) {
+      console.log(error);
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === 'P2002'
@@ -76,7 +77,7 @@ export class AuthService {
 
   async validateUser(email: string, pass: string): Promise<any> {
     const user = await this.prisma.user.findUnique({
-      where: { email, isActive: true },
+      where: { email, isActive: false },
     });
     if (user && (await bcrypt.compare(pass, user.password))) {
       const { password: _password, ...result } = user;

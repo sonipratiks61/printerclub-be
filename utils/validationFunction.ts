@@ -15,4 +15,6 @@ export const ValidationFunctionPipe = () =>
       );
     },
     stopAtFirstError: true,
+    whitelist: true, // Strips non-whitelisted properties
+    transform: true,
   });
