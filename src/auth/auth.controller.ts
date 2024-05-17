@@ -8,12 +8,18 @@ import {
   UseGuards,
   Get,
   HttpException,
+  NotFoundException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiResponse,
+  ApiHeader,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
@@ -30,6 +36,20 @@ export class AuthController {
   }
 
   @Post('login')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        email: { type: 'string', example: 'john.doe@example.com' },
+        password: { type: 'string', example: 'strongPassword123!' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'user login successfully.',
+    type: CreateUserDto,
+  })
   async login(
     @Body() body: { email: string; password: string },
     @Res() response: Response,
@@ -78,6 +98,11 @@ export class AuthController {
   }
 
   @Get('refresh-token')
+  @ApiResponse({
+    status: 200,
+    description: 'user refresh-token successfully.',
+    type: CreateUserDto,
+  })
   @UseGuards(AuthGuard('jwt-refresh')) // Use the custom refresh guard
   async refreshToken(
     @Headers('authorization') refreshToken: string,
@@ -100,17 +125,63 @@ export class AuthController {
   }
 
   @Post('forgot-password')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        email: { type: 'string', example: 'user@example.com' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Reset password link has been sent to the user email.',
+    type: CreateUserDto,
+  })
+  @ApiBearerAuth()
   async forgotPassword(@Body('email') email: string): Promise<any> {
     try {
       await this.authService.forgotPassword(email);
-      return { message: 'Reset password link has been sent to your email.' };
+      return {
+        success: true,
+        message: 'Reset password link has been sent to your email.',
+      };
     } catch (error) {
-      console.error(error);
-      return { message: 'Reset password link has been sent to your email.' };
+      if (error instanceof NotFoundException) {
+        throw new HttpException(
+          {
+            success: false,
+            message: error.message,
+          },
+          HttpStatus.NOT_FOUND,
+        );
+      } else {
+        throw new HttpException(
+          {
+            success: false,
+            message: error.message || 'There was a problem accessing data',
+          },
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     }
   }
 
   @Post('reset-password')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        password: { type: 'string', example: 'new_password' },
+      },
+      required: ['password'],
+    },
+  })
+  @ApiHeader({ name: 'Authorization', description: 'Bearer token' })
+  @ApiResponse({
+    status: 200,
+    description: 'Password reset successfully.',
+  })
   async resetPassword(
     @Body() body: { password: string },
     @Headers('authorization') token: string,

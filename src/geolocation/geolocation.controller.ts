@@ -2,17 +2,24 @@ import {
   Controller,
   Get,
   Query,
-  NotFoundException,
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
 import { GeoLocationService } from './geolocation.service';
+import { CreateAddressDto } from 'src/user/dto/create-address.dto';
+import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 
 @Controller('geoLocation')
 export class GeoLocationController {
   constructor(private readonly geoLocationService: GeoLocationService) {}
 
   @Get()
+  @ApiResponse({
+    status: 200,
+    description: 'Get users with addresses successfully',
+    type: [CreateAddressDto],
+  })
+  @ApiBearerAuth()
   async getUsersWithAddresses(@Query('pincode') pincode?: string) {
     try {
       const usersWithAddresses =

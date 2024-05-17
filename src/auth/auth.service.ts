@@ -77,7 +77,7 @@ export class AuthService {
 
   async validateUser(email: string, pass: string): Promise<any> {
     const user = await this.prisma.user.findUnique({
-      where: { email, isActive: false },
+      where: { email, isActive: true },
     });
     if (user && (await bcrypt.compare(pass, user.password))) {
       const { password: _password, ...result } = user;
@@ -165,7 +165,8 @@ export class AuthService {
     let payload: any;
     try {
       payload = this.jwtService.verify(token, {
-        secret: process.env.JWT_REFRESH_TOKEN_SECRET,
+        secret:
+          process.env.JWT_REFRESH_TOKEN_SECRET || 'JWT_REFRESH_TOKEN_SECRET',
       });
     } catch (e) {
       throw new Error('Invalid or expired reset token');

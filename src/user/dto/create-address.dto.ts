@@ -6,15 +6,14 @@ export class CreateAddressDto {
     description: 'The country where the user resides',
     example: 'United States',
   })
-  @IsNotEmpty({ message: 'country cannot be empty.' })
+  @IsNotEmpty({ message: 'country cannot be empty' })
   @IsString({ message: 'country must be a string' })
   country: string;
-
   @ApiProperty({
     description: 'The state or province where the user resides',
     example: 'California',
   })
-  @IsNotEmpty({ message: 'state cannot be empty.' })
+  @IsNotEmpty({ message: 'state cannot be empty' })
   @IsString({ message: 'state must be a string' })
   state: string;
 
@@ -22,17 +21,20 @@ export class CreateAddressDto {
     description: 'The city where the user resides',
     example: 'San Francisco',
   })
-  @IsNotEmpty({ message: 'city cannot be empty.' })
-  @IsString({ message: 'city must be a string' })
+  @IsNotEmpty({ message: 'City cannot be empty' })
+  @IsString({ message: 'City must be a string' })
   city: string;
 
   @ApiProperty({
     description: "The postal code of the user's address",
     example: '941038',
   })
+  // @IsPostalCode()
+  // @IsNotEmpty({ message: 'pinCode cannot be empty.' })
+  // @IsPostalCode('IN')
   @IsNotEmpty({ message: 'pinCode cannot be empty.' })
   @IsPostalCode('IN')
-  pinCode: string;
+  pinCode: string; // Validate without specific locale
 
   @ApiProperty({
     description:

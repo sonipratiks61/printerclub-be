@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateAddressDto } from 'src/user/dto/create-address.dto';
 
@@ -8,31 +7,47 @@ export class AddressService {
   constructor(private prisma: PrismaService) {}
 
   async create(createAddressDto: CreateAddressDto[], userId: number) {
-    try {
-      const createOperations = createAddressDto.map((addressDto) => ({
-        address: addressDto.address,
-        city: addressDto.city,
-        state: addressDto.state,
-        country: addressDto.country,
-        pinCode: addressDto.pinCode,
-        userId: userId,
-      }));
-      if (createOperations.length === 0) {
-        throw new Error('At least Enter the One Address');
+    // Validate each CreateAddressDto object
+    for (const addressDto of createAddressDto) {
+      if (
+        !addressDto.address ||
+        !addressDto.city ||
+        !addressDto.state ||
+        !addressDto.country ||
+        !addressDto.pinCode
+      ) {
+        throw new Error('All address fields are required.');
       }
-      const createdAddresses = [];
-      for (const operation of createOperations) {
-        const createdAddress = await this.prisma.address.create({
-          data: operation,
-        });
-        createdAddresses.push(createdAddress);
+
+      const pinCodeRegex = /^\d{6}$/;
+      if (!pinCodeRegex.test(addressDto.pinCode)) {
+        throw new Error('Invalid pinCode format.');
       }
-      return createdAddresses;
-    } catch (error) {
-      console.log(error);
-      throw error;
     }
+
+    const createOperations = createAddressDto.map((addressDto) => ({
+      address: addressDto.address,
+      city: addressDto.city,
+      state: addressDto.state,
+      country: addressDto.country,
+      pinCode: addressDto.pinCode,
+      userId: userId,
+    }));
+
+    if (createOperations.length === 0) {
+      throw new Error('At least one address must be provided.');
+    }
+
+    const createdAddresses = [];
+    for (const operation of createOperations) {
+      const createdAddress = await this.prisma.address.create({
+        data: operation,
+      });
+      createdAddresses.push(createdAddress);
+    }
+    return createdAddresses;
   }
+
   async findOne(id: number) {
     return await this.prisma.address.findUnique({
       where: {

@@ -20,7 +20,6 @@ import { AddressService } from './address/address.service';
 import { GeoLocationController } from './geolocation/geolocation.controller';
 import { GeoLocationService } from './geolocation/geolocation.service';
 
-import { ValidationFunctionPipe } from 'utils/validationFunction';
 @Module({
   imports: [
     JwtModule.register({}),

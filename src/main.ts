@@ -1,7 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { ValidationFunctionPipe } from 'utils/validationFunction';
+import { getCustomValidationError } from 'utils/validationFunction';
+import { ValidationPipe, HttpException, HttpStatus } from '@nestjs/common';
+import { ValidationError } from 'class-validator';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
@@ -22,9 +24,21 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, options);
 
-  SwaggerModule.setup('api', app, document);
-
-  app.useGlobalPipes(ValidationFunctionPipe());
+  SwaggerModule.setup('api', app, document, {
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
+  });
+  app.useGlobalPipes(
+    new ValidationPipe({
+      exceptionFactory: (errors: ValidationError[]) =>
+        new HttpException(
+          getCustomValidationError(errors), // Call getCustomValidationError to format the error
+          HttpStatus.BAD_REQUEST, // Set the HTTP status to 400 Bad Request
+        ),
+      transform: true, // Automatically transform payload data to DTO instances
+    }),
+  );
   await app.listen(3000);
 }
 bootstrap();
