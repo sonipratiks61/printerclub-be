@@ -13,6 +13,9 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { UserService } from './user.service';
+import { ApiBearerAuth, ApiOkResponse, ApiResponse } from '@nestjs/swagger';
+
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -20,6 +23,11 @@ export class UserController {
 
   @Get('me')
   @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'Returns the user profile',
+    type: CreateUserDto,
+  }) // Specify the response type
   getProfile(@Request() req) {
     // The user object is attached to the request in the JWT strategy validate method
     return req.user;
@@ -27,6 +35,15 @@ export class UserController {
 
   @Get()
   @UseGuards(AuthGuard('jwt')) // Ensures only authenticated users can access this route
+  @ApiOkResponse({
+    description: 'List of all users with addresses',
+    type: CreateUserDto,
+  })
+  @ApiResponse({
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    description: 'Internal server error',
+  })
+  @ApiBearerAuth()
   async findAllUsers() {
     try {
       return await this.userService.findAllUsersWithAddresses();
@@ -43,6 +60,12 @@ export class UserController {
 
   @Patch(':id/active')
   @UseGuards(AuthGuard('jwt')) // Assuming JWT is used for authentication
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: 200,
+    description: 'Updated successfully',
+    type: CreateUserDto,
+  })
   async setActiveStatus(
     @Param('id') id: string,
     @Body('isActive') isActive: boolean,

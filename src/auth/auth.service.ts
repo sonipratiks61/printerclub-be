@@ -165,7 +165,8 @@ export class AuthService {
     let payload: any;
     try {
       payload = this.jwtService.verify(token, {
-        secret: process.env.JWT_REFRESH_TOKEN_SECRET,
+        secret:
+          process.env.JWT_REFRESH_TOKEN_SECRET || 'JWT_REFRESH_TOKEN_SECRET',
       });
     } catch (e) {
       throw new Error('Invalid or expired reset token');

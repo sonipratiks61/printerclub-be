@@ -1,13 +1,16 @@
 import {
+  IsDefined,
   IsEmail,
   IsNotEmpty,
   IsOptional,
   IsString,
   MinLength,
+  ValidateNested,
 } from 'class-validator';
 
 import { CreateAddressDto } from './create-address.dto';
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
 export class CreateUserDto {
   @ApiProperty({
@@ -81,5 +84,9 @@ export class CreateUserDto {
       },
     ],
   })
+  @IsNotEmpty({ message: 'addresses must not be empty.' })
+  @ValidateNested({ each: true })
+  @IsDefined()
+  @Type(() => CreateAddressDto)
   addresses: CreateAddressDto[];
 }
