@@ -103,10 +103,13 @@ export class AuthController {
   async forgotPassword(@Body('email') email: string): Promise<any> {
     try {
       await this.authService.forgotPassword(email);
-      return { message: 'Reset password link has been sent to your email.' };
+      return {
+        success: true,
+        message: 'Reset password link has been sent to your email.',
+      };
     } catch (error) {
       console.error(error);
-      return { message: 'Reset password link has been sent to your email.' };
+      return { success: false, message: error.message };
     }
   }
 

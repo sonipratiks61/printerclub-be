@@ -4,14 +4,19 @@ import * as nodemailer from 'nodemailer';
 
 @Injectable()
 export class MailService {
-  private transporter;
+  private transporter: nodemailer.Transporter;
 
   constructor() {
     this.transporter = nodemailer.createTransport({
-      service: 'gmail', // or another email service
+      host: 'smtp.gmail.com',
+      port: 465, // Use port 465 for secure (SSL) connection
+      secure: true, // Use true for 465, false for other ports
       auth: {
         user: process.env.EMAIL_USERNAME,
         pass: process.env.EMAIL_PASSWORD,
+      },
+      tls: {
+        rejectUnauthorized: true,
       },
     });
   }
@@ -24,12 +29,15 @@ export class MailService {
       text,
       html,
     };
+
     try {
-      await this.transporter.sendMail(mailOptions);
+      const info = await this.transporter.sendMail(mailOptions);
+      console.log('Email sent: ' + info.response);
     } catch (error) {
-      console.info('=====mail is not sent=====');
+      console.error('Error sending email:', error);
+      console.info('===== Mail not sent =====');
       console.info(mailOptions);
-      console.info('==========================');
+      console.info('=========================');
     }
   }
 }

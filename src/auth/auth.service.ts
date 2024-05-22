@@ -77,7 +77,7 @@ export class AuthService {
 
   async validateUser(email: string, pass: string): Promise<any> {
     const user = await this.prisma.user.findUnique({
-      where: { email, isActive: true },
+      where: { email, isActive: false },
     });
     if (user && (await bcrypt.compare(pass, user.password))) {
       const { password: _password, ...result } = user;
@@ -151,7 +151,6 @@ export class AuthService {
       { email: user.email, sub: user.id },
       { secret: process.env.JWT_REFRESH_TOKEN_SECRET, expiresIn: '1h' },
     );
-
     const resetPasswordUrl = `${process.env.RESET_PASSWORD_LINK}?token=${resetToken}`;
 
     await this.mailService.sendMail(
