@@ -36,7 +36,7 @@ export class AuthService {
           addresses: {
             create: user.addresses, // Assuming addresses is an array of address data
           },
-          isActive: true, // User needs admin approval to activate
+          isActive: false, // User needs admin approval to activate
         },
       });
       return {
@@ -77,7 +77,7 @@ export class AuthService {
 
   async validateUser(email: string, pass: string): Promise<any> {
     const user = await this.prisma.user.findUnique({
-      where: { email, isActive: false },
+      where: { email, isActive: true },
     });
     if (user && (await bcrypt.compare(pass, user.password))) {
       const { password: _password, ...result } = user;
