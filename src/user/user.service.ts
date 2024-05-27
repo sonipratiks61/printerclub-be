@@ -26,6 +26,11 @@ export class UserService {
             address: true,
           },
         },
+        role: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
   }

@@ -7,12 +7,21 @@ export class RoleService {
   constructor(private prisma: PrismaService) {}
 
   async createRole(createRoleDto: CreateRoleDto) {
-    return this.prisma.role.create({
+    const data = this.prisma.role.create({
       data: {
         name: createRoleDto.name,
         capabilities: {
           create: createRoleDto.capabilities,
         },
+      },
+    });
+    return data;
+  }
+
+  async findAll() {
+    return await this.prisma.role.findMany({
+      include: {
+        capabilities: true,
       },
     });
   }
