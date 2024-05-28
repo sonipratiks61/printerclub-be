@@ -22,6 +22,8 @@ import { RoleController } from './role/role.controller';
 import { RoleService } from './role/role.service';
 import { RoleAndCapabilityController } from './role-and-capability/role-and-capability.controller';
 import { RoleAndCapabilityService } from './role-and-capability/role-and-capability.service';
+import { CategoryController } from './category/category.controller';
+import { CategoryService } from './category/category.service';
 import { ResponseService } from 'utils/response/customResponse';
 
 @Module({
@@ -40,6 +42,7 @@ import { ResponseService } from 'utils/response/customResponse';
     GeoLocationController,
     RoleController,
     RoleAndCapabilityController,
+    CategoryController,
   ],
   providers: [
     AppService,
@@ -54,6 +57,7 @@ import { ResponseService } from 'utils/response/customResponse';
     GeoLocationService,
     RoleService,
     RoleAndCapabilityService,
+    CategoryService,
     ResponseService,
   ],
 })
