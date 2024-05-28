@@ -1,34 +1,29 @@
 // attachments.controller.ts
-import {
-  Controller,
-  Post,
-  UseGuards,
-  HttpException,
-  HttpStatus,
-  Get,
-  Body,
-} from '@nestjs/common';
+import { Controller, Post, UseGuards, Get, Body, Res } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiResponse } from '@nestjs/swagger';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { RoleService } from './role.service';
+import { ResponseService } from 'utils/response/customResponse';
 
 @Controller('role')
 export class RoleController {
-  constructor(private readonly roleService: RoleService) {}
+  constructor(
+    private readonly roleService: RoleService,
+    private readonly responseService: ResponseService, // Inject the ResponseService
+  ) {}
 
   @Get()
   @UseGuards(AuthGuard('jwt'))
-  async fetchAll() {
+  async fetchAll(@Res() res) {
     try {
-      return await this.roleService.findAll();
+      const data = await this.roleService.findAll();
+      return this.responseService.sendSuccess(res, 'fetch successfully!', data);
     } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: error.message || 'There was a problem accessing data',
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
+      return this.responseService.sendInternalError(
+        res,
+        error.message || 'something went wrong',
+        error,
       );
     }
   }
@@ -39,15 +34,16 @@ export class RoleController {
     description: 'The user has been successfully created.',
     type: CreateRoleDto,
   })
-  async createAttachment(@Body() createRoleDto: CreateRoleDto) {
+  async createAttachment(@Body() createRoleDto: CreateRoleDto, @Res() res) {
     try {
       await this.roleService.createRole(createRoleDto);
-      return { success: true, message: 'create Successfully' };
+      this.responseService.sendSuccess(res, 'Create Successfully');
+      return;
     } catch (error) {
-      console.error('Error occurred while:', error);
-      throw new HttpException(
-        { success: false, message: error.message },
-        HttpStatus.INTERNAL_SERVER_ERROR,
+      this.responseService.sendInternalError(
+        res,
+        error.message || 'something went wrong',
+        error,
       );
     }
   }

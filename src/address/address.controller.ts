@@ -3,12 +3,11 @@ import {
   Controller,
   Delete,
   Get,
-  HttpException,
-  HttpStatus,
   Param,
   Patch,
   Post,
   Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { AddressService } from './address.service';
@@ -21,9 +20,15 @@ import {
   ApiParam,
   ApiResponse,
 } from '@nestjs/swagger';
+import { ValidationError } from 'class-validator';
+import { getCustomValidationError } from 'utils/validationFunction';
+import { ResponseService } from '../../utils/response/customResponse';
 @Controller('address')
 export class AddressController {
-  constructor(private readonly addressService: AddressService) {}
+  constructor(
+    private readonly addressService: AddressService,
+    private readonly responseService: ResponseService,
+  ) {}
 
   @Post()
   @UseGuards(AuthGuard('jwt'))
@@ -33,22 +38,31 @@ export class AddressController {
     type: CreateAddressDto,
   })
   @ApiBearerAuth()
-  async create(@Req() req, @Body() createAddressDto: CreateAddressDto[]) {
+  async create(
+    @Res() res,
+    @Req() req,
+    @Body() createAddressDto: CreateAddressDto[],
+  ) {
     try {
       const userId = req.user.id;
       await this.addressService.create(createAddressDto, userId);
-      return {
-        success: true,
-        message: 'Address Created Successfully',
-      };
+      this.responseService.sendSuccess(res, 'Address Created Successfully');
+      return;
     } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
+      if (error instanceof ValidationError) {
+        const formattedError = getCustomValidationError([error]);
+        this.responseService.sendBadRequest(
+          res,
+          'Validation error',
+          formattedError,
+        );
+      } else {
+        this.responseService.sendInternalError(
+          res,
+          error.message || 'something went wrong',
+          error,
+        );
       }
-      throw new HttpException(
-        { message: 'Validation failed', error: error.message },
-        HttpStatus.BAD_REQUEST,
-      );
     }
   }
 
@@ -61,26 +75,20 @@ export class AddressController {
     type: CreateAddressDto,
     isArray: true,
   })
-  async fetchAll(@Req() req) {
+  async fetchAll(@Req() req, @Res() res) {
     try {
-      console.log(req.user.id);
       const data = await this.addressService.findAllAddress();
-      return {
-        success: true,
-        message: ' Address Fetch Successfully',
-        data: data,
-      };
+      this.responseService.sendSuccess(res, 'Address Fetch Successfully', data);
+      return;
     } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: 'Something went wrong',
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
+      this.responseService.sendInternalError(
+        res,
+        error.message || 'something went wrong',
+        error,
       );
+      return;
     }
   }
-
   @Patch(':id')
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth()
@@ -94,39 +102,32 @@ export class AddressController {
     @Param('id') id: string,
     @Req() req,
     @Body() createAddressDto: CreateAddressDto,
+    @Res() res,
   ) {
     try {
       const updateAddressId = parseInt(id);
       const category = await this.addressService.findOne(updateAddressId);
       if (!category) {
-        throw new NotFoundException('Invalid addressId');
+        return this.responseService.sendNotFound(res, 'Invalid addressId');
       }
-      const data = this.addressService.update(
+      const data = await this.addressService.update(
         updateAddressId,
         createAddressDto,
       );
-      return {
-        success: true,
-        message: 'Address updated successfully',
-        data: data,
-      };
+      return this.responseService.sendSuccess(
+        res,
+        'Address updated successfully',
+        data,
+      );
     } catch (error) {
       console.log(error);
       if (error instanceof NotFoundException) {
-        throw new HttpException(
-          {
-            success: false,
-            message: error.message,
-          },
-          HttpStatus.NOT_FOUND,
-        );
+        return this.responseService.sendNotFound(res, error.message);
       } else {
-        throw new HttpException(
-          {
-            success: false,
-            message: error.message || 'Failed to remove address',
-          },
-          HttpStatus.INTERNAL_SERVER_ERROR,
+        return this.responseService.sendInternalError(
+          res,
+          error.message || 'something went wrong',
+          error,
         );
       }
     }
@@ -138,35 +139,31 @@ export class AddressController {
   @ApiParam({ name: 'id', description: 'Address ID to delete', type: 'string' })
   @ApiResponse({
     status: 200,
-    description: 'Address updated successfully',
+    description: 'Address successfully',
     type: CreateAddressDto,
   })
   @ApiNotFoundResponse({ description: 'Address not found' })
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string, @Res() res) {
     try {
       const addressId = parseInt(id, 10);
       const data = await this.addressService.findOne(addressId);
       if (!data) {
-        throw new NotFoundException(`Address with ID ${id} not found`);
+        return this.responseService.sendNotFound(
+          res,
+          `Address with ID ${id} not found`,
+        );
       }
-      return { success: true, message: 'Address successfully ', data };
+      this.responseService.sendSuccess(res, 'fetch Address', data);
+      return;
     } catch (error) {
       console.log(error);
       if (error instanceof NotFoundException) {
-        throw new HttpException(
-          {
-            success: false,
-            message: error.message,
-          },
-          HttpStatus.NOT_FOUND,
-        );
+        return this.responseService.sendNotFound(res, error.message);
       } else {
-        throw new HttpException(
-          {
-            success: false,
-            message: error.message || 'Failed to remove address',
-          },
-          HttpStatus.INTERNAL_SERVER_ERROR,
+        return this.responseService.sendInternalError(
+          res,
+          error.message || 'something went wrong',
+          error,
         );
       }
     }
@@ -178,7 +175,7 @@ export class AddressController {
   @ApiParam({ name: 'id', description: 'Address ID to delete', type: 'string' })
   @ApiResponse({ status: 200, description: 'Address successfully removed' })
   @ApiResponse({ status: 404, description: 'Address not found' })
-  async remove(@Param('id') id: string) {
+  async remove(@Param('id') id: string, @Res() res) {
     try {
       const addressId = parseInt(id, 10);
       const data = await this.addressService.findOne(addressId);
@@ -186,24 +183,20 @@ export class AddressController {
         throw new NotFoundException(`Address with ID ${id} not found`);
       }
       await this.addressService.remove(addressId);
-      return { success: true, message: 'Address successfully removed' };
+      return this.responseService.sendSuccess(
+        res,
+        'Address successfully removed',
+        data,
+      );
     } catch (error) {
       console.log(error);
       if (error instanceof NotFoundException) {
-        throw new HttpException(
-          {
-            success: false,
-            message: error.message,
-          },
-          HttpStatus.NOT_FOUND,
-        );
+        return this.responseService.sendNotFound(res, error.message);
       } else {
-        throw new HttpException(
-          {
-            success: false,
-            message: error.message || 'Failed to remove address',
-          },
-          HttpStatus.INTERNAL_SERVER_ERROR,
+        return this.responseService.sendInternalError(
+          res,
+          error.message || 'something went wrong',
+          error,
         );
       }
     }
