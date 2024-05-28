@@ -1,50 +1,47 @@
 // attachments.controller.ts
-import {
-  Controller,
-  Post,
-  UseGuards,
-  HttpException,
-  HttpStatus,
-  Get,
-  Body,
-} from '@nestjs/common';
+import { Controller, Post, UseGuards, Get, Body, Res } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RoleAndCapabilityService } from './role-and-capability.service';
 import { RoleAndCapabilityDto } from './dto/role-and-capability.dto';
+import { ResponseService } from 'utils/response/customResponse';
 
 @Controller('roleAndCapability')
 export class RoleAndCapabilityController {
   constructor(
     private readonly roleAndCapabilityService: RoleAndCapabilityService,
+    private readonly responseService: ResponseService,
   ) {}
 
   @Get()
   @UseGuards(AuthGuard('jwt'))
-  async fetchAll() {
+  async fetchAll(@Res() res) {
     try {
-      return await this.roleAndCapabilityService.findAll();
+      const data = await this.roleAndCapabilityService.findAll();
+      return this.responseService.sendSuccess(res, 'fetch Successfully', data);
     } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: error.message || 'There was a problem accessing data',
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
+      return this.responseService.sendInternalError(
+        res,
+        error.message || 'something went wrong',
+        error,
       );
     }
   }
 
   @Post()
   @UseGuards(AuthGuard('jwt'))
-  async createAttachment(@Body() roleAndCapabilityDto: RoleAndCapabilityDto) {
+  async createAttachment(
+    @Body() roleAndCapabilityDto: RoleAndCapabilityDto,
+    @Res() res,
+  ) {
     try {
       await this.roleAndCapabilityService.create(roleAndCapabilityDto);
-      return { success: true, message: 'Created Successfully' };
+      return this.responseService.sendSuccess(res, 'Created successfully');
     } catch (error) {
       console.error('Error occurred while :', error);
-      throw new HttpException(
-        { success: false, message: error.message },
-        HttpStatus.INTERNAL_SERVER_ERROR,
+      return this.responseService.sendInternalError(
+        res,
+        error.message || 'something went wrong',
+        error,
       );
     }
   }

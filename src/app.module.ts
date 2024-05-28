@@ -1,6 +1,5 @@
 import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
-
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthController } from './auth/auth.controller';
@@ -23,6 +22,8 @@ import { RoleController } from './role/role.controller';
 import { RoleService } from './role/role.service';
 import { RoleAndCapabilityController } from './role-and-capability/role-and-capability.controller';
 import { RoleAndCapabilityService } from './role-and-capability/role-and-capability.service';
+import { ResponseService } from 'utils/response/customResponse';
+
 @Module({
   imports: [
     JwtModule.register({}),
@@ -53,6 +54,7 @@ import { RoleAndCapabilityService } from './role-and-capability/role-and-capabil
     GeoLocationService,
     RoleService,
     RoleAndCapabilityService,
+    ResponseService,
   ],
 })
 export class AppModule {
