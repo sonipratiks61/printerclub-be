@@ -1,16 +1,13 @@
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { MailService } from 'src/mail/mail.service';
-import { ResponseInterface } from 'utils/response/interface';
+// import { ResponseInterface } from 'utils/response/interface';
+import { ResponseService } from 'utils/response/customResponse';
+import { Response } from 'express'; // Import Response from express
 
 @Injectable()
 export class AuthService {
@@ -18,16 +15,21 @@ export class AuthService {
     private prisma: PrismaService,
     private jwtService: JwtService,
     private mailService: MailService,
+    private readonly responseService: ResponseService,
   ) {}
 
-  async signUp(user: CreateUserDto): Promise<ResponseInterface> {
+  async signUp(user: CreateUserDto, res: Response): Promise<void> {
     const hashedPassword = await bcrypt.hash(user.password, 8);
     try {
       const defaultRole = await this.prisma.role.findUnique({
         where: { name: 'user' },
       });
       if (!defaultRole) {
-        throw new Error('Default role not found in database');
+        this.responseService.sendBadRequest(
+          res,
+          'Default role not found in database',
+        );
+        return;
       }
       await this.prisma.user.create({
         data: {
@@ -45,11 +47,11 @@ export class AuthService {
           isActive: false, // User needs admin approval to activate
         },
       });
-
-      return {
-        success: true,
-        message: 'User signed up successfully.',
-      };
+      this.responseService.sendCreateObject(
+        res,
+        'User signed up successfully.',
+      );
+      return;
     } catch (error) {
       console.log(error);
       if (
@@ -66,19 +68,14 @@ export class AuthService {
             // Handle single string target
             targetDescription = error.meta.target;
           }
-          throw new HttpException(
-            {
-              success: false,
-              message: `A user with this ${targetDescription} already exists.`,
-            },
-            HttpStatus.CONFLICT,
+          this.responseService.sendBadRequest(
+            res,
+            `A user with this ${targetDescription} already exists.`,
           );
+          return;
         }
       }
-      throw new HttpException(
-        { success: false, message: 'Failed to register user.' },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      this.responseService.sendInternalError(res, 'Failed to register user.');
     }
   }
 
@@ -113,7 +110,7 @@ export class AuthService {
     };
   }
 
-  async validateRefreshToken(token: string): Promise<any> {
+  async validateRefreshToken(token: string, res: Response): Promise<any> {
     try {
       // Remove 'Bearer ' prefix if present
       token = token.startsWith('Bearer ') ? token.slice(7) : token;
@@ -130,7 +127,8 @@ export class AuthService {
       });
 
       if (!user || !user.isActive) {
-        throw new UnauthorizedException(
+        this.responseService.sendAuthenticationFailed(
+          res,
           'Refresh token is invalid or has been revoked.',
         );
       }
@@ -138,9 +136,18 @@ export class AuthService {
       return { userId: payload.sub, username: payload.username };
     } catch (error) {
       if (error instanceof JwtService || error.status === 401) {
-        throw new UnauthorizedException('Refresh token validation failed.');
+        this.responseService.sendAuthenticationFailed(
+          res,
+          'Refresh token validation failed.',
+          error,
+        );
+      } else {
+        this.responseService.sendInternalError(
+          res,
+          'Internal Server Error',
+          error,
+        );
       }
-      throw error;
     }
   }
 

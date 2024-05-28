@@ -1,47 +1,49 @@
-import {
-  Controller,
-  Get,
-  Query,
-  HttpException,
-  HttpStatus,
-} from '@nestjs/common';
+import { Controller, Get, Query, Res } from '@nestjs/common';
 import { GeoLocationService } from './geolocation.service';
-import { CreateAddressDto } from 'src/user/dto/create-address.dto';
-import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
+import { ResponseService } from '../../utils/response/customResponse'; // Import the ResponseService
+import { getCustomValidationError } from '../../utils/validationFunction'; // Import utility function
+import { Response } from 'express'; // Import Response
+import { ValidationError } from 'class-validator';
 
 @Controller('geoLocation')
 export class GeoLocationController {
-  constructor(private readonly geoLocationService: GeoLocationService) {}
+  constructor(
+    private readonly geoLocationService: GeoLocationService,
+    private readonly responseService: ResponseService, // Inject the ResponseService
+  ) {}
 
   @Get()
-  @ApiResponse({
-    status: 200,
-    description: 'Get users with addresses successfully',
-    type: [CreateAddressDto],
-  })
-  @ApiBearerAuth()
-  async getUsersWithAddresses(@Query('pincode') pincode?: string) {
+  async getUsersWithAddresses(
+    @Res() res: Response,
+    @Query('pincode') pincode?: string,
+  ) {
     try {
       const usersWithAddresses =
         await this.geoLocationService.findAllUsersWithAddresses(pincode);
       if (usersWithAddresses.length === 0) {
-        throw new HttpException(
-          {
-            success: false,
-            message: 'No found with the provided pincode',
-          },
-          HttpStatus.NOT_FOUND,
+        this.responseService.sendNotFound(
+          res,
+          'No users found with the provided pincode',
         );
+      } else {
+        this.responseService.sendSuccess(
+          res,
+          'Fetch the pincode',
+          usersWithAddresses,
+        );
+        return;
       }
-      return usersWithAddresses;
     } catch (error) {
-      throw new HttpException(
-        {
-          success: false,
-          message: error.message,
-        },
-        HttpStatus.NOT_FOUND,
-      );
+      if (error instanceof ValidationError) {
+        const formattedError = getCustomValidationError([error]);
+        this.responseService.sendBadRequest(
+          res,
+          'Validation error',
+          formattedError,
+        );
+      } else {
+        this.responseService.sendInternalError(res, error.message, error);
+      }
     }
   }
 }
