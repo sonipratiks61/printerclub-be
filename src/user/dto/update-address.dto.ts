@@ -12,16 +12,16 @@ export class UpdateAddressDto {
     example: 'United States',
   })
   @IsOptional()
-  @IsNotEmpty({ message: 'country cannot be empty' })
-  @IsString({ message: 'country must be a string' })
+  @IsNotEmpty({ message: 'Country cannot be empty' })
+  @IsString({ message: 'Country must be a string' })
   country: string;
   @ApiProperty({
     description: 'The state or province where the user resides',
     example: 'California',
   })
   @IsOptional()
-  @IsNotEmpty({ message: 'state cannot be empty' })
-  @IsString({ message: 'state must be a string' })
+  @IsNotEmpty({ message: 'State cannot be empty' })
+  @IsString({ message: 'State must be a string' })
   state: string;
 
   @ApiProperty({
@@ -38,7 +38,7 @@ export class UpdateAddressDto {
     example: '941038',
   })
   @IsOptional()
-  @IsNotEmpty({ message: 'pinCode cannot be empty.' })
+  @IsNotEmpty({ message: 'PinCode cannot be empty.' })
   @IsPostalCode('IN')
   pinCode: string;
 
@@ -48,7 +48,7 @@ export class UpdateAddressDto {
     example: '123 Main St, Apt 101',
   })
   @IsOptional()
-  @IsNotEmpty({ message: 'address cannot be empty.' })
-  @IsString({ message: 'address must be a string' })
+  @IsNotEmpty({ message: 'Address cannot be empty.' })
+  @IsString({ message: 'Address must be a string' })
   address: string;
 }

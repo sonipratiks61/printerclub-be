@@ -106,7 +106,7 @@ export class AuthService {
     };
   }
 
-  async validateRefreshToken(token: string, res: Response): Promise<any> {
+  async validateRefreshToken(token: string): Promise<any> {
     try {
       token = token.startsWith('Bearer ') ? token.slice(7) : token;
 
@@ -120,26 +120,15 @@ export class AuthService {
       });
 
       if (!user || !user.isActive) {
-        this.responseService.sendAuthenticationFailed(
-          res,
-          'Refresh token is invalid or has been revoked.',
-        );
+        throw new Error('User not found or not active');
       }
 
       return { userId: payload.sub, username: payload.username };
     } catch (error) {
       if (error instanceof JwtService || error.status === 401) {
-        this.responseService.sendAuthenticationFailed(
-          res,
-          'Refresh token validation failed.',
-          error,
-        );
+        throw new Error('Refresh token validation failed.');
       } else {
-        this.responseService.sendInternalError(
-          res,
-          'Internal Server Error',
-          error,
-        );
+        throw error;
       }
     }
   }

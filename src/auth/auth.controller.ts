@@ -95,20 +95,14 @@ export class AuthController {
     @Res() res,
   ) {
     try {
-      const user = await this.authService.validateRefreshToken(
-        refreshToken,
-        res,
-      );
+      const user = await this.authService.validateRefreshToken(refreshToken);
 
       const accessToken = await this.authService.createAccessToken(user);
       res.setHeader('X-Access-Token', accessToken);
       this.responseService.sendSuccess(res, 'Token refreshed successfully');
     } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      } else {
-        this.responseService.sendInternalError(res, 'Token refresh failed');
-      }
+      console.log(error);
+      this.responseService.sendInternalError(res, error.message, error);
     }
   }
 

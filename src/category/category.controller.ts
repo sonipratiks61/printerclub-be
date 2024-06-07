@@ -116,7 +116,7 @@ export class CategoryController {
       );
       this.responseService.sendSuccess(
         res,
-        'Updated Successfully',
+        'Category Updated Successfully',
         updatedCategory,
       );
     } catch (error) {
