@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { GeolocationController } from './geolocation.controller';
+import { GeoLocationController } from './geolocation.controller';
 
 describe('GeolocationController', () => {
-  let controller: GeolocationController;
+  let controller: GeoLocationController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [GeolocationController],
+      controllers: [GeoLocationController],
     }).compile();
 
-    controller = module.get<GeolocationController>(GeolocationController);
+    controller = module.get<GeoLocationController>(GeoLocationController);
   });
 
   it('should be defined', () => {

@@ -17,6 +17,7 @@ import { UserService } from './user.service';
 import { ApiBearerAuth, ApiOkResponse, ApiResponse } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ResponseService } from 'utils/response/customResponse';
+import { IdValidationPipe } from 'utils/validation/paramsValidation';
 
 @Controller('user')
 export class UserController {
@@ -31,9 +32,8 @@ export class UserController {
   @ApiOkResponse({
     description: 'Returns the user profile',
     type: CreateUserDto,
-  }) // Specify the response type
+  })
   getProfile(@Request() req, @Res() res) {
-    // The user object is attached to the request in the JWT strategy validate method
     try {
       const user = req.user;
       return this.responseService.sendSuccess(
@@ -44,7 +44,7 @@ export class UserController {
     } catch (error) {
       return this.responseService.sendInternalError(
         res,
-        'something went wrong',
+        'Something Went Wrong',
         error,
       );
     }
@@ -58,7 +58,7 @@ export class UserController {
   })
   @ApiResponse({
     status: HttpStatus.INTERNAL_SERVER_ERROR,
-    description: 'Internal server error',
+    description: 'Internal Server Error',
   })
   @ApiBearerAuth()
   async findAllUsers(@Res() res) {
@@ -72,29 +72,27 @@ export class UserController {
     } catch (error) {
       return this.responseService.sendInternalError(
         res,
-        'something went wrong',
+        'Something went wrong',
         error,
       );
     }
   }
 
-  @Patch(':id/active')
+  @Patch('active/:id')
   @UseGuards(AuthGuard('jwt')) // Assuming JWT is used for authentication
   @ApiBearerAuth()
   @ApiResponse({
     status: 200,
-    description: 'Updated successfully',
+    description: 'Updated Successfully',
     type: CreateUserDto,
   })
   async setActiveStatus(
-    @Param('id') id: string,
+    @Param('id', IdValidationPipe) id: string,
     @Body('isActive') isActive: boolean,
     @Req() req,
     @Res() res,
   ) {
-    // Prevent users from changing their own active status
     try {
-      // Prevent users from changing their own active status
       if (req.user.id === Number(id)) {
         return this.responseService.sendBadRequest(
           res,
@@ -118,7 +116,7 @@ export class UserController {
       } else {
         return this.responseService.sendInternalError(
           res,
-          error.message || 'something went wrong',
+          error.message || 'Something went wrong',
           error,
         );
       }

@@ -17,11 +17,11 @@ export class RoleAndCapabilityController {
   async fetchAll(@Res() res) {
     try {
       const data = await this.roleAndCapabilityService.findAll();
-      return this.responseService.sendSuccess(res, 'fetch Successfully', data);
+      this.responseService.sendSuccess(res, 'Fetch Successfully', data);
     } catch (error) {
-      return this.responseService.sendInternalError(
+      this.responseService.sendInternalError(
         res,
-        error.message || 'something went wrong',
+        error.message || 'Something Went Wrong',
         error,
       );
     }
@@ -35,12 +35,12 @@ export class RoleAndCapabilityController {
   ) {
     try {
       await this.roleAndCapabilityService.create(roleAndCapabilityDto);
-      return this.responseService.sendSuccess(res, 'Created successfully');
+      this.responseService.sendSuccess(res, 'Created Successfully');
     } catch (error) {
       console.error('Error occurred while :', error);
-      return this.responseService.sendInternalError(
+      this.responseService.sendInternalError(
         res,
-        error.message || 'something went wrong',
+        error.message || 'Something Went Wrong',
         error,
       );
     }

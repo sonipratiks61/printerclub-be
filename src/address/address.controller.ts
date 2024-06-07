@@ -21,8 +21,10 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { ValidationError } from 'class-validator';
-import { getCustomValidationError } from 'utils/validationFunction';
+import { getCustomValidationError } from 'utils/validation/validationFunction';
 import { ResponseService } from '../../utils/response/customResponse';
+import { IdValidationPipe } from 'utils/validation/paramsValidation';
+import { UpdateAddressDto } from 'src/user/dto/update-address.dto';
 @Controller('address')
 export class AddressController {
   constructor(
@@ -47,8 +49,8 @@ export class AddressController {
       const userId = req.user.id;
       await this.addressService.create(createAddressDto, userId);
       this.responseService.sendSuccess(res, 'Address Created Successfully');
-      return;
     } catch (error) {
+      console.log(error);
       if (error instanceof ValidationError) {
         const formattedError = getCustomValidationError([error]);
         this.responseService.sendBadRequest(
@@ -59,7 +61,7 @@ export class AddressController {
       } else {
         this.responseService.sendInternalError(
           res,
-          error.message || 'something went wrong',
+          error.message || 'Something Went Wrong',
           error,
         );
       }
@@ -79,16 +81,15 @@ export class AddressController {
     try {
       const data = await this.addressService.findAllAddress();
       this.responseService.sendSuccess(res, 'Address Fetch Successfully', data);
-      return;
     } catch (error) {
       this.responseService.sendInternalError(
         res,
-        error.message || 'something went wrong',
+        error.message || 'Something Went Wrong',
         error,
       );
-      return;
     }
   }
+
   @Patch(':id')
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth()
@@ -99,24 +100,24 @@ export class AddressController {
   })
   @ApiNotFoundResponse({ description: 'Address not found' })
   async update(
-    @Param('id') id: string,
-    @Req() req,
-    @Body() createAddressDto: CreateAddressDto,
+    @Param('id', IdValidationPipe) id: string,
     @Res() res,
+    @Req() req,
+    @Body() updateAddressDto: UpdateAddressDto,
   ) {
     try {
       const updateAddressId = parseInt(id);
       const category = await this.addressService.findOne(updateAddressId);
       if (!category) {
-        return this.responseService.sendNotFound(res, 'Invalid addressId');
+        this.responseService.sendNotFound(res, 'Invalid address Id');
       }
       const data = await this.addressService.update(
         updateAddressId,
-        createAddressDto,
+        updateAddressDto,
       );
       return this.responseService.sendSuccess(
         res,
-        'Address updated successfully',
+        'Address Updated Successfully',
         data,
       );
     } catch (error) {
@@ -126,14 +127,14 @@ export class AddressController {
       } else {
         return this.responseService.sendInternalError(
           res,
-          error.message || 'something went wrong',
+          error.message || 'Something Went Wrong',
           error,
         );
       }
     }
   }
 
-  @Get(':id')
+  @Get('findOne/:id')
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth()
   @ApiParam({ name: 'id', description: 'Address ID to delete', type: 'string' })
@@ -143,26 +144,25 @@ export class AddressController {
     type: CreateAddressDto,
   })
   @ApiNotFoundResponse({ description: 'Address not found' })
-  async findOne(@Param('id') id: string, @Res() res) {
+  async findOne(@Param('id', IdValidationPipe) id: string, @Res() res) {
     try {
       const addressId = parseInt(id, 10);
       const data = await this.addressService.findOne(addressId);
       if (!data) {
-        return this.responseService.sendNotFound(
+        this.responseService.sendNotFound(
           res,
           `Address with ID ${id} not found`,
         );
       }
-      this.responseService.sendSuccess(res, 'fetch Address', data);
-      return;
+      this.responseService.sendSuccess(res, 'Fetch Address', data);
     } catch (error) {
       console.log(error);
       if (error instanceof NotFoundException) {
-        return this.responseService.sendNotFound(res, error.message);
+        this.responseService.sendNotFound(res, error.message);
       } else {
-        return this.responseService.sendInternalError(
+        this.responseService.sendInternalError(
           res,
-          error.message || 'something went wrong',
+          error.message || 'Something Went Wrong',
           error,
         );
       }
@@ -175,27 +175,30 @@ export class AddressController {
   @ApiParam({ name: 'id', description: 'Address ID to delete', type: 'string' })
   @ApiResponse({ status: 200, description: 'Address successfully removed' })
   @ApiResponse({ status: 404, description: 'Address not found' })
-  async remove(@Param('id') id: string, @Res() res) {
+  async remove(@Param('id', IdValidationPipe) id: string, @Res() res) {
     try {
       const addressId = parseInt(id, 10);
       const data = await this.addressService.findOne(addressId);
       if (!data) {
-        throw new NotFoundException(`Address with ID ${id} not found`);
+        this.responseService.sendNotFound(
+          res,
+          `Address with ID ${id} not found`,
+        );
       }
       await this.addressService.remove(addressId);
-      return this.responseService.sendSuccess(
+      this.responseService.sendSuccess(
         res,
-        'Address successfully removed',
+        'Address Successfully Removed',
         data,
       );
     } catch (error) {
       console.log(error);
       if (error instanceof NotFoundException) {
-        return this.responseService.sendNotFound(res, error.message);
+        this.responseService.sendNotFound(res, error.message);
       } else {
-        return this.responseService.sendInternalError(
+        this.responseService.sendInternalError(
           res,
-          error.message || 'something went wrong',
+          'Something Went Wrong',
           error,
         );
       }

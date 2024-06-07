@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { getCustomValidationError } from 'utils/validationFunction';
+import { getCustomValidationError } from 'utils/validation/validationFunction';
 import { ValidationPipe, HttpException, HttpStatus } from '@nestjs/common';
 import { ValidationError } from 'class-validator';
 
@@ -36,7 +36,8 @@ async function bootstrap() {
           getCustomValidationError(errors), // Call getCustomValidationError to format the error
           HttpStatus.BAD_REQUEST, // Set the HTTP status to 400 Bad Request
         ),
-      transform: true, // Automatically transform payload data to DTO instances
+      transform: true,
+      stopAtFirstError: true,
     }),
   );
   await app.listen(3000);

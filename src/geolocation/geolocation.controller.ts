@@ -1,7 +1,7 @@
 import { Controller, Get, Query, Res } from '@nestjs/common';
 import { GeoLocationService } from './geolocation.service';
 import { ResponseService } from '../../utils/response/customResponse'; // Import the ResponseService
-import { getCustomValidationError } from '../../utils/validationFunction'; // Import utility function
+import { getCustomValidationError } from '../../utils/validation/validationFunction'; // Import utility function
 import { Response } from 'express'; // Import Response
 import { ValidationError } from 'class-validator';
 

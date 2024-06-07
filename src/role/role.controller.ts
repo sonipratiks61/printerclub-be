@@ -18,11 +18,11 @@ export class RoleController {
   async fetchAll(@Res() res) {
     try {
       const data = await this.roleService.findAll();
-      return this.responseService.sendSuccess(res, 'fetch successfully!', data);
+      this.responseService.sendSuccess(res, 'Fetch Successfully!', data);
     } catch (error) {
-      return this.responseService.sendInternalError(
+      this.responseService.sendInternalError(
         res,
-        error.message || 'something went wrong',
+        error.message || 'Something Went Wrong',
         error,
       );
     }
@@ -38,11 +38,10 @@ export class RoleController {
     try {
       await this.roleService.createRole(createRoleDto);
       this.responseService.sendSuccess(res, 'Create Successfully');
-      return;
     } catch (error) {
       this.responseService.sendInternalError(
         res,
-        error.message || 'something went wrong',
+        error.message || 'Something Went Wrong',
         error,
       );
     }
