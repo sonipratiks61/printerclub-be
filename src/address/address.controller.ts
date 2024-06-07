@@ -134,7 +134,7 @@ export class AddressController {
     }
   }
 
-  @Get('findOne/:id')
+  @Get(':id')
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth()
   @ApiParam({ name: 'id', description: 'Address ID to delete', type: 'string' })

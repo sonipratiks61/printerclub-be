@@ -46,7 +46,7 @@ export class AttachmentController {
     }
   }
 
-  @Get('findOne/:id')
+  @Get(':id')
   @UseGuards(AuthGuard('jwt'))
   async findOne(
     @Param('id', IdValidationPipe) id: string,
