@@ -29,7 +29,6 @@ export class AuthService {
           res,
           'Default role not found in database',
         );
-        return;
       }
       await this.prisma.user.create({
         data: {
@@ -41,7 +40,7 @@ export class AuthService {
           gstNumber: user.gstNumber,
           acceptTerms: user.acceptTerms,
           addresses: {
-            create: user.addresses, // Assuming addresses is an array of address data
+            create: user.addresses,
           },
           roleId: defaultRole.id,
           isActive: false, // User needs admin approval to activate
@@ -62,10 +61,8 @@ export class AuthService {
         if (error.meta && error.meta.target) {
           let targetDescription = '';
           if (Array.isArray(error.meta.target)) {
-            // Handle array of targets
             targetDescription = error.meta.target.join(', ');
           } else if (typeof error.meta.target === 'string') {
-            // Handle single string target
             targetDescription = error.meta.target;
           }
           this.responseService.sendBadRequest(
@@ -79,7 +76,7 @@ export class AuthService {
     }
   }
 
-  async validateUser(email: string, pass: string): Promise<any> {
+  async validateUser(email: string, pass: string) {
     const user = await this.prisma.user.findUnique({
       where: { email, isActive: true },
       include: {
@@ -106,47 +103,32 @@ export class AuthService {
     return {
       accessToken,
       refreshToken,
-      user,
     };
   }
 
-  async validateRefreshToken(token: string, res: Response): Promise<any> {
+  async validateRefreshToken(token: string): Promise<any> {
     try {
-      // Remove 'Bearer ' prefix if present
       token = token.startsWith('Bearer ') ? token.slice(7) : token;
 
-      // Verify the token and extract the payload
       const payload = this.jwtService.verify(token, {
         secret:
           process.env.JWT_REFRESH_TOKEN_SECRET || 'JWT_REFRESH_TOKEN_SECRET',
       });
 
-      // Check in the database if the token is still valid (not revoked, still active)
       const user = await this.prisma.user.findUnique({
         where: { id: payload.sub, isActive: true },
       });
 
       if (!user || !user.isActive) {
-        this.responseService.sendAuthenticationFailed(
-          res,
-          'Refresh token is invalid or has been revoked.',
-        );
+        throw new Error('User not found or not active');
       }
 
       return { userId: payload.sub, username: payload.username };
     } catch (error) {
       if (error instanceof JwtService || error.status === 401) {
-        this.responseService.sendAuthenticationFailed(
-          res,
-          'Refresh token validation failed.',
-          error,
-        );
+        throw new Error('Refresh token validation failed.');
       } else {
-        this.responseService.sendInternalError(
-          res,
-          'Internal Server Error',
-          error,
-        );
+        throw error;
       }
     }
   }
@@ -162,7 +144,7 @@ export class AuthService {
   async forgotPassword(email: string): Promise<void> {
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user) {
-      throw new Error('User with this email does not exist.');
+      throw new Error('Please enter the valid email address');
     }
 
     const resetToken = this.jwtService.sign(

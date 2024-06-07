@@ -16,6 +16,7 @@ import { AttachmentService } from './attachment.service';
 import { AuthGuard } from '@nestjs/passport';
 import { FileUploadMiddleware } from 'utils/ImageUploadFunction/ImageUploadFunction';
 import { ResponseService } from 'utils/response/customResponse';
+import { IdValidationPipe } from 'utils/validation/paramsValidation';
 
 @Controller('attachments')
 export class AttachmentController {
@@ -35,12 +36,11 @@ export class AttachmentController {
     try {
       const userId = req.user.id;
       await this.attachmentService.create(files, userId);
-      this.responseService.sendSuccess(res, 'upload successfully');
-      return;
+      this.responseService.sendSuccess(res, 'Upload Successfully');
     } catch (error) {
       this.responseService.sendInternalError(
         res,
-        error.message || 'something went wrong',
+        error.message || 'Something Went Wrong',
         error,
       );
     }
@@ -48,16 +48,18 @@ export class AttachmentController {
 
   @Get(':id')
   @UseGuards(AuthGuard('jwt'))
-  async findOne(@Param('id') id: string, @Res() res): Promise<void> {
+  async findOne(
+    @Param('id', IdValidationPipe) id: string,
+    @Res() res,
+  ): Promise<void> {
     try {
       const attachmentId = parseInt(id);
       console.log(attachmentId);
       const attachment = await this.attachmentService.findOne(attachmentId);
       if (!attachment) {
-        this.responseService.sendNotFound(res, 'Invalid attachmentId');
+        this.responseService.sendNotFound(res, 'Invalid Attachment Id');
       }
       this.responseService.sendSuccess(res, 'Fetch Successfully', attachment);
-      return;
     } catch (error) {
       console.log(error);
       if (error instanceof NotFoundException) {
@@ -66,10 +68,9 @@ export class AttachmentController {
       } else {
         this.responseService.sendInternalError(
           res,
-          error.message || 'something went wrong',
+          error.message || 'Something Went Wrong',
           error,
         );
-        return;
       }
     }
   }
@@ -83,7 +84,7 @@ export class AttachmentController {
     } catch (error) {
       this.responseService.sendInternalError(
         res,
-        error.message || 'something went wrong',
+        error.message || 'Something Went Wrong',
         error,
       );
     }
@@ -91,30 +92,29 @@ export class AttachmentController {
 
   @Delete(':id')
   @UseGuards(AuthGuard('jwt'))
-  async remove(@Param('id') id: string, @Res() res): Promise<void> {
+  async remove(
+    @Param('id', IdValidationPipe) id: string,
+    @Res() res,
+  ): Promise<void> {
     try {
       const attachmentId = parseInt(id, 10);
 
       const attachment = await this.attachmentService.findOne(attachmentId);
       if (!attachment) {
-        this.responseService.sendNotFound(res, 'Invalid attachmentId');
-        return;
+        this.responseService.sendNotFound(res, 'Invalid attachment Id');
       }
       await this.attachmentService.remove(attachmentId);
-      this.responseService.sendSuccess(res, 'Attachment deleted successfully');
-      return;
+      this.responseService.sendSuccess(res, 'Attachment Deleted Successfully');
     } catch (error) {
       console.log(error);
       if (error instanceof NotFoundException) {
         this.responseService.sendNotFound(res, error.message);
-        return;
       } else {
         this.responseService.sendInternalError(
           res,
-          error.message || 'something went wrong',
+          error.message || 'Something Went Wrong',
           error,
         );
-        return;
       }
     }
   }

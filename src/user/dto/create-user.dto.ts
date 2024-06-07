@@ -1,4 +1,5 @@
 import {
+  IsBoolean,
   IsDefined,
   IsEmail,
   IsNotEmpty,
@@ -11,29 +12,30 @@ import {
 import { CreateAddressDto } from './create-address.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
+import { IsTenDigitNumber } from 'utils/validation/phoneNumberValidation';
 
 export class CreateUserDto {
   @ApiProperty({
     description: 'The business name of the user',
     example: 'Acme Corp',
   })
-  @IsNotEmpty({ message: 'businessName cannot be empty.' })
-  @IsString({ message: 'businessName must be a string' })
+  @IsNotEmpty({ message: 'Business Name cannot be empty.' })
+  @IsString({ message: 'Business Name must be a string' })
   businessName: string;
 
   @ApiProperty({
     description: 'The full name of the user',
     example: 'John Doe',
   })
-  @IsNotEmpty({ message: 'name cannot be empty.' })
-  @IsString({ message: 'name must be a string' })
+  @IsNotEmpty({ message: 'Name cannot be empty.' })
+  @IsString({ message: 'Name must be a string' })
   name: string;
 
   @ApiProperty({
     description: 'The email address of the user',
     example: 'john.doe@example.com',
   })
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Email must not be empty' })
   @IsEmail({}, { message: 'Please provide a valid email address.' })
   email: string;
 
@@ -43,6 +45,7 @@ export class CreateUserDto {
   })
   @IsNotEmpty({ message: 'Mobile number must not be empty' })
   @IsString({ message: 'Mobile number must be a string' })
+  @IsTenDigitNumber({ message: 'Mobile number must be a 10-digit number' })
   mobileNumber: string;
 
   @ApiProperty({
@@ -60,14 +63,15 @@ export class CreateUserDto {
     required: false,
   })
   @IsOptional()
-  @IsString()
+  @IsString({ message: 'GST Number must be a string' })
   gstNumber?: string;
 
   @ApiProperty({
     description: 'Whether the user accepts terms and conditions',
     example: true,
   })
-  @IsNotEmpty()
+  @IsNotEmpty({ message: 'Accept Terms must not be empty' })
+  @IsBoolean({ message: 'Accept Terms must be Boolean ' })
   acceptTerms: boolean;
 
   @ApiProperty({
@@ -84,7 +88,7 @@ export class CreateUserDto {
       },
     ],
   })
-  @IsNotEmpty({ message: 'addresses must not be empty.' })
+  @IsNotEmpty({ message: 'Addresses must not be empty.' })
   @ValidateNested({ each: true })
   @IsDefined()
   @Type(() => CreateAddressDto)

@@ -48,7 +48,7 @@ export class AuthController {
   })
   @ApiResponse({
     status: 200,
-    description: 'user login successfully.',
+    description: 'User Login successfully.',
     type: CreateUserDto,
   })
   async login(@Body() body: { email: string; password: string }, @Res() res) {
@@ -63,21 +63,13 @@ export class AuthController {
           res,
           'The email or password you entered is wrong',
         );
-        return;
       }
       if (user) {
-        const {
-          accessToken,
-          refreshToken,
-          user: userData,
-        } = await this.authService.login(user);
+        const { accessToken, refreshToken } =
+          await this.authService.login(user);
         res.setHeader('X-Access-Token', accessToken);
         res.setHeader('X-Refresh-Token', refreshToken);
-        return this.responseService.sendSuccess(
-          res,
-          'Login Successfully',
-          userData,
-        );
+        this.responseService.sendSuccess(res, 'Login Successfully', user);
       }
     } catch (error) {
       if (error instanceof HttpException) {
@@ -94,7 +86,7 @@ export class AuthController {
   @Get('refresh-token')
   @ApiResponse({
     status: 200,
-    description: 'user refresh-token successfully.',
+    description: 'User refresh-token successfully.',
     type: CreateUserDto,
   })
   @UseGuards(AuthGuard('jwt-refresh')) // Use the custom refresh guard
@@ -103,30 +95,14 @@ export class AuthController {
     @Res() res,
   ) {
     try {
-      const user = await this.authService.validateRefreshToken(
-        refreshToken,
-        res,
-      );
+      const user = await this.authService.validateRefreshToken(refreshToken);
 
-      if (!user) {
-        this.responseService.sendAuthenticationFailed(res, 'Invalid token');
-        return;
-      }
       const accessToken = await this.authService.createAccessToken(user);
       res.setHeader('X-Access-Token', accessToken);
-      return this.responseService.sendSuccess(
-        res,
-        'Token refreshed successfully',
-      );
+      this.responseService.sendSuccess(res, 'Token refreshed successfully');
     } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      } else {
-        return this.responseService.sendInternalError(
-          res,
-          'Token refresh failed',
-        );
-      }
+      console.log(error);
+      this.responseService.sendInternalError(res, error.message, error);
     }
   }
 
@@ -145,16 +121,19 @@ export class AuthController {
     type: CreateUserDto,
   })
   @ApiBearerAuth()
-  async forgotPassword(@Body('email') email: string, @Res() res): Promise<any> {
+  async forgotPassword(
+    @Body('email') email: string,
+    @Res() res,
+  ): Promise<void> {
     try {
       await this.authService.forgotPassword(email);
-      return this.responseService.sendSuccess(
+      this.responseService.sendSuccess(
         res,
         'Reset password link has been sent to your email.',
       );
     } catch (error) {
       console.error(error);
-      return this.responseService.sendInternalError(
+      this.responseService.sendInternalError(
         res,
         'An error occurred while attempting to send the reset password link.',
       );
@@ -174,7 +153,7 @@ export class AuthController {
   @ApiHeader({ name: 'Authorization', description: 'Bearer token' })
   @ApiResponse({
     status: 200,
-    description: 'Password reset successfully.',
+    description: 'Password Reset Successfully.',
   })
   async resetPassword(
     @Body() body: { password: string },
@@ -188,7 +167,7 @@ export class AuthController {
         'Password has been successfully reset.',
       );
     } catch (error) {
-      return this.responseService.sendInternalError(
+      this.responseService.sendInternalError(
         res,
         error.message || 'Failed to reset password',
       );

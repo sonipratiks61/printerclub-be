@@ -1,170 +1,161 @@
 import {
   Controller,
-  Get,
   Post,
-  Put,
-  Delete,
   UseGuards,
   Body,
-  Param,
   Req,
-  HttpException,
-  HttpStatus,
+  Get,
+  Put,
+  Res,
+  Delete,
+  Param,
   NotFoundException,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
-import { CreateCategoryDto, UpdateCategoryDto } from './dto/category.dto';
+import { CreateCategoryDto } from './dto/category.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { ResponseService } from 'utils/response/customResponse';
+import { IdValidationPipe } from 'utils/validation/paramsValidation';
+import { UpdateCategoryDto } from './dto/update.category.dto';
 
 @Controller('category')
 export class CategoryController {
-  constructor(private readonly categoryService: CategoryService) {}
+  constructor(
+    private readonly categoryService: CategoryService,
+    private readonly responseService: ResponseService,
+  ) {}
 
-  @UseGuards(AuthGuard('jwt'))
   @Post()
+  @UseGuards(AuthGuard('jwt'))
   async create(
     @Body() createCategoryDto: CreateCategoryDto,
     @Req() req,
-  ): Promise<{ success: boolean; message: string; statusCode: number }> {
+    @Res() res,
+  ) {
     const userId = req.user.id; // Access req.user.id from the request object
     try {
       await this.categoryService.create(createCategoryDto, userId);
-      return {
-        success: true,
-        message: 'Category created successfully',
-        statusCode: HttpStatus.OK,
-      };
+      this.responseService.sendSuccess(res, 'Category Created Successfully');
     } catch (error) {
-      throw new HttpException(
-        error.message || 'Failed to create category',
-        HttpStatus.BAD_REQUEST,
+      console.error(error);
+      this.responseService.sendBadRequest(
+        res,
+        'Failed to create category',
+        error.message,
       );
     }
   }
 
   @Get()
   @UseGuards(AuthGuard('jwt')) // Ensures only authenticated users can access this route
-  async fetchAll() {
+  async fetchAll(@Res() res) {
     try {
-      return await this.categoryService.findAllCategories();
+      const categories = await this.categoryService.findAll();
+      this.responseService.sendSuccess(
+        res,
+        'Categories Fetched Successfully',
+        categories,
+      );
     } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: 'There was a problem accessing data',
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
+      this.responseService.sendBadRequest(
+        res,
+        'Failed to create category',
+        error.message,
       );
     }
   }
+
   @Get(':id')
   @UseGuards(AuthGuard('jwt'))
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id', IdValidationPipe) id: string, @Res() res) {
     try {
       const categoryId = parseInt(id, 10);
       const category = await this.categoryService.findOne(categoryId);
       if (!category) {
-        throw new NotFoundException('Invalid CategoryId');
+        this.responseService.sendNotFound(
+          res,
+          `Category with ID ${id} not found`,
+        );
       }
-      return {
-        status: HttpStatus.OK,
-        message: 'Fetch Successfully ',
-        data: category,
-      };
+      this.responseService.sendSuccess(res, 'Fetch Successfully', category);
     } catch (error) {
       console.log(error);
       if (error instanceof NotFoundException) {
-        throw new HttpException(
-          {
-            status: HttpStatus.NOT_FOUND,
-            error: error.message,
-          },
-          HttpStatus.NOT_FOUND,
-        );
+        this.responseService.sendNotFound(res, error.message);
+        return;
       } else {
-        throw new HttpException(
-          {
-            status: HttpStatus.INTERNAL_SERVER_ERROR,
-            error: 'There was a problem accessing data',
-          },
-          HttpStatus.INTERNAL_SERVER_ERROR,
+        this.responseService.sendInternalError(
+          res,
+          error.message || 'Something Went Wrong',
+          error,
         );
+        return;
       }
     }
   }
 
   @Put(':id')
+  @UseGuards(AuthGuard('jwt'))
   async update(
-    @Param('id') id: string,
+    @Param('id', IdValidationPipe) id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
+    @Res() res,
   ) {
     try {
       const categoryId = parseInt(id, 10);
       const category = await this.categoryService.findOne(categoryId);
       if (!category) {
-        throw new NotFoundException('Invalid CategoryId');
+        this.responseService.sendNotFound(
+          res,
+          `Category with ID ${id} not found`,
+        );
       }
       const updatedCategory = await this.categoryService.update(
         categoryId,
         updateCategoryDto,
       );
-      return {
-        status: HttpStatus.OK,
-        message: 'Category updated successfully',
-        data: updatedCategory,
-      };
+      this.responseService.sendSuccess(
+        res,
+        'Category Updated Successfully',
+        updatedCategory,
+      );
     } catch (error) {
       console.log(error);
       if (error instanceof NotFoundException) {
-        throw new HttpException(
-          {
-            status: HttpStatus.NOT_FOUND,
-            error: error.message,
-          },
-          HttpStatus.NOT_FOUND,
-        );
+        this.responseService.sendNotFound(res, error.message);
       } else {
-        throw new HttpException(
-          {
-            status: HttpStatus.INTERNAL_SERVER_ERROR,
-            error: 'There was a problem accessing data',
-          },
-          HttpStatus.INTERNAL_SERVER_ERROR,
+        this.responseService.sendInternalError(
+          res,
+          error.message || 'Something Went Wrong',
+          error,
         );
       }
     }
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string) {
+  @UseGuards(AuthGuard('jwt'))
+  async remove(@Param('id', IdValidationPipe) id: string, @Res() res) {
     const categoryId = parseInt(id, 10);
     try {
       const category = await this.categoryService.findOne(categoryId);
       if (!category) {
-        throw new NotFoundException('Invalid CategoryId');
+        this.responseService.sendNotFound(
+          res,
+          `Category with ID ${id} not found`,
+        );
       }
       await this.categoryService.remove(categoryId);
-      return {
-        status: HttpStatus.OK,
-        message: 'Category deleted successfully',
-      };
+      this.responseService.sendSuccess(res, 'Category Deleted Successfully');
     } catch (error) {
-      console.log(error);
+      console.error(error);
       if (error instanceof NotFoundException) {
-        throw new HttpException(
-          {
-            status: HttpStatus.NOT_FOUND,
-            error: error.message,
-          },
-          HttpStatus.NOT_FOUND,
-        );
+        this.responseService.sendNotFound(res, error.message);
       } else {
-        throw new HttpException(
-          {
-            status: HttpStatus.INTERNAL_SERVER_ERROR,
-            error: 'There was a problem accessing data',
-          },
-          HttpStatus.INTERNAL_SERVER_ERROR,
+        this.responseService.sendInternalError(
+          res,
+          'Something Went Wrong',
+          error,
         );
       }
     }

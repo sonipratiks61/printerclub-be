@@ -6,9 +6,17 @@ import { CreateAddressDto } from 'src/user/dto/create-address.dto';
 export class AddressService {
   constructor(private prisma: PrismaService) {}
 
-  async create(createAddressDto: CreateAddressDto[], userId: number) {
+  async create(
+    createAddressDto: CreateAddressDto | CreateAddressDto[],
+    userId: number,
+  ) {
+    // Ensure createAddressDto is an array
+    const addresses = Array.isArray(createAddressDto)
+      ? createAddressDto
+      : [createAddressDto];
+
     // Validate each CreateAddressDto object
-    for (const addressDto of createAddressDto) {
+    for (const addressDto of addresses) {
       if (
         !addressDto.address ||
         !addressDto.city ||
@@ -25,7 +33,7 @@ export class AddressService {
       }
     }
 
-    const createOperations = createAddressDto.map((addressDto) => ({
+    const createOperations = addresses.map((addressDto) => ({
       address: addressDto.address,
       city: addressDto.city,
       state: addressDto.state,

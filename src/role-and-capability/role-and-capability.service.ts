@@ -14,9 +14,8 @@ export class RoleAndCapabilityService {
       const { roleId, capabilityIds } = roleAndCapabilityDto;
 
       if (capabilityIds.length == 0) {
-        throw new Error(`Atleast the one capabilityIds`);
+        throw new Error(`At least the one capabilityIds`);
       }
-      // Check if the roleId and capabilityIds are valid
       const existingRole = await this.prisma.role.findUnique({
         where: { id: roleId },
       });
@@ -30,7 +29,7 @@ export class RoleAndCapabilityService {
       });
 
       if (capabilities.length !== capabilityIds.length) {
-        throw new Error('Invalid capabilityIds');
+        throw new Error('Invalid capability Ids');
       }
 
       const createdMappings: RoleAndCapabilityMapping[] = [];
@@ -45,9 +44,7 @@ export class RoleAndCapabilityService {
           });
 
         if (existingMapping) {
-          throw new Error(
-            'Mapping already exists for roleId  and capabilityId',
-          );
+          throw new Error('Mapping already exists for roleId and capabilityId');
         }
 
         const createdMapping =

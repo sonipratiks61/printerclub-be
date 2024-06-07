@@ -13,12 +13,12 @@ class CapabilityDto {
 }
 
 export class CreateRoleDto {
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: 'Name must be a string' })
+  @IsNotEmpty({ message: 'Name cannot be empty' })
   name: string;
 
   @ValidateNested({ each: true })
   @Type(() => CapabilityDto)
-  @ArrayNotEmpty()
+  @ArrayNotEmpty({ message: 'Capabilities array cannot be empty' })
   capabilities: CapabilityDto[];
 }

@@ -8,22 +8,18 @@ export class AttachmentService {
 
   async create(files: Express.Multer.File[], userId: number) {
     try {
-      const createdAttachments = [];
       if (files.length === 0) {
         throw new Error('Please upload at least 1 file.');
       }
       for (const file of files) {
-        const createdAttachment = await this.prisma.attachment.create({
+        await this.prisma.attachment.create({
           data: {
             path: file.path,
             attachmentType: file.mimetype,
             userId: userId,
           },
         });
-
-        createdAttachments.push(createdAttachment);
       }
-      return createdAttachments;
     } catch (error) {
       console.error('Error creating attachments:', error);
       throw error;
