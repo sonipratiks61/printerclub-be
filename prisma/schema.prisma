@@ -14,23 +14,24 @@ datasource db {
 }
 
 model User {
-  id           Int          @id @default(autoincrement())
-  email        String       @unique
-  password     String
-  mobileNumber String       @unique
-  businessName String
-  name         String
-  gstNumber    String?
-  addresses    Address[]
-  attachments  Attachment[]
-  roleId       Int
-  role         Role?        @relation(fields: [roleId], references: [id])
-  acceptTerms  Boolean
-  isActive     Boolean      @default(false) // for admin approval
-  createdAt    DateTime     @default(now())
-  updatedAt    DateTime     @updatedAt
-  categories   Category[]
-  products     Product[]
+  id                    Int                     @id @default(autoincrement())
+  email                 String                  @unique
+  password              String
+  mobileNumber          String                  @unique
+  businessName          String
+  name                  String
+  gstNumber             String?
+  addresses             Address[]
+  attachments           Attachment[]
+  attachmentAssociation AttachmentAssociation[] @relation("user_attachmentAssociations")
+  roleId                Int
+  role                  Role?                   @relation(fields: [roleId], references: [id])
+  acceptTerms           Boolean
+  isActive              Boolean                 @default(false) // for admin approval
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+  categories            Category[]
+  products              Product[]
 }
 
 model Address {
@@ -74,13 +75,16 @@ model GeoLocation {
 }
 
 model Attachment {
-  id             Int      @id @default(autoincrement())
+  id             Int                     @id @default(autoincrement())
   path           String
   attachmentType String
   userId         Int
-  user           User     @relation(fields: [userId], references: [id])
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  associations AttachmentAssociation[]
+  user           User                    @relation(fields: [userId], references: [id])
+  createdAt      DateTime                @default(now())
+  updatedAt      DateTime                @updatedAt
+
+  @@map("attachments") // Optional: maps the model to a table named "attachments"
 }
 
 model RoleAndCapabilityMapping {
@@ -95,33 +99,37 @@ model RoleAndCapabilityMapping {
 }
 
 model Category {
-  id            Int          @id @default(autoincrement())
-  userId        Int
-  parentId      Int
-  category      Category     @relation("subCategories", fields: [parentId], references: [id])
-  subCategories Category[]   @relation("subCategories")
-  name          String
-  description   String
-  product       Product[]
-  user          User         @relation(fields: [userId], references: [id])
-  type          CategoryType                                      
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  id                     Int                     @id @default(autoincrement())
+  userId                 Int
+  parentId               Int
+  category               Category                @relation("subCategories", fields: [parentId], references: [id])
+  subCategories          Category[]              @relation("subCategories")
+  name                   String
+  description            String
+  product                Product[]
+  attachmentAssociations AttachmentAssociation[] @relation("category_attachmentAssociations")
+  user                   User                    @relation(fields: [userId], references: [id])
+  type                   CategoryType
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+
+  @@map("categories") // Optional: maps the model to a table named "categories"
 }
- 
+
 model Product {
-  id            Int         @id @default(autoincrement())
-  categoryId    Int
-  productName   String
-  cost          String
-  gst           String
-  category      Category    @relation(fields: [categoryId], references: [id])
-  attributes    Attribute[]
-  AmountPayable String
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  User          User        @relation(fields: [userId], references: [id])
-  userId        Int
+  id                    Int                     @id @default(autoincrement())
+  categoryId            Int
+  productName           String
+  cost                  String
+  gst                   String
+  category              Category                @relation(fields: [categoryId], references: [id])
+  attributes            Attribute[]
+  AttachmentAssociation AttachmentAssociation[] @relation("product_attachmentAssociations")
+  AmountPayable         String
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+  User                  User                    @relation(fields: [userId], references: [id])
+  userId                Int
 }
 
 model Attribute {
@@ -154,7 +162,19 @@ model Attribute {
   updatedAt             DateTime @updatedAt
 }
 
-  enum CategoryType {
+model AttachmentAssociation {
+  id           Int        @id @default(autoincrement())
+  category     Category   @relation("category_attachmentAssociations", fields: [categoryId], references: [id])
+  productId    Int
+  product      Product    @relation("product_attachmentAssociations", fields: [productId], references: [id])
+  userId       Int
+  user         User       @relation("user_attachmentAssociations", fields: [userId], references: [id])
+  categoryId   Int
+  attachment   Attachment @relation(fields: [attachmentId], references: [id])
+  attachmentId Int
+}
+
+enum CategoryType {
   service
   physical
 }

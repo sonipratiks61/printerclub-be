@@ -32,8 +32,8 @@ export class CategoryController {
     @Req() req,
     @Res() res,
   ) {
-    const userId = req.user.id; // Access req.user.id from the request object
     try {
+      const userId = req.user.id; // Access req.user.id from the request object
       await this.categoryService.create(createCategoryDto, userId);
       this.responseService.sendSuccess(res, 'Category Created Successfully');
     } catch (error) {
