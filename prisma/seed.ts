@@ -19,7 +19,7 @@ async function main() {
     where: { name: 'Admin' },
     update: {}, // No need to update anything if it already exists
     create: {
-      name: 'User',
+      name: 'Admin',
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
     },
