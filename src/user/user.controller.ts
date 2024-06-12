@@ -1,4 +1,3 @@
-// src/user/user.controller.ts
 import {
   Controller,
   Get,
@@ -11,11 +10,14 @@ import {
   ForbiddenException,
   Res,
   Req,
+  Post,
+  Put,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { UserService } from './user.service';
 import { ApiBearerAuth, ApiOkResponse, ApiResponse } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 import { ResponseService } from 'utils/response/customResponse';
 import { IdValidationPipe } from 'utils/validation/paramsValidation';
 
@@ -51,7 +53,7 @@ export class UserController {
   }
 
   @Get()
-  @UseGuards(AuthGuard('jwt')) // Ensures only authenticated users can access this route
+  @UseGuards(AuthGuard('jwt'))
   @ApiOkResponse({
     description: 'List of all users with addresses',
     type: CreateUserDto,
@@ -79,7 +81,7 @@ export class UserController {
   }
 
   @Patch('active/:id')
-  @UseGuards(AuthGuard('jwt')) // Assuming JWT is used for authentication
+  @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth()
   @ApiResponse({
     status: 200,
@@ -120,6 +122,56 @@ export class UserController {
           error,
         );
       }
+    }
+  }
+
+  @Post()
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: 'User created successfully',
+    type: CreateUserDto,
+  })
+  async createUser(@Body() createUserDto: CreateUserDto, @Res() res) {
+    try {
+      const newUser = await this.userService.create(createUserDto);
+      return this.responseService.sendSuccess(
+        res,
+        'User created successfully',
+        newUser,
+      );
+    } catch (error) {
+      console.log(error);
+      return this.responseService.sendInternalError(res, error.message, error);
+    }
+  }
+
+  @Put(':id')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'User updated successfully',
+    type: UpdateUserDto,
+  })
+  async updateUser(
+    @Param('id', IdValidationPipe) id: string,
+    @Body() updateUserDto: UpdateUserDto,
+    @Res() res,
+  ) {
+    try {
+      const updatedUser = await this.userService.update(
+        Number(id),
+        updateUserDto,
+      );
+      return this.responseService.sendSuccess(
+        res,
+        'User updated successfully',
+        updatedUser,
+      );
+    } catch (error) {
+      return this.responseService.sendInternalError(res, error.message, error);
     }
   }
 }
