@@ -101,9 +101,9 @@ model RoleAndCapabilityMapping {
 model Category {
   id                     Int                     @id @default(autoincrement())
   userId                 Int
-  parentId               Int
-  category               Category                @relation("subCategories", fields: [parentId], references: [id])
-  subCategories          Category[]              @relation("subCategories")
+  parentId               Int?                   
+  parent                 Category?               @relation("CategoryToSubcategories", fields: [parentId], references: [id])
+  subCategories          Category[]              @relation("CategoryToSubcategories")
   name                   String
   description            String
   product                Product[]
@@ -112,8 +112,6 @@ model Category {
   type                   CategoryType
   createdAt              DateTime                @default(now())
   updatedAt              DateTime                @updatedAt
-
-  @@map("categories") // Optional: maps the model to a table named "categories"
 }
 
 model Product {
