@@ -1,5 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsPostalCode } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsPostalCode,
+  IsOptional,
+} from 'class-validator';
 
 export class CreateAddressDto {
   @ApiProperty({
@@ -38,6 +43,7 @@ export class CreateAddressDto {
       'The full address line including street name, building number, etc.',
     example: '123 Main St, Apt 101',
   })
+  @IsOptional()
   @IsNotEmpty({ message: 'Address cannot be empty.' })
   @IsString({ message: 'Address must be a string' })
   address: string;

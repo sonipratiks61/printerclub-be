@@ -17,7 +17,7 @@ model User {
   id                    Int                     @id @default(autoincrement())
   email                 String                  @unique
   password              String
-  mobileNumber          String                  @unique
+  mobileNumber          String?                 @unique
   businessName          String
   name                  String
   gstNumber             String?
@@ -41,8 +41,8 @@ model Address {
   state     String
   city      String
   pinCode   String
-  address   String
-user User @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Restrict)
+  address   String?
+  user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
