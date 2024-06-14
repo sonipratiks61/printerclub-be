@@ -8,16 +8,37 @@ export class CategoryService {
   constructor(private prisma: PrismaService) {}
 
   async create(createCategoryDto: CreateCategoryDto, userId: number) {
-    const data = await this.prisma.category.create({
-      data: {
-        name: createCategoryDto.name,
-        description: createCategoryDto.description,
-        type: createCategoryDto.type as CategoryType,
-        parentId: createCategoryDto.parentId || null,
-        userId: userId,
-      },
-    });
-    return data;
+    try {
+      if (createCategoryDto.parentId) {
+        const parentCategory = await this.prisma.category.findUnique({
+          where: {
+            id: createCategoryDto.parentId,
+          },
+        });
+
+        if (!parentCategory) {
+          throw new Error(
+            `Parent category with ID ${createCategoryDto.parentId} not found`,
+          );
+        }
+      }
+      const parentId = createCategoryDto.parentId
+        ? createCategoryDto.parentId
+        : null;
+      const newCategory = await this.prisma.category.create({
+        data: {
+          name: createCategoryDto.name,
+          description: createCategoryDto.description,
+          type: createCategoryDto.type as CategoryType,
+          parentId: parentId,
+          userId: userId,
+        },
+      });
+      return newCategory;
+    } catch (error) {
+      console.error('Error creating category:', error);
+      throw error; // Re-throw the error or handle it accordingly
+    }
   }
 
   async findOne(id: number) {
@@ -49,6 +70,28 @@ export class CategoryService {
         parentId: updateCategoryDto.parentId,
       },
     });
+  }
+
+  async findParentCategories(parentId: number) {
+    const parentCategories = await this.prisma.category.findMany({
+      where: {
+        OR: [
+          { id: parentId },
+          { subCategories: { some: { parentId: parentId } } },
+        ],
+      },
+      select: {
+        subCategories: {
+          select: {
+            id: true,
+            name: true,
+            parentId: true,
+          },
+        },
+      },
+    });
+
+    return parentCategories;
   }
 
   async remove(id: number) {

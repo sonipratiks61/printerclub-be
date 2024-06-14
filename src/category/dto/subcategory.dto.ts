@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsNotEmpty } from 'class-validator';
+import { IsString, IsOptional, IsNotEmpty, IsInt } from 'class-validator';
 
 export class CreateSubCategoryDto {
   @IsNotEmpty({ message: 'Name cannot be empty' })
@@ -14,5 +14,7 @@ export class CreateSubCategoryDto {
   type: string;
 
   @IsOptional()
-  parentId?: number;
+  @IsNotEmpty({ message: 'Type cannot be empty' })
+  @IsInt({ message: 'Type must be a string' })
+  parentId: number;
 }
