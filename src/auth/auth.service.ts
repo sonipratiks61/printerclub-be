@@ -78,12 +78,16 @@ export class AuthService {
 
   async validateUser(email: string, pass: string) {
     const user = await this.prisma.user.findUnique({
-      where: { email, isActive: false },
+      where: { email },
       include: {
         role: true,
       },
     });
-    if (user && (await bcrypt.compare(pass, user.password))) {
+    if (!user.isActive) {
+      throw new Error('User not Active');
+    }
+
+    if (user.isActive && (await bcrypt.compare(pass, user.password))) {
       const { password: _password, ...result } = user;
       return result;
     }
