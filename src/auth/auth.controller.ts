@@ -75,10 +75,7 @@ export class AuthController {
       if (error instanceof HttpException) {
         throw error;
       } else {
-        return this.responseService.sendInternalError(
-          res,
-          'Internal server error',
-        );
+        return this.responseService.sendInternalError(res, error.message);
       }
     }
   }
