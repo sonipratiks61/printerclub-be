@@ -35,6 +35,9 @@ $ npm install
 ## Running the app
 
 ```bash
+## Migration Generate
+$ npx prisma migrate dev --name init
+
 # development
 $ npm run start
 
@@ -44,6 +47,8 @@ $ npm run start:dev
 # production mode
 $ npm run start:prod
 ```
+
+
 
 ## Test
 
