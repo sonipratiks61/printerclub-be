@@ -63,7 +63,10 @@ export class AuthService {
           if (Array.isArray(error.meta.target)) {
             targetDescription = error.meta.target.join(', ');
           } else if (typeof error.meta.target === 'string') {
-            targetDescription = error.meta.target;
+            targetDescription =
+              error.meta.target === 'User_email_key'
+                ? 'Email'
+                : 'Mobile Number';
           }
           this.responseService.sendBadRequest(
             res,
@@ -83,8 +86,11 @@ export class AuthService {
         role: true,
       },
     });
+    if (!user) {
+      throw new Error('User does not exist');
+    }
     if (!user.isActive) {
-      throw new Error('User not Active');
+      throw new Error('User not Activated yet, Please contact admin');
     }
 
     if (user.isActive && (await bcrypt.compare(pass, user.password))) {
