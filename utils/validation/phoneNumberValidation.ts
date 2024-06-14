@@ -10,7 +10,7 @@ export function IsTenDigitNumber(validationOptions?: ValidationOptions) {
       options: validationOptions,
       validator: {
         validate(value: any) {
-          if (!/^\+91\d{10}$/.test(value)) {
+          if (!/^\d{10}$/.test(value)) {
             return false;
           }
           return true;
