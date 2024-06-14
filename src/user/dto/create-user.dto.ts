@@ -46,6 +46,7 @@ export class CreateUserDto {
   @IsNotEmpty({ message: 'Mobile number must not be empty' })
   @IsString({ message: 'Mobile number must be a string' })
   @IsTenDigitNumber({ message: 'Mobile number must be a 10-digit number' })
+  @IsOptional()
   mobileNumber: string;
 
   @ApiProperty({
