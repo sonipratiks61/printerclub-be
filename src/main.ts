@@ -13,6 +13,7 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Allowed methods
     allowedHeaders: '*', // Custom headers you wish to allow
     credentials: true, // Supports credentials like cookies
+    exposedHeaders: ['X-Access-Token', 'X-Refresh-Token'],
   });
 
   const options = new DocumentBuilder()
