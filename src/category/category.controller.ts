@@ -10,7 +10,6 @@ import {
   Delete,
   Param,
   NotFoundException,
-  Query,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/category.dto';
@@ -44,32 +43,6 @@ export class CategoryController {
         'Failed to create category',
         error.message,
       );
-    }
-  }
-
-  @Get('subCategory')
-  @UseGuards(AuthGuard('jwt'))
-  async findParentCategories(@Query('parentId') parentId: string, @Res() res) {
-    try {
-      const searchParentId = parseInt(parentId, 10);
-
-      const categories =
-        await this.categoryService.findParentCategories(searchParentId);
-      return this.responseService.sendSuccess(
-        res,
-        'Fetch Successful',
-        categories,
-      );
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        return this.responseService.sendNotFound(res, error.message);
-      } else {
-        return this.responseService.sendInternalError(
-          res,
-          'Something Went Wrong',
-          error,
-        );
-      }
     }
   }
 
