@@ -31,6 +31,8 @@ import { AttributeService } from './attribute/attribute.service';
 import { AttributeController } from './attribute/attribute.controller';
 import { ProductAttributesService } from './product-attributes/product-attributes.service';
 import { ProductAttributesController } from './product-attributes/product-attributes.controller';
+import { SubCategoryController } from './sub-category/sub-category.controller';
+import { SubCategoryService } from './sub-category/sub-category.service';
 
 @Module({
   imports: [
@@ -52,6 +54,7 @@ import { ProductAttributesController } from './product-attributes/product-attrib
     ProductController,
     AttributeController,
     ProductAttributesController,
+    SubCategoryController,
   ],
   providers: [
     AppService,
@@ -71,6 +74,7 @@ import { ProductAttributesController } from './product-attributes/product-attrib
     ProductService,
     AttributeService,
     ProductAttributesService,
+    SubCategoryService,
   ],
 })
 export class AppModule {

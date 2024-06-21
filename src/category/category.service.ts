@@ -51,8 +51,24 @@ export class CategoryService {
 
   async findAll() {
     return this.prisma.category.findMany({
-      include: {
-        subCategories: true,
+      where:{
+        parentId:null
+      },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        type: true,
+        createdAt: true,
+        subCategories: {
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            parentId: true,
+            createdAt: true,
+          },
+        },
         attachmentAssociations: true,
       },
     });
@@ -70,28 +86,6 @@ export class CategoryService {
         parentId: updateCategoryDto.parentId,
       },
     });
-  }
-
-  async findParentCategories(parentId: number) {
-    const parentCategories = await this.prisma.category.findMany({
-      where: {
-        OR: [
-          { id: parentId },
-          { subCategories: { some: { parentId: parentId } } },
-        ],
-      },
-      select: {
-        subCategories: {
-          select: {
-            id: true,
-            name: true,
-            parentId: true,
-          },
-        },
-      },
-    });
-
-    return parentCategories;
   }
 
   async remove(id: number) {
