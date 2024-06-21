@@ -2,8 +2,42 @@ import { PrismaClient } from '@prisma/client';
 
 // initialize Prisma Client
 const prisma = new PrismaClient();
+const attributes = [
+  { name: 'service' },
+  { name: 'printing' },
+  { name: 'dieShape' },
+  { name: 'textureType' },
+  { name: 'paperQuality' },
+  { name: 'colour' },
+  { name: 'paperQuanlity' }, // Assuming it's not a typo, otherwise 'paperQuality' might be intended.
+  { name: 'pocket' },
+  { name: 'binding' },
+  { name: 'envelopeCode' },
+  { name: 'flapOpening' },
+  { name: 'windowCutting' },
+  { name: 'paperType' },
+  { name: 'size' },
+  { name: 'lamination' },
+  { name: 'halfCut' },
+  { name: 'firstPaperQuality' },
+  { name: 'secondCopyPaperColor' },
+  { name: 'thirdCopyPaperColor' },
+  { name: 'stickersCountPerSheet' },
+  { name: 'OpenType' },
+];
 
 async function main() {
+  for (const attribute of attributes) {
+    await prisma.attribute.upsert({
+      where: { name: attribute.name },
+      update: {}, // No need to update anything if it already exists
+      create: {
+        ...attribute,
+        createdAt: new Date(), // Use the current date for createdAt
+        updatedAt: new Date(), // Use the current date for updatedAt
+      },
+    });
+  }
   // create two dummy articles
   await prisma.role.upsert({
     where: { name: 'User' },
