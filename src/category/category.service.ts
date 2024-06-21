@@ -51,8 +51,8 @@ export class CategoryService {
 
   async findAll() {
     return this.prisma.category.findMany({
-      where:{
-        parentId:null
+      where: {
+        parentId: null,  
       },
       select: {
         id: true,
@@ -60,15 +60,6 @@ export class CategoryService {
         description: true,
         type: true,
         createdAt: true,
-        subCategories: {
-          select: {
-            id: true,
-            name: true,
-            description: true,
-            parentId: true,
-            createdAt: true,
-          },
-        },
         attachmentAssociations: true,
       },
     });
