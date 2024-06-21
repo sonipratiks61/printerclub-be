@@ -1,11 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { CategoryService } from 'src/category/category.service';
 
 @Injectable()
 export class SubCategoryService {
   constructor(private prisma: PrismaService) { }
 
   async findParentCategories(parentId: number) {
+    const parent = await this.prisma.category.findFirst({
+      where: {
+        parentId: parentId,
+      },
+    });
+  
+    if(!parent)
+    {
+      throw new Error("Invalid ParentId")
+    }
     const parentCategories = await this.prisma.category.findMany({
       where: {
         OR: [
@@ -25,10 +36,6 @@ export class SubCategoryService {
       },
     });
 
-    if (parentCategories.length === 0) {
-      throw new Error(`Parent category with ID ${parentId} does not exist.`);
-    }
-
     const formattedCategories = parentCategories.flatMap((category) =>
       category.subCategories.map((subCategory) => ({
         id: subCategory.id,
@@ -37,7 +44,6 @@ export class SubCategoryService {
         description: subCategory.description,
       })),
     );
-
     return formattedCategories;
   }
 }

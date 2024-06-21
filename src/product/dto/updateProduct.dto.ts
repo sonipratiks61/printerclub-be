@@ -14,27 +14,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { AttributeType } from '@prisma/client';
 import { Type } from 'class-transformer';
 
-// class QuantityRange {
-//   @ApiProperty({
-//     description: 'Minimum quantity',
-//     example: 1,
-//   })
-//   @IsOptional()
-//   @IsNotEmpty({ message: 'Minimum quantity must not be empty' })
-//   @IsInt({ message: 'Minimum quantity must be an integer' })
-//   @Min(1, { message: 'Minimum quantity must be at least 1' })
-//   min: number;
 
-//   @ApiProperty({
-//     description: 'Maximum quantity',
-//     example: 10,
-//   })
-//   @IsOptional()
-//   @IsNotEmpty({ message: 'Maximum quantity must not be empty' })
-//   @IsInt({ message: 'Maximum quantity must be an integer' })
-//   @Min(0, { message: 'Maximum quantity must be at least 0' })
-//   max: number;
-// }
 class QuantityRange {
   @ApiProperty({
     description: 'Quantity type',
