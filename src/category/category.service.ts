@@ -9,6 +9,8 @@ export class CategoryService {
 
   async create(createCategoryDto: CreateCategoryDto, userId: number) {
     try {
+      let message = 'Category created successfully';
+  
       if (createCategoryDto.parentId) {
         const parentCategory = await this.prisma.category.findUnique({
           where: {
@@ -21,7 +23,10 @@ export class CategoryService {
             `Parent category with ID ${createCategoryDto.parentId} not found`,
           );
         }
+  
+        message = 'Subcategory created successfully';
       }
+  
       const parentId = createCategoryDto.parentId
         ? createCategoryDto.parentId
         : null;
@@ -34,13 +39,13 @@ export class CategoryService {
           userId: userId,
         },
       });
-      return newCategory;
+      return { newCategory, message };
     } catch (error) {
       console.error('Error creating category:', error);
       throw error; // Re-throw the error or handle it accordingly
     }
   }
-
+  
   async findOne(id: number) {
     return this.prisma.category.findUnique({
       where: {
