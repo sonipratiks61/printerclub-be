@@ -34,17 +34,18 @@ export class CategoryController {
   ) {
     try {
       const userId = req.user.id; // Access req.user.id from the request object
-      await this.categoryService.create(createCategoryDto, userId);
-      this.responseService.sendSuccess(res, 'Category Created Successfully');
+      const {  message } = await this.categoryService.create(createCategoryDto, userId);
+      this.responseService.sendSuccess(res, message, );
     } catch (error) {
       console.error(error);
       this.responseService.sendBadRequest(
         res,
-        'Failed to create category',
-        error.message,
+        error.message||'Failed to create category',
+        error,
       );
     }
   }
+  
 
   @Get()
   @UseGuards(AuthGuard('jwt')) // Ensures only authenticated users can access this route
