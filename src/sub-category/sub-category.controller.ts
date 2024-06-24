@@ -23,28 +23,22 @@ export class SubCategoryController {
       const searchParentId = parseInt(parentId, 10);
       const parent = await this.categoryService.findOneSubCategory(searchParentId);
       if (!parent) {
-        return this.responseService.sendBadRequest(
-          res, "Invalid ParentId")
+        return this.responseService.sendNotFound(
+          res, "Invalid Parent Id")
       }
-      const categories =
+      const subCategory =
         await this.categoryService.searchSubCategories(searchParentId);
-
-
       return this.responseService.sendSuccess(
         res,
         'Fetch SubCategory Successful',
-        categories,
+        subCategory,
       );
     } catch (error) {
-      if (error instanceof NotFoundException) {
-        return this.responseService.sendNotFound(res, error.message);
-      } else {
-        return this.responseService.sendInternalError(
-          res,
-          error.message,
-          error,
-        );
-      }
+      return this.responseService.sendInternalError(
+        res,
+        error.message,
+      );
     }
   }
 }
+
