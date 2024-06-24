@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import {Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCategoryDto } from './dto/category.dto';
 import { CategoryType } from '@prisma/client';
 import { UpdateCategoryDto } from './dto/update.category.dto';
 @Injectable()
 export class CategoryService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async create(createCategoryDto: CreateCategoryDto, userId: number) {
     try {
@@ -19,8 +19,8 @@ export class CategoryService {
         });
 
         if (!parentCategory) {
-          throw new Error(
-            `Parent category with ID ${createCategoryDto.parentId} not found`,
+          throw new NotFoundException(
+            `Category with ID ${createCategoryDto.parentId} not found`,
           );
         }
   
@@ -42,10 +42,10 @@ export class CategoryService {
       return { newCategory, message };
     } catch (error) {
       console.error('Error creating category:', error);
-      throw error; // Re-throw the error or handle it accordingly
+      throw error; 
     }
   }
-  
+
   async findOne(id: number) {
     return this.prisma.category.findUnique({
       where: {
@@ -57,13 +57,13 @@ export class CategoryService {
   async findAll() {
     return this.prisma.category.findMany({
       where: {
-        parentId: null,  
+        parentId: null,
       },
       select: {
         id: true,
         name: true,
         description: true,
-        parentId:true,
+        parentId: true,
         type: true,
         createdAt: true,
         attachmentAssociations: true,
@@ -72,6 +72,21 @@ export class CategoryService {
   }
 
   async update(id: number, updateCategoryDto: UpdateCategoryDto) {
+    if (updateCategoryDto.parentId) {
+      const parentCategory = await this.prisma.category.findUnique({
+        where: {
+          id: updateCategoryDto.parentId,
+        },
+      });
+
+      if (!parentCategory) {
+        throw new NotFoundException(
+          `Parent category with ID ${updateCategoryDto.parentId} not found`,
+        );
+      }
+
+    }
+
     return this.prisma.category.update({
       where: {
         id: id,

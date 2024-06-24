@@ -23,7 +23,7 @@ export class CategoryController {
   constructor(
     private readonly categoryService: CategoryService,
     private readonly responseService: ResponseService,
-  ) {}
+  ) { }
 
   @Post()
   @UseGuards(AuthGuard('jwt'))
@@ -34,18 +34,21 @@ export class CategoryController {
   ) {
     try {
       const userId = req.user.id; // Access req.user.id from the request object
-      const {  message } = await this.categoryService.create(createCategoryDto, userId);
-      this.responseService.sendSuccess(res, message, );
+      const { message } = await this.categoryService.create(createCategoryDto, userId);
+      this.responseService.sendSuccess(res, message);
     } catch (error) {
       console.error(error);
-      this.responseService.sendBadRequest(
-        res,
-        error.message||'Failed to create category',
-        error,
-      );
+      if (error instanceof NotFoundException) {
+        this.responseService.sendNotFound(res, error.message);
+      } else {
+        this.responseService.sendInternalError(
+          res,
+          error.message|| 'Something Went Wrong',
+        );
+      }
     }
   }
-  
+
 
   @Get()
   @UseGuards(AuthGuard('jwt')) // Ensures only authenticated users can access this route
@@ -58,10 +61,9 @@ export class CategoryController {
         categories,
       );
     } catch (error) {
-      this.responseService.sendBadRequest(
+      this.responseService.sendInternalError(
         res,
-        'Failed to create category',
-        error.message,
+        error.message || 'Something Went Wrong'
       );
     }
   }
@@ -81,19 +83,13 @@ export class CategoryController {
       this.responseService.sendSuccess(res, 'Fetch Successfully', category);
     } catch (error) {
       console.log(error);
-      if (error instanceof NotFoundException) {
-        this.responseService.sendNotFound(res, error.message);
-        return;
-      } else {
         this.responseService.sendInternalError(
           res,
           error.message || 'Something Went Wrong',
-          error,
         );
         return;
       }
     }
-  }
 
   @Put(':id')
   @UseGuards(AuthGuard('jwt'))
@@ -122,15 +118,12 @@ export class CategoryController {
       );
     } catch (error) {
       console.log(error);
-      if (error instanceof NotFoundException) {
-        this.responseService.sendNotFound(res, error.message);
-      } else {
         this.responseService.sendInternalError(
           res,
           error.message || 'Something Went Wrong',
-          error,
+        
         );
-      }
+      
     }
   }
 
@@ -150,15 +143,12 @@ export class CategoryController {
       this.responseService.sendSuccess(res, 'Category Deleted Successfully');
     } catch (error) {
       console.error(error);
-      if (error instanceof NotFoundException) {
-        this.responseService.sendNotFound(res, error.message);
-      } else {
+     
         this.responseService.sendInternalError(
           res,
           'Something Went Wrong',
-          error,
         );
       }
     }
   }
-}
+
