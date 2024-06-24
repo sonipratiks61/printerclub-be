@@ -6,17 +6,17 @@ import { CategoryService } from 'src/category/category.service';
 export class SubCategoryService {
   constructor(private prisma: PrismaService) { }
 
-  async findParentCategories(parentId: number) {
-    const parent = await this.prisma.category.findFirst({
+  async findOneSubCategory(parentId:number)
+  {
+    return await this.prisma.category.findFirst({
       where: {
         parentId: parentId,
       },
     });
-  
-    if(!parent)
-    {
-      throw new Error("Invalid ParentId")
-    }
+    
+  }
+  async searchSubCategories(parentId: number) {
+   
     const parentCategories = await this.prisma.category.findMany({
       where: {
         OR: [
