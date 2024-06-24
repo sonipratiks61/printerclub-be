@@ -63,6 +63,7 @@ export class CategoryService {
         id: true,
         name: true,
         description: true,
+        parentId:true,
         type: true,
         createdAt: true,
         attachmentAssociations: true,
