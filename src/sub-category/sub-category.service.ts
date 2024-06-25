@@ -33,6 +33,16 @@ export class SubCategoryService {
             description: true,
           },
         },
+        product:{
+          select: {
+          id:true,
+          name:true,
+          description:true,
+          categoryId:true,
+          quantity:true
+        }
+
+        }
       },
     });
 
@@ -42,6 +52,8 @@ export class SubCategoryService {
         name: subCategory.name,
         parentId: subCategory.parentId,
         description: subCategory.description,
+        products: category.product.filter((product) => product.categoryId === subCategory.parentId),
+        
       })),
     );
     return formattedCategories;
