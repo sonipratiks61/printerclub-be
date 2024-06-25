@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProductDto } from './dto/product.dto';
 import { UpdateProductDto } from './dto/updateProduct.dto';
@@ -12,7 +12,7 @@ export class ProductService {
   async create(createProductDto: CreateProductDto, userId: number) {
     const categoryId=await this.categoryService.findOne(createProductDto.categoryId);
 if(!categoryId){
-  throw new Error('Invalid Category Id') ;
+  throw new NotFoundException('Invalid Category Id') ;
 }
     let productData: any = {
       name: createProductDto.name,
@@ -85,7 +85,7 @@ if(!categoryId){
       });
   
       if (!product) {
-        throw new Error(`Product with ID ${updateProductDto.categoryId} not found`);
+        throw new NotFoundException(`Product with ID ${updateProductDto.categoryId} not found`);
       }
     }
     let productData: any = {
@@ -100,7 +100,7 @@ if(!categoryId){
 
     if (type === 'text') {
       if (min === undefined || max === undefined) {
-        throw new Error('Both minimum and maximum quantity must be provided as a QuantityRange object for text type');
+        throw new BadRequestException('Both minimum and maximum quantity must be provided as a QuantityRange object for text type');
       }
       productData = {
         ...productData,
@@ -108,7 +108,7 @@ if(!categoryId){
       };
     } else if (type === 'dropDown') {
       if (!options || !Array.isArray(options) || options.length === 0) {
-        throw new Error('Dropdown value must be provided as an array of numbers for dropDown type');
+        throw new BadRequestException('Dropdown value must be provided as an array of numbers for dropDown type');
       }
       productData = {
         ...productData,
