@@ -1,4 +1,4 @@
-import { IsIn, IsInt, IsNotEmpty, IsString } from 'class-validator';
+import { ArrayNotEmpty, IsArray, IsIn, IsInt, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { AttributeType } from '@prisma/client';
 
@@ -29,5 +29,8 @@ export class CreateProductAttributesDto {
   @IsInt({ message: 'Type must be a integer' })
   productId?: number;
 
-  optional: string;
+  @IsOptional()
+  @IsArray({ message: 'Options must be an array' })
+  @ArrayNotEmpty({ message: 'Options array must not be empty' })
+  options?: string[]
 }

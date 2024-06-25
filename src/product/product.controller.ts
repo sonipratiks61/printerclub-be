@@ -34,11 +34,10 @@ export class ProductController {
   ) {
     try {
       const userId = req.user.id; 
-      await this.productService.create(createProductDto, userId);
-      this.responseService.sendSuccess(res, 'Product Created Successfully'
+     const data = await this.productService.create(createProductDto, userId);
+      this.responseService.sendSuccess(res, 'Product Created Successfully',data
       );
     } catch (error) {
-      console.error(error);
       this.responseService.sendBadRequest(res, error.message||'Something Went Wrong', error);
     }
   }
@@ -53,6 +52,7 @@ export class ProductController {
         categories,
       );
     } catch (error) {
+
       this.responseService.sendBadRequest(
         res,
         error.message||'Something Went Wrong',

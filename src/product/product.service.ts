@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProductDto } from './dto/product.dto';
 import { UpdateProductDto } from './dto/updateProduct.dto';
@@ -20,25 +20,30 @@ export class ProductService {
       price: createProductDto.price,
       userId: userId,
       categoryId: createProductDto.categoryId,
+      requiredFigment:createProductDto.isFitmentRequired ,
+      requiredMeasurement:createProductDto.isMeasurementRequired 
     };
 
-    const { type, min, max, option } = createProductDto.quantity;
+    const { type, min, max, options } = createProductDto.quantity;
 
     if (type === 'text') {
       if (min === undefined || max === undefined) {
-        throw new Error('Both minimum and maximum quantity must be provided as a QuantityRange object for text type');
+        throw new BadRequestException('Both minimum and maximum quantity must be provided as a QuantityRange object for text type');
       }
       productData = {
         ...productData,
         quantity: { min, max },
+        
       };
+      
     } else if (type === 'dropDown') {
-      if (!option || !Array.isArray(option) || option.length === 0) {
-        throw new Error('Dropdown value must be provided as an array of numbers for dropDown type');
+      if (!options || !Array.isArray(options) || options.length === 0) {
+       
+        throw new BadRequestException('Dropdown value must be provided as an array of numbers for dropDown type');
       }
       productData = {
         ...productData,
-        quantity: option,
+        quantity: options,
       };
     }
 
@@ -88,8 +93,10 @@ export class ProductService {
       description: updateProductDto.description,
       price: updateProductDto.price,
       categoryId: updateProductDto.categoryId,
+      isMeasurementRequired:updateProductDto.isMeasurementRequired,
+      isFitmentRequired:updateProductDto.isFitmentRequired
     };
-    const { type, min, max, option } = updateProductDto.quantity;
+    const { type, min, max, options } = updateProductDto.quantity;
 
     if (type === 'text') {
       if (min === undefined || max === undefined) {
@@ -100,12 +107,12 @@ export class ProductService {
         quantity: { min, max },
       };
     } else if (type === 'dropDown') {
-      if (!option || !Array.isArray(option) || option.length === 0) {
+      if (!options || !Array.isArray(options) || options.length === 0) {
         throw new Error('Dropdown value must be provided as an array of numbers for dropDown type');
       }
       productData = {
         ...productData,
-        quantity: option,
+        quantity: options,
       };
     }
     return this.prisma.product.update({
