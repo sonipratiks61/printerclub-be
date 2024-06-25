@@ -9,11 +9,11 @@ import {
   ArrayNotEmpty,
   IsArray,
   ValidateNested,
+  IsBoolean,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { AttributeType } from '@prisma/client';
 import { Type } from 'class-transformer';
-
 
 class QuantityRange {
   @ApiProperty({
@@ -53,7 +53,7 @@ class QuantityRange {
   @IsArray({ message: 'Quantity option must be an array' })
   @ArrayNotEmpty({ message: 'Quantity option array must not be empty' })
   @IsInt({ each: true, message: 'Each quantity value must be an integer' })
-  option?: number[];
+  options?: number[];
 }
 export class UpdateProductDto {
   @ApiProperty({
@@ -100,4 +100,23 @@ export class UpdateProductDto {
   @IsNotEmpty({ message: 'Category Id cannot be empty.' })
   @IsInt({ message: 'Category Id must be a integer' })
   categoryId?: number;
+
+  @ApiProperty({
+    description: 'Indicates if a measurement is required',
+    example: true,
+  })
+  @IsOptional()
+  @IsNotEmpty({ message: 'RequiredMeasurement cannot be empty.' })
+  @IsBoolean({ message: 'RequiredMeasurement must be a boolean' })
+  isMeasurementRequired : boolean;
+
+  @ApiProperty({
+    description: 'Indicates if a measurement is required',
+    example: true,
+  })
+  @IsOptional()
+  @IsNotEmpty({ message: 'Required Fitment cannot be empty.' })
+  @IsBoolean({ message: 'Required Fitment must be a boolean' })
+  isFitmentRequired : boolean;
+
 }
