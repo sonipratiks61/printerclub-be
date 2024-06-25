@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -23,7 +24,7 @@ export class ProductController {
   constructor(
     private readonly productService: ProductService,
     private readonly responseService: ResponseService,
-  ) {}
+  ) { }
 
   @Post()
   @UseGuards(AuthGuard('jwt'))
@@ -33,16 +34,28 @@ export class ProductController {
     @Res() res,
   ) {
     try {
-      const userId = req.user.id; 
-     const data = await this.productService.create(createProductDto, userId);
-      this.responseService.sendSuccess(res, 'Product Created Successfully',data
+      const userId = req.user.id;
+      const data = await this.productService.create(createProductDto, userId);
+      this.responseService.sendSuccess(res, 'Product Created Successfully', data
       );
     } catch (error) {
-      this.responseService.sendBadRequest(res, error.message||'Something Went Wrong', error);
+      if (error instanceof BadRequestException) {
+        this.responseService.sendBadRequest(res, error.message, error);
+      } else if (error instanceof NotFoundException) {
+        this.responseService.sendNotFound(res, error.message);
+        return;
+      } else {
+        this.responseService.sendInternalError(
+          res,
+          'Something Went Wrong',
+          error,
+        );
+        return;
+      }
     }
   }
   @Get()
-  @UseGuards(AuthGuard('jwt')) 
+  @UseGuards(AuthGuard('jwt'))
   async fetchAll(@Res() res) {
     try {
       const categories = await this.productService.findAll();
@@ -53,9 +66,9 @@ export class ProductController {
       );
     } catch (error) {
 
-      this.responseService.sendBadRequest(
+      this.responseService.sendInternalError(
         res,
-        error.message||'Something Went Wrong',
+        error.message || 'Something Went Wrong',
         error.message,
       );
     }
@@ -64,27 +77,22 @@ export class ProductController {
   @UseGuards(AuthGuard('jwt'))
   async findOne(@Param('id', IdValidationPipe) id: string, @Res() res) {
     try {
-      const categoryId = parseInt(id, 10);
-      const category = await this.productService.findOne(categoryId);
-      if (!category) {
+      const productId = parseInt(id, 10);
+      const product = await this.productService.findOne(productId);
+      if (!product) {
         this.responseService.sendNotFound(
           res,
-          `Category with ID ${id} not found`,
+          'Product not found',
         );
       }
-      this.responseService.sendSuccess(res, 'Fetch Successfully', category);
+      this.responseService.sendSuccess(res, ' Product Fetch Successfully', product);
     } catch (error) {
-      if (error instanceof NotFoundException) {
-        this.responseService.sendNotFound(res, error.message);
-        return;
-      } else {
-        this.responseService.sendInternalError(
-          res,
-          error.message || 'Something Went Wrong',
-          error,
-        );
-        return;
-      }
+      this.responseService.sendInternalError(
+        res,
+        error.message || 'Something Went Wrong',
+        error,
+      );
+
     }
   }
 
@@ -97,11 +105,11 @@ export class ProductController {
   ) {
     try {
       const productId = parseInt(id, 10);
-      const category = await this.productService.findOne(productId);
-      if (!category) {
+      const product = await this.productService.findOne(productId);
+      if (!product) {
         this.responseService.sendNotFound(
           res,
-          `Category with ID ${id} not found`,
+         "Product not Found",
         );
       }
       const updatedCategory = await this.productService.update(
@@ -115,14 +123,18 @@ export class ProductController {
       );
     } catch (error) {
       console.log(error);
-      if (error instanceof NotFoundException) {
+      if (error instanceof BadRequestException) {
+        this.responseService.sendBadRequest(res, error.message, error);
+      } else if (error instanceof NotFoundException) {
         this.responseService.sendNotFound(res, error.message);
+        return;
       } else {
         this.responseService.sendInternalError(
           res,
-          error.message || 'Something Went Wrong',
+          'Something Went Wrong',
           error,
         );
+        return;
       }
     }
   }
@@ -136,11 +148,11 @@ export class ProductController {
       if (!product) {
         this.responseService.sendNotFound(
           res,
-          `Category with ID ${id} not found`,
+          'Product not Found'
         );
       }
       await this.productService.remove(productId);
-      this.responseService.sendSuccess(res, 'Category Deleted Successfully');
+      this.responseService.sendSuccess(res, 'Product Deleted Successfully');
     } catch (error) {
       console.error(error);
       if (error instanceof NotFoundException) {
@@ -148,7 +160,7 @@ export class ProductController {
       } else {
         this.responseService.sendInternalError(
           res,
-          error.message||'Something Went Wrong',
+          error.message || 'Something Went Wrong',
           error,
         );
       }
