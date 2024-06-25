@@ -125,8 +125,25 @@ model Product {
   price                 String
   createdAt             DateTime                @default(now())
   updatedAt             DateTime                @updatedAt
- user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
- userId                Int
+  User                  User                    @relation(fields: [userId], references: [id])
+  userId                Int
+  isFitmentRequired       Boolean
+  isMeasurementRequired   Boolean
+  ProductAttribute      ProductAttribute[]
+}
+
+model ProductAttribute {
+  id        Int           @id @default(autoincrement())
+  productId Int
+  name      String
+  product   Product       @relation(fields: [productId], references: [id])
+  type      AttributeType
+  options  Json?     
+}
+
+enum AttributeType {
+  text
+  dropDown
 }
 
 model Attribute {
