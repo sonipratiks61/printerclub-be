@@ -43,11 +43,7 @@ export class ProductAttributesService {
           throw new BadRequestException('Options must be provided for dropDown type');
         }
         data.options = dto.options;
-      } else if (dto.type === 'text') {
-        if (dto.options && dto.options.length > 0) {
-          throw new BadRequestException('Options should not be provided for text type');
-        }
-      }
+      } 
 
       return data;
     });
