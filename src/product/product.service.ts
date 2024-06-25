@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProductDto } from './dto/product.dto';
 import { UpdateProductDto } from './dto/updateProduct.dto';
@@ -20,8 +20,8 @@ export class ProductService {
       price: createProductDto.price,
       userId: userId,
       categoryId: createProductDto.categoryId,
-      requiredFigment:createProductDto.isFitmentRequired ,
-      requiredMeasurement:createProductDto.isMeasurementRequired 
+      isFitmentRequired :createProductDto.isFitmentRequired ,
+      isMeasurementRequired :createProductDto.isMeasurementRequired 
     };
 
     const { type, min, max, options } = createProductDto.quantity;
@@ -32,7 +32,7 @@ export class ProductService {
       }
       productData = {
         ...productData,
-        quantity: { min, max },
+        quantity: {type, min, max },
         
       };
       
@@ -43,7 +43,7 @@ export class ProductService {
       }
       productData = {
         ...productData,
-        quantity: options,
+        quantity: {type,options},
       };
     }
 
@@ -85,7 +85,7 @@ export class ProductService {
       });
 
       if (!product) {
-        throw new Error(`Product with ID ${updateProductDto.categoryId} not found`);
+        throw new NotFoundException(`Product with ID ${updateProductDto.categoryId} not found`);
       }
     }
     let productData: any = {
@@ -100,7 +100,7 @@ export class ProductService {
 
     if (type === 'text') {
       if (min === undefined || max === undefined) {
-        throw new Error('Both minimum and maximum quantity must be provided as a QuantityRange object for text type');
+        throw new BadRequestException('Both minimum and maximum quantity must be provided as a QuantityRange object for text type');
       }
       productData = {
         ...productData,
@@ -108,7 +108,7 @@ export class ProductService {
       };
     } else if (type === 'dropDown') {
       if (!options || !Array.isArray(options) || options.length === 0) {
-        throw new Error('Dropdown value must be provided as an array of numbers for dropDown type');
+        throw new BadRequestException('Dropdown value must be provided as an array of numbers for dropDown type');
       }
       productData = {
         ...productData,

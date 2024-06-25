@@ -69,11 +69,11 @@ export class ProductAttributesController {
   @UseGuards(AuthGuard('jwt'))
   async fetchAll(@Res() res) {
     try {
-      const categories = await this.productAttributesService.findAll();
+      const productAttribute  = await this.productAttributesService.findAll();
       this.responseService.sendSuccess(
         res,
         'Product Attributes Fetched Successfully',
-        categories,
+        productAttribute ,
       );
     } catch (error) {
         return this.responseService.sendInternalError(
@@ -86,15 +86,15 @@ export class ProductAttributesController {
   @UseGuards(AuthGuard('jwt'))
   async findOne(@Param('id', IdValidationPipe) id: string, @Res() res) {
     try {
-      const productId = parseInt(id, 10);
-      const product = await this.productAttributesService.findOne(productId);
-      if (!product) {
+      const productAttributeId = parseInt(id, 10);
+      const productAttribute = await this.productAttributesService.findOne(productAttributeId);
+      if (!productAttribute ) {
         this.responseService.sendNotFound(
           res,
-          `Product with ID ${id} not found`,
+          "productAttributeId Invalid",
         );
       }
-      this.responseService.sendSuccess(res, 'Fetch Successfully', product);
+      this.responseService.sendSuccess(res, 'Fetch Successfully', productAttribute );
     } catch (error) {
      
         this.responseService.sendInternalError(
@@ -113,16 +113,16 @@ export class ProductAttributesController {
     @Res() res,
   ) {
     try {
-      const productId = parseInt(id, 10);
-      const product = await this.productAttributesService.findOne(productId);
-      if (!product) {
+      const productAttributeId = parseInt(id, 10);
+      const productAttribute  = await this.productAttributesService.findOne(productAttributeId);
+      if (!productAttribute ) {
         this.responseService.sendNotFound(
           res,
-          `Product with ID ${id} not found`,
+          "productAttributeId Invalid",
         );
       }
       const updatedCategory = await this.productAttributesService.update(
-        productId,
+        productAttributeId,
         updateProductAttributesDto,
       );
       this.responseService.sendSuccess(
@@ -149,16 +149,16 @@ export class ProductAttributesController {
   @Delete(':id')
   @UseGuards(AuthGuard('jwt'))
   async remove(@Param('id', IdValidationPipe) id: string, @Res() res) {
-    const productId = parseInt(id, 10);
+    const productAttributeId = parseInt(id, 10);
     try {
-      const product = await this.productAttributesService.findOne(productId);
-      if (!product) {
+      const productAttribute  = await this.productAttributesService.findOne(productAttributeId);
+      if (!productAttribute ) {
         this.responseService.sendNotFound(
           res,
-          `Category with ID ${id} not found`,
+         'productAttributeId Invalid'
         );
       }
-      await this.productAttributesService.remove(productId);
+      await this.productAttributesService.remove(productAttributeId);
       this.responseService.sendSuccess(
         res,
         'Product Attributes Deleted Successfully',
