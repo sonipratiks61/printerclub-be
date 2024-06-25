@@ -30,7 +30,6 @@ class QuantityRange {
   })
   @IsOptional()
   @IsInt({ message: 'Minimum quantity must be an integer' })
-  @Min(1, { message: 'Minimum quantity must be at least 1' })
   min?: number;
 
   @ApiProperty({
@@ -40,7 +39,6 @@ class QuantityRange {
   })
   @IsOptional()
   @IsInt({ message: 'Maximum quantity must be an integer' })
-  @Min(0, { message: 'Maximum quantity must be at least 0' })
   max?: number;
 
   @ApiProperty({
