@@ -129,6 +129,8 @@ model Product {
   updatedAt             DateTime                @updatedAt
   User                  User                    @relation(fields: [userId], references: [id])
   userId                Int
+  isFitmentRequired       Boolean
+  isMeasurementRequired   Boolean
   ProductAttribute      ProductAttribute[]
 }
 
@@ -138,7 +140,7 @@ model ProductAttribute {
   name      String
   product   Product       @relation(fields: [productId], references: [id])
   type      AttributeType
-  optional  String?
+  options  Json?     
 }
 
 enum AttributeType {

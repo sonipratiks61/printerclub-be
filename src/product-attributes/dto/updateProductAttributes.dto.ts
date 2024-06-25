@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsOptional, IsInt, IsIn, IsEnum } from 'class-validator';
+import { IsNotEmpty, IsString, IsOptional, IsInt, IsIn, IsEnum, ArrayNotEmpty, IsArray } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { AttributeType } from '@prisma/client';
 
@@ -17,7 +17,7 @@ export class UpdateProductAttributesDto {
     example: 'text',
   })
   @IsNotEmpty({ message: 'Type cannot be empty.' })
-  @IsIn(['text', 'dropDown'], { message: 'Optional type must be either text or dropDown' })
+  @IsIn(['text', 'dropDown'], { message: 'Type must be either text or dropDown' })
   @IsOptional()
   type: AttributeType;
 
@@ -26,11 +26,13 @@ export class UpdateProductAttributesDto {
     example: 1,
     required: false,
   })
-  // @IsNotEmpty({ message: 'Type cannot be empty.' })
-  // @IsInt({ message: 'Type must be a integer' })
+  @IsNotEmpty({ message: 'Type cannot be empty.' })
+  @IsInt({ message: 'Type must be a integer' })
   @IsOptional()
   productId?: number;
 
   @IsOptional()
-  optional: string;
+  @IsArray({ message: 'Options must be an array' })
+  @ArrayNotEmpty({ message: 'Options array must not be empty' })
+   options?: string[];
 }
