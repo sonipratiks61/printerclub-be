@@ -20,8 +20,8 @@ export class ProductService {
       price: createProductDto.price,
       userId: userId,
       categoryId: createProductDto.categoryId,
-      requiredFigment:createProductDto.isFitmentRequired ,
-      requiredMeasurement:createProductDto.isMeasurementRequired 
+      isFitmentRequired :createProductDto.isFitmentRequired ,
+      isMeasurementRequired :createProductDto.isMeasurementRequired 
     };
 
     const { type, min, max, options } = createProductDto.quantity;
