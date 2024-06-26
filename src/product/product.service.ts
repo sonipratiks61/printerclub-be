@@ -78,11 +78,15 @@ export class ProductService {
   }
 
   async findProductByCategoryId(categoryId: number) {
+    if (isNaN(categoryId) || categoryId <= 0) {
+      throw new BadRequestException("Invalid category ID");
+    }
     const category = await this.categoryService.findOne(categoryId);
 
     if (!category) {
       throw new NotFoundException("Category not found");
     }
+
     const data = await this.prisma.product.findMany({
       where: {
         categoryId: categoryId,

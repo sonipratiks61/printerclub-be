@@ -27,18 +27,18 @@ export class ProductAttributesController {
   constructor(
     private readonly productAttributesService: ProductAttributesService,
     private readonly responseService: ResponseService,
-  ) {}
+  ) { }
 
   @Post()
   @UseGuards(AuthGuard('jwt'))
- 
+
   async create(
     @Body() createProductAttributesDto: CreateProductAttributesDto[],
     @Req() req,
     @Res() res,
   ) {
     try {
-      const data=await this.productAttributesService.createMany(createProductAttributesDto);
+      await this.productAttributesService.createMany(createProductAttributesDto);
       return this.responseService.sendSuccess(
         res,
         'Product Attributes Created Successfully'
@@ -91,17 +91,17 @@ export class ProductAttributesController {
       if (!productAttribute ) {
         this.responseService.sendNotFound(
           res,
-          "productAttributeId Invalid",
+          "productAttribute Id Invalid",
         );
       }
-      this.responseService.sendSuccess(res, 'Fetch Successfully', productAttribute );
+      this.responseService.sendSuccess(res, 'Fetch Successfully', productAttribute);
     } catch (error) {
-     
-        this.responseService.sendInternalError(
-          res,
-          error.message || 'Something Went Wrong',
-        );
-      
+
+      this.responseService.sendInternalError(
+        res,
+        error.message || 'Something Went Wrong',
+      );
+
     }
   }
 
@@ -114,11 +114,11 @@ export class ProductAttributesController {
   ) {
     try {
       const productAttributeId = parseInt(id, 10);
-      const productAttribute  = await this.productAttributesService.findOne(productAttributeId);
-      if (!productAttribute ) {
+      const productAttribute = await this.productAttributesService.findOne(productAttributeId);
+      if (!productAttribute) {
         this.responseService.sendNotFound(
           res,
-          "productAttributeId Invalid",
+          "productAttribute Id Invalid",
         );
       }
       const updatedCategory = await this.productAttributesService.update(
@@ -135,7 +135,7 @@ export class ProductAttributesController {
       if (error instanceof NotFoundException) {
         this.responseService.sendNotFound(res, error.message);
       }
-      else if(error instanceof BadRequestException) {
+      else if (error instanceof BadRequestException) {
         this.responseService.sendBadRequest(res, error.message);
       } else {
         this.responseService.sendInternalError(
@@ -151,11 +151,11 @@ export class ProductAttributesController {
   async remove(@Param('id', IdValidationPipe) id: string, @Res() res) {
     const productAttributeId = parseInt(id, 10);
     try {
-      const productAttribute  = await this.productAttributesService.findOne(productAttributeId);
-      if (!productAttribute ) {
+      const productAttribute = await this.productAttributesService.findOne(productAttributeId);
+      if (!productAttribute) {
         this.responseService.sendNotFound(
           res,
-         'productAttributeId Invalid'
+          'productAttribute Id Invalid'
         );
       }
       await this.productAttributesService.remove(productAttributeId);
@@ -164,12 +164,12 @@ export class ProductAttributesController {
         'Product Attributes Deleted Successfully',
       );
     } catch (error) {
-    console.log(error);
-        this.responseService.sendInternalError(
-          res,
-          error.message||'Something Went Wrong',
-        );
-      
+      console.log(error);
+      this.responseService.sendInternalError(
+        res,
+        error.message || 'Something Went Wrong',
+      );
+
     }
   }
 }

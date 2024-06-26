@@ -97,7 +97,7 @@ export class CreateProductDto {
   categoryId?: number;
 
   @ApiProperty({
-    description: 'Indicates if a measurement is required',
+    description: 'Indicates if a fitment is required',
     example: true,
   })
   @IsNotEmpty({ message: 'RequiredMeasurement cannot be empty.' })
