@@ -9,7 +9,7 @@ import { SubCategoryService } from 'src/sub-category/sub-category.service';
 export class ProductService {
   constructor(private prisma: PrismaService,
     private categoryService: CategoryService,
-    private subCategoryService:SubCategoryService) { }
+    private subCategoryService: SubCategoryService) { }
 
   async create(createProductDto: CreateProductDto, userId: number) {
     const categoryId = await this.categoryService.findOne(createProductDto.categoryId);
@@ -34,7 +34,7 @@ export class ProductService {
       }
       productData = {
         ...productData,
-        quantity: { type,min, max },
+        quantity: { type, min, max },
 
       };
 
@@ -45,7 +45,7 @@ export class ProductService {
       }
       productData = {
         ...productData,
-        quantity: {type,options},
+        quantity: { type, options },
       };
     }
 
@@ -83,19 +83,9 @@ export class ProductService {
     if (!category) {
       throw new NotFoundException("Category not found");
     }
-    const parentId: number = categoryId;
-    const subCategoryId = await this.subCategoryService.findOneSubCategory(parentId);
-
-    if (!subCategoryId) {
-      throw new NotFoundException("SubCategory not found");
-    }
-    const subCategories = await this.subCategoryService.searchSubCategories(parentId);
-    const subCategoryIds: number[] = subCategories.map(subCategory => subCategory.parentId);
-    subCategoryIds.push(parentId);
-
     const data = await this.prisma.product.findMany({
       where: {
-        categoryId: { in: subCategoryIds },
+        categoryId: categoryId,
       },
     });
 
@@ -114,7 +104,7 @@ export class ProductService {
         throw new NotFoundException("Product Id Invalid");
       }
     }
-    
+
     let productData: any = {
       name: updateProductDto.name,
       description: updateProductDto.description,
@@ -131,7 +121,7 @@ export class ProductService {
       }
       productData = {
         ...productData,
-        quantity: {type, min, max },
+        quantity: { type, min, max },
       };
     } else if (type === 'dropDown') {
       if (!options || !Array.isArray(options) || options.length === 0) {
@@ -139,7 +129,7 @@ export class ProductService {
       }
       productData = {
         ...productData,
-        quantity: {type,options},
+        quantity: { type, options },
       };
     }
     return this.prisma.product.update({
@@ -156,7 +146,7 @@ export class ProductService {
         productId: id,
       },
     });
-    const data=this.prisma.product.delete({ where: { id } });
+    const data = this.prisma.product.delete({ where: { id } });
     return data;
   }
 }
