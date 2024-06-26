@@ -7,13 +7,13 @@ import { CategoryService } from 'src/category/category.service';
 @Injectable()
 export class ProductService {
   constructor(private prisma: PrismaService,
-    private categoryService:CategoryService) {}
+    private categoryService: CategoryService) { }
 
   async create(createProductDto: CreateProductDto, userId: number) {
-    const categoryId=await this.categoryService.findOne(createProductDto.categoryId);
-if(!categoryId){
-  throw new Error('Invalid Category Id') ;
-}
+    const categoryId = await this.categoryService.findOne(createProductDto.categoryId);
+    if (!categoryId) {
+      throw new Error('Invalid Category Id');
+    }
     let productData: any = {
       name: createProductDto.name,
       description: createProductDto.description,
@@ -21,9 +21,9 @@ if(!categoryId){
       userId: userId,
       categoryId: createProductDto.categoryId,
     };
-  
+
     const { type, min, max, option } = createProductDto.quantity;
-  
+
     if (type === 'text') {
       if (min === undefined || max === undefined) {
         throw new Error('Both minimum and maximum quantity must be provided as a QuantityRange object for text type');
@@ -41,7 +41,7 @@ if(!categoryId){
         quantity: option,
       };
     }
-  
+
     const createdProduct = await this.prisma.product.create({
       data: productData,
       include: {
@@ -52,10 +52,10 @@ if(!categoryId){
         },
       },
     });
-  
+
     return createdProduct;
   }
-  
+
   async findAll() {
     return await this.prisma.product.findMany({
       include: {
@@ -78,7 +78,7 @@ if(!categoryId){
           id: updateProductDto.categoryId,
         },
       });
-  
+
       if (!product) {
         throw new Error(`Product with ID ${updateProductDto.categoryId} not found`);
       }
@@ -90,7 +90,7 @@ if(!categoryId){
       categoryId: updateProductDto.categoryId,
     };
     const { type, min, max, option } = updateProductDto.quantity;
-  
+
     if (type === 'text') {
       if (min === undefined || max === undefined) {
         throw new Error('Both minimum and maximum quantity must be provided as a QuantityRange object for text type');

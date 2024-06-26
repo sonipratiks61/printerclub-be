@@ -4,7 +4,6 @@ import {
   ValidateNested,
   IsNotEmpty,
   IsInt,
-  IsDefined,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { CreateSubCategoryDto } from './subcategory.dto'; // Adjust the import path as needed
@@ -22,12 +21,12 @@ export class CreateCategoryDto {
   @IsString({ message: 'Type must be a string' })
   type: string;
 
+  @IsOptional()
   @IsInt({ message: 'Parent Id must be a number' })
-  parentId?: number;
+  parentId: number | null;
 
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => CreateSubCategoryDto)
-  @IsDefined()
   subCategories?: CreateSubCategoryDto[];
 }
