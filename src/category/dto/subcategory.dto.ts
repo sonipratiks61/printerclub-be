@@ -15,6 +15,6 @@ export class CreateSubCategoryDto {
 
   @IsOptional()
   @IsNotEmpty({ message: 'Type cannot be empty' })
-  @IsInt({ message: 'Type must be a string' })
+  @IsInt({ message: 'Type must be a number' })
   parentId: number;
 }
