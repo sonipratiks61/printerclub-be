@@ -56,13 +56,13 @@ export class ProductController {
     }
   }
 
-  @Get()
+  @Get('byCategoryId')
   @UseGuards(AuthGuard('jwt'))
   async findProductByCategoryId(@Res() res, @Body('categoryId') categoryId?: string) {
     try {
       const category= parseInt(categoryId,10)
       const  data = await this.productService.findProductByCategoryId(category);
-      this.responseService.sendSuccess(res, 'Products fetched successfully', data);
+      this.responseService.sendSuccess(res, 'Products fetched successfully by category', data);
     } catch (error) {
       if(error instanceof BadRequestException)
       {
