@@ -41,7 +41,7 @@ export class ProductAttributesController {
       const data=await this.productAttributesService.createMany(createProductAttributesDto);
       return this.responseService.sendSuccess(
         res,
-        'Product Attributes Created Successfully',data
+        'Product Attributes Created Successfully'
       );
     } catch (error) {
       console.error(error);
@@ -164,15 +164,12 @@ export class ProductAttributesController {
         'Product Attributes Deleted Successfully',
       );
     } catch (error) {
-      if (error instanceof NotFoundException) {
-        this.responseService.sendNotFound(res, error.message);
-      }
-     else {
+    console.log(error);
         this.responseService.sendInternalError(
           res,
           error.message||'Something Went Wrong',
         );
-      }
+      
     }
   }
 }
