@@ -101,7 +101,7 @@ model RoleAndCapabilityMapping {
 model Category {
   id                     Int                     @id @default(autoincrement())
   userId                 Int
-  parentId               Int?                   
+  parentId               Int?
   parent                 Category?               @relation("CategoryToSubcategories", fields: [parentId], references: [id])
   subCategories          Category[]              @relation("CategoryToSubcategories")
   name                   String
@@ -127,6 +127,8 @@ model Product {
   updatedAt             DateTime                @updatedAt
   User                  User                    @relation(fields: [userId], references: [id])
   userId                Int
+  isFitmentRequired     Boolean
+  isMeasurementRequired Boolean
   ProductAttribute      ProductAttribute[]
 }
 
@@ -136,7 +138,7 @@ model ProductAttribute {
   name      String
   product   Product       @relation(fields: [productId], references: [id])
   type      AttributeType
-  optional  String?
+  options   Json?
 }
 
 enum AttributeType {
@@ -161,16 +163,17 @@ model AttachmentAssociation {
   categoryId   Int
   attachment   Attachment @relation(fields: [attachmentId], references: [id])
   attachmentId Int
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 }
-model OrderStatus{
-  id         Int      @id @default(autoincrement())
-  status     String
-  description String  @db.Text
-  dependOn   Int 
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+
+model OrderStatus {
+  id          Int      @id @default(autoincrement())
+  status      String
+  description String   @db.Text
+  dependOn    Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 enum CategoryType {

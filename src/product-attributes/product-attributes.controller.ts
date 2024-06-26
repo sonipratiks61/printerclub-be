@@ -1,8 +1,10 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
+  HttpException,
   NotFoundException,
   Param,
   Post,
@@ -10,6 +12,8 @@ import {
   Req,
   Res,
   UseGuards,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ResponseService } from 'utils/response/customResponse';
@@ -23,74 +27,81 @@ export class ProductAttributesController {
   constructor(
     private readonly productAttributesService: ProductAttributesService,
     private readonly responseService: ResponseService,
-  ) {}
+  ) { }
 
   @Post()
   @UseGuards(AuthGuard('jwt'))
+
   async create(
-    @Body() createProductAttributesDto: CreateProductAttributesDto,
+    @Body() createProductAttributesDto: CreateProductAttributesDto[],
     @Req() req,
     @Res() res,
   ) {
     try {
-      // Access req.user.id from the request object
-      await this.productAttributesService.create(createProductAttributesDto);
-      this.responseService.sendSuccess(
+      await this.productAttributesService.createMany(createProductAttributesDto);
+      return this.responseService.sendSuccess(
         res,
-        'Product Attributes Created Successfully',
+        'Product Attributes Created Successfully'
       );
     } catch (error) {
       console.error(error);
-      this.responseService.sendBadRequest(
-        res,
-        error.message||'Something Went Wrong',
-        error,
-      );
+      if (error instanceof BadRequestException) {
+        return this.responseService.sendBadRequest(
+          res,
+          error.message,
+        );
+      } 
+      else if(error instanceof NotFoundException){
+        return this.responseService.sendNotFound(
+          res,
+          error.message,
+        );
+      }else {
+        return this.responseService.sendInternalError(
+          res,
+         'Something Went Wrong',
+        );
+      }
     }
   }
+
   @Get()
-  @UseGuards(AuthGuard('jwt')) // Ensures only authenticated users can access this route
+  @UseGuards(AuthGuard('jwt'))
   async fetchAll(@Res() res) {
     try {
-      const categories = await this.productAttributesService.findAll();
+      const productAttribute  = await this.productAttributesService.findAll();
       this.responseService.sendSuccess(
         res,
         'Product Attributes Fetched Successfully',
-        categories,
+        productAttribute ,
       );
     } catch (error) {
-      this.responseService.sendBadRequest(
-        res,
-        error.message||'Something Went Wrong',
-        error.message,
-      );
+        return this.responseService.sendInternalError(
+          res,
+          error.message || 'Internal Server Error',
+        ); 
     }
   }
   @Get(':id')
   @UseGuards(AuthGuard('jwt'))
   async findOne(@Param('id', IdValidationPipe) id: string, @Res() res) {
     try {
-      const productId = parseInt(id, 10);
-      const product = await this.productAttributesService.findOne(productId);
-      if (!product) {
+      const productAttributeId = parseInt(id, 10);
+      const productAttribute = await this.productAttributesService.findOne(productAttributeId);
+      if (!productAttribute ) {
         this.responseService.sendNotFound(
           res,
-          `Product with ID ${id} not found`,
+          "productAttribute Id Invalid",
         );
       }
-      this.responseService.sendSuccess(res, 'Fetch Successfully', product);
+      this.responseService.sendSuccess(res, 'Fetch Successfully', productAttribute);
     } catch (error) {
-      if (error instanceof NotFoundException) {
-        this.responseService.sendNotFound(res, error.message);
-        return;
-      } else {
-        this.responseService.sendInternalError(
-          res,
-          error.message || 'Something Went Wrong',
-          error,
-        );
-        return;
-      }
+
+      this.responseService.sendInternalError(
+        res,
+        error.message || 'Something Went Wrong',
+      );
+
     }
   }
 
@@ -102,16 +113,16 @@ export class ProductAttributesController {
     @Res() res,
   ) {
     try {
-      const productId = parseInt(id, 10);
-      const product = await this.productAttributesService.findOne(productId);
-      if (!product) {
+      const productAttributeId = parseInt(id, 10);
+      const productAttribute = await this.productAttributesService.findOne(productAttributeId);
+      if (!productAttribute) {
         this.responseService.sendNotFound(
           res,
-          `Product with ID ${id} not found`,
+          "productAttribute Id Invalid",
         );
       }
       const updatedCategory = await this.productAttributesService.update(
-        productId,
+        productAttributeId,
         updateProductAttributesDto,
       );
       this.responseService.sendSuccess(
@@ -123,11 +134,13 @@ export class ProductAttributesController {
       console.log(error);
       if (error instanceof NotFoundException) {
         this.responseService.sendNotFound(res, error.message);
+      }
+      else if (error instanceof BadRequestException) {
+        this.responseService.sendBadRequest(res, error.message);
       } else {
         this.responseService.sendInternalError(
           res,
           error.message || 'Something Went Wrong',
-          error,
         );
       }
     }
@@ -136,31 +149,27 @@ export class ProductAttributesController {
   @Delete(':id')
   @UseGuards(AuthGuard('jwt'))
   async remove(@Param('id', IdValidationPipe) id: string, @Res() res) {
-    const productId = parseInt(id, 10);
+    const productAttributeId = parseInt(id, 10);
     try {
-      const product = await this.productAttributesService.findOne(productId);
-      if (!product) {
+      const productAttribute = await this.productAttributesService.findOne(productAttributeId);
+      if (!productAttribute) {
         this.responseService.sendNotFound(
           res,
-          `Category with ID ${id} not found`,
+          'productAttribute Id Invalid'
         );
       }
-      await this.productAttributesService.remove(productId);
+      await this.productAttributesService.remove(productAttributeId);
       this.responseService.sendSuccess(
         res,
         'Product Attributes Deleted Successfully',
       );
     } catch (error) {
-      console.error(error);
-      if (error instanceof NotFoundException) {
-        this.responseService.sendNotFound(res, error.message);
-      } else {
-        this.responseService.sendInternalError(
-          res,
-          error.message||'Something Went Wrong',
-          error,
-        );
-      }
+      console.log(error);
+      this.responseService.sendInternalError(
+        res,
+        error.message || 'Something Went Wrong',
+      );
+
     }
   }
 }

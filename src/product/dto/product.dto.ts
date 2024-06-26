@@ -9,6 +9,7 @@ import {
   IsArray,
   ArrayNotEmpty,
   IsOptional,
+  IsBoolean,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
@@ -29,7 +30,6 @@ class QuantityRange {
   })
   @IsOptional()
   @IsInt({ message: 'Minimum quantity must be an integer' })
-  @Min(1, { message: 'Minimum quantity must be at least 1' })
   min?: number;
 
   @ApiProperty({
@@ -39,7 +39,6 @@ class QuantityRange {
   })
   @IsOptional()
   @IsInt({ message: 'Maximum quantity must be an integer' })
-  @Min(0, { message: 'Maximum quantity must be at least 0' })
   max?: number;
 
   @ApiProperty({
@@ -51,7 +50,7 @@ class QuantityRange {
   @IsArray({ message: 'Quantity option must be an array' })
   @ArrayNotEmpty({ message: 'Quantity option array must not be empty' })
   @IsInt({ each: true, message: 'Each quantity value must be an integer' })
-  option?: number[];
+  options?: number[];
 }
 
 export class CreateProductDto {
@@ -96,4 +95,29 @@ export class CreateProductDto {
   @IsNotEmpty({ message: 'Category Id cannot be empty.' })
   @IsInt({ message: 'Category Id must be a integer' })
   categoryId?: number;
+
+  @ApiProperty({
+    description: 'Indicates if a fitment is required',
+    example: true,
+  })
+  @IsNotEmpty({ message: 'RequiredMeasurement cannot be empty.' })
+  @IsBoolean({ message: 'RequiredMeasurement must be a boolean' })
+  isMeasurementRequired : boolean;
+
+  @ApiProperty({
+    description: 'Indicates if a measurement is required',
+    example: true,
+  })
+  @IsNotEmpty({ message: 'Required Fitment cannot be empty.' })
+  @IsBoolean({ message: 'Required Fitment must be a boolean' })
+  isFitmentRequired : boolean;
+
 }
+
+
+
+
+
+
+ 
+

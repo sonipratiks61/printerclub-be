@@ -44,7 +44,7 @@ export function getCustomValidationError(
   }
 
   return {
-    result: formattedErrors,
+    errors: formattedErrors,
     success: false,
   };
 }
