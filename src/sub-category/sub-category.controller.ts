@@ -18,7 +18,7 @@ export class SubCategoryController {
   ) { }
   @Get()
   @UseGuards(AuthGuard('jwt'))
-  async findParentCategories(@Query('parentId') parentId: string, @Res() res) {
+  async findSubCategories(@Query('parentId') parentId: string, @Res() res) {
     try {
       const searchParentId = parseInt(parentId, 10);
       const parent = await this.categoryService.findOneSubCategory(searchParentId);
@@ -34,6 +34,7 @@ export class SubCategoryController {
         subCategory,
       );
     } catch (error) {
+      console.log(error);
       return this.responseService.sendInternalError(
         res,
         error.message,
