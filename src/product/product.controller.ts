@@ -60,17 +60,15 @@ export class ProductController {
   @UseGuards(AuthGuard('jwt'))
   async findProductByCategoryId(@Res() res, @Body('categoryId') categoryId?: string) {
     try {
-      let data;
-      if (categoryId) {
-        const category = parseInt(categoryId, 10);
-        data = await this.productService.findProductByCategoryId(category);
-      } else {
-
-        data = await this.productService.findAll();
-      }
+      const category= parseInt(categoryId,10)
+      const  data = await this.productService.findProductByCategoryId(category);
       this.responseService.sendSuccess(res, 'Products fetched successfully', data);
     } catch (error) {
-      if (error instanceof NotFoundException) {
+      if(error instanceof BadRequestException)
+      {
+        this.responseService.sendBadRequest(res, error.message);
+      }
+     else if (error instanceof NotFoundException) {
         this.responseService.sendNotFound(res, error.message);
       } else {
         this.responseService.sendInternalError(
