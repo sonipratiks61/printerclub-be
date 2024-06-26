@@ -77,7 +77,7 @@ export class CategoryController {
       if (!category) {
         this.responseService.sendNotFound(
           res,
-          `Category with ID ${id} not found`,
+          "CategoryId Invalid",
         );
       }
       this.responseService.sendSuccess(res, 'Fetch Successfully', category);

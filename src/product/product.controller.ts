@@ -39,6 +39,7 @@ export class ProductController {
       this.responseService.sendSuccess(res, 'Product Created Successfully', data
       );
     } catch (error) {
+      console.log(error);
       if (error instanceof BadRequestException) {
         this.responseService.sendBadRequest(res, error.message, error);
       } else if (error instanceof NotFoundException) {
@@ -54,6 +55,33 @@ export class ProductController {
       }
     }
   }
+
+  @Get()
+  @UseGuards(AuthGuard('jwt'))
+  async findProductByCategoryId(@Res() res, @Body('categoryId') categoryId?: string) {
+    try {
+      let data;
+      if (categoryId) {
+        const category = parseInt(categoryId, 10);
+        data = await this.productService.findProductByCategoryId(category);
+      } else {
+
+        data = await this.productService.findAll();
+      }
+      this.responseService.sendSuccess(res, 'Products fetched successfully', data);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        this.responseService.sendNotFound(res, error.message);
+      } else {
+        this.responseService.sendInternalError(
+          res,
+          error.message || 'Something went wrong',
+          error,
+        );
+      }
+    }
+  }
+
   @Get()
   @UseGuards(AuthGuard('jwt'))
   async fetchAll(@Res() res) {

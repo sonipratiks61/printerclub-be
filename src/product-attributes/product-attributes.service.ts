@@ -76,7 +76,7 @@ export class ProductAttributesService {
       });
 
       if (!product) {
-        throw new BadRequestException(`Product with ID ${updateProductAttributeDto.productId} not found`);
+        throw new BadRequestException("Product Invalid");
       }
     }
 
@@ -92,13 +92,8 @@ export class ProductAttributesService {
       }
 
       updateProductAttributeData.options = updateProductAttributeDto.options;
-    } else if (updateProductAttributeDto.type === 'text') {
-
-      if (updateProductAttributeDto.options && updateProductAttributeDto.options.length > 0) {
-
-        throw new BadRequestException('Options should not be provided for text type');
-      }
     }
+    
     return this.prisma.productAttribute.update({
       where: {
         id: id,
@@ -113,6 +108,6 @@ export class ProductAttributesService {
 
   }
   async remove(id: number) {
-    return this.prisma.product.delete({ where: { id } });
+    return this.prisma.productAttribute.delete({ where: { id } });
   }
 }
