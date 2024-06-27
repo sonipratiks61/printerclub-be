@@ -33,12 +33,14 @@ import { ProductAttributesService } from './product-attributes/product-attribute
 import { ProductAttributesController } from './product-attributes/product-attributes.controller';
 import { SubCategoryController } from './sub-category/sub-category.controller';
 import { SubCategoryService } from './sub-category/sub-category.service';
+import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [
     JwtModule.register({}),
     MulterModule.register({
       dest: './uploads',
     }),
+    ConfigModule.forRoot()
   ],
   controllers: [
     AppController,
