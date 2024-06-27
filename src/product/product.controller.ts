@@ -56,7 +56,7 @@ export class ProductController {
     }
   }
 
-  @Get('byCategoryId')
+  @Get('categoryId')
   @UseGuards(AuthGuard('jwt'))
   async findProductByCategoryId(@Res() res, @Body('categoryId') categoryId?: string) {
     try {
