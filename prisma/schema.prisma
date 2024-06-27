@@ -124,8 +124,8 @@ model Product {
   userId                Int
   isFitmentRequired     Boolean?
   isMeasurementRequired Boolean?
-  ProductAttribute      ProductAttribute[]
   orderItems            OrderItem[]
+  attributes      ProductAttribute[]
 }
 
 model ProductAttribute {
