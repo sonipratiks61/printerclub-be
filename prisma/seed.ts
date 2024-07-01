@@ -44,6 +44,7 @@ async function main() {
     update: {}, // No need to update anything if it already exists
     create: {
       name: 'User',
+      capabilityId:1,
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
     },
@@ -54,6 +55,7 @@ async function main() {
     update: {}, // No need to update anything if it already exists
     create: {
       name: 'Admin',
+      capabilityId:1,
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
     },
@@ -64,7 +66,6 @@ async function main() {
     update: {}, // No need to update anything if it already exists
     create: {
       name: 'getProfile',
-      roleId: 1,
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
     },
@@ -75,7 +76,6 @@ async function main() {
     update: {},
     create: {
       name: 'forgetPassword',
-      roleId: 1,
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
     },
@@ -86,7 +86,6 @@ async function main() {
     update: {}, // No need to update anything if it already exists
     create: {
       name: 'getProfile',
-      roleId: 1,
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
     },
@@ -97,7 +96,6 @@ async function main() {
     update: {},
     create: {
       name: 'createAttachment',
-      roleId: 1,
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
     },
@@ -107,7 +105,6 @@ async function main() {
     update: {},
     create: {
       name: 'deletedAttachment',
-      roleId: 1,
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
     },
