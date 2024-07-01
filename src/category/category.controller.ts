@@ -34,8 +34,8 @@ export class CategoryController {
   ) {
     try {
       const userId = req.user.id; // Access req.user.id from the request object
-      const { message } = await this.categoryService.create(createCategoryDto, userId);
-      this.responseService.sendSuccess(res, message);
+      const {newCategory, message } = await this.categoryService.create(createCategoryDto, userId);
+      this.responseService.sendSuccess(res, message,newCategory);
     } catch (error) {
       console.error(error);
       if (error instanceof NotFoundException) {
