@@ -64,14 +64,27 @@ export class ProductService {
   }
 
   async findAll() {
-    return await this.prisma.product.findMany({
+    const products= await this.prisma.product.findMany({
       include: {
-        category: true,
-        attributes: true
-      },
-    });
-  }
+        category: {
+          select: {
+            id: true,
+            name: true,
+            subCategories: {
+             select:{ id:true,
+              name:true,}
 
+            }
+          }
+        },
+        attributes :true
+      }
+    });
+  
+
+    return products;
+  }
+  
   async findOne(id: number) {
     return await this.prisma.product.findUnique({
       where: { id },
