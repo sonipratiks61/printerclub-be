@@ -44,6 +44,7 @@ async function main() {
     update: {}, // No need to update anything if it already exists
     create: {
       name: 'User',
+
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
     },
@@ -54,6 +55,7 @@ async function main() {
     update: {}, // No need to update anything if it already exists
     create: {
       name: 'Admin',
+
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
     },
