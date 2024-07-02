@@ -54,20 +54,13 @@ export class CategoryService {
     });
   }
 
-  async findAll() {
+  async findAll(includeSubCategory:boolean) {
     return this.prisma.category.findMany({
-      where: {
-        parentId: null,
+      where:{
+        parentId: null
       },
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        parentId: true,
-        type: true,
-        createdAt: true,
-        includeSubCategory:true,
-        attachmentAssociations: true,
+      include:{
+        subCategories: includeSubCategory ? true : undefined,
       },
     });
   }

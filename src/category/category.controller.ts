@@ -10,6 +10,7 @@ import {
   Delete,
   Param,
   NotFoundException,
+  Query,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/category.dto';
@@ -52,12 +53,12 @@ export class CategoryController {
 
   @Get()
   @UseGuards(AuthGuard('jwt')) // Ensures only authenticated users can access this route
-  async fetchAll(@Res() res) {
+  async fetchAll(@Res() res,@Query('includeSubCategory') includeSubCategory: boolean) {
     try {
-      const categories = await this.categoryService.findAll();
+      const categories = await this.categoryService.findAll(includeSubCategory);
       this.responseService.sendSuccess(
         res,
-        'Categories Fetched Successfully',
+        'Fetched Successfully',
         categories,
       );
     } catch (error) {
