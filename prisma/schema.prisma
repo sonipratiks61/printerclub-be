@@ -47,6 +47,25 @@ model Address {
   updatedAt DateTime @updatedAt
 }
 
+// model Role {
+//   id                       Int                        @id @default(autoincrement())
+//   capabilityId             Int
+//   capabilities             Capability                 @relation(fields: [capabilityId], references: [id])
+//   name                     String                     @unique
+//   roleAndCapabilityMapping RoleAndCapabilityMapping[]
+//   users                    User[]
+//   createdAt                DateTime                   @default(now())
+//   updatedAt                DateTime                   @updatedAt
+// }
+
+// model Capability {
+//   id                       Int                        @id @default(autoincrement())
+//   name                     String                     
+//   roleAndCapabilityMapping RoleAndCapabilityMapping[]
+//   role                     Role[]
+//   createdAt                DateTime                   @default(now())
+//   updatedAt                DateTime                   @updatedAt
+// }
 model Role {
   id            Int                        @id @default(autoincrement())
   name          String                     @unique
@@ -102,7 +121,7 @@ model Category {
   parent                 Category?               @relation("CategoryToSubcategories", fields: [parentId], references: [id])
   subCategories          Category[]              @relation("CategoryToSubcategories")
   name                   String
-  description            String @db.Text
+  description            String                  @db.Text
   product                Product[]
   attachmentAssociations AttachmentAssociation[] @relation("category_attachmentAssociations")
   user                   User                    @relation(fields: [userId], references: [id])
@@ -125,9 +144,9 @@ model Product {
   updatedAt             DateTime                @updatedAt
   User                  User                    @relation(fields: [userId], references: [id])
   userId                Int
-  isFitmentRequired     Boolean? @default(false)
-  isMeasurementRequired Boolean? @default(false)
-  attributes      ProductAttribute[]
+  isFitmentRequired     Boolean?                @default(false)
+  isMeasurementRequired Boolean?                @default(false)
+  attributes            ProductAttribute[]
 }
 
 model ProductAttribute {
