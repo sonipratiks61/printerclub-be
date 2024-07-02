@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { CreateCapabilityDto } from './dto/capability.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { CreateCapabilityDto } from './dto/capabilities.dto';
 
 @Injectable()
 export class CapabilityService {

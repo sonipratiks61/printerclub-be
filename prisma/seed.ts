@@ -39,75 +39,46 @@ async function main() {
     });
   }
   // create two dummy articles
-  await prisma.role.upsert({
+  const role1=await prisma.role.upsert({
     where: { name: 'User' },
     update: {}, // No need to update anything if it already exists
     create: {
       name: 'User',
-      capabilityId:1,
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
     },
   });
 
-  await prisma.role.upsert({
+  const role2=await prisma.role.upsert({
     where: { name: 'Admin' },
     update: {}, // No need to update anything if it already exists
     create: {
       name: 'Admin',
-      capabilityId:1,
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
     },
   });
 
-  await prisma.capability.upsert({
-    where: { name: 'getProfile' },
-    update: {}, // No need to update anything if it already exists
-    create: {
-      name: 'getProfile',
-      createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
+
+const capability1 = await prisma.capability.create({
+    data: {
+      name: 'Read',
     },
   });
 
-  await prisma.capability.upsert({
-    where: { name: 'forgetPassword' },
-    update: {},
-    create: {
-      name: 'forgetPassword',
-      createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
+  const capability2 = await prisma.capability.create({
+    data: {
+      name: 'Write',
     },
   });
 
-  await prisma.capability.upsert({
-    where: { name: 'getProfile' },
-    update: {}, // No need to update anything if it already exists
-    create: {
-      name: 'getProfile',
-      createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-  });
 
-  await prisma.capability.upsert({
-    where: { name: 'createAttachment' },
-    update: {},
-    create: {
-      name: 'createAttachment',
-      createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-  });
-  await prisma.capability.upsert({
-    where: { name: 'createAttachment' },
-    update: {},
-    create: {
-      name: 'deletedAttachment',
-      createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
+  await prisma.roleAndCapabilityMapping.createMany({
+    data: [
+      { roleId: role1.id, capabilityId: capability1.id },
+      { roleId: role1.id, capabilityId: capability2.id },
+      { roleId: role2.id, capabilityId: capability1.id },
+    ],
   });
   const userData = {
     businessName: "John",
@@ -131,7 +102,7 @@ async function main() {
   const data = {
     businessName: "Admin",
     name: "Admin",
-    email: "Admin@gmail.com",
+    email: "admin@gmail.com",
     mobileNumber: "1212121212",
     password: "password123", 
     isActive: true,

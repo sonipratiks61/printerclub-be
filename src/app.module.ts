@@ -34,6 +34,8 @@ import { ProductAttributesController } from './product-attributes/product-attrib
 import { SubCategoryController } from './sub-category/sub-category.controller';
 import { SubCategoryService } from './sub-category/sub-category.service';
 import { ConfigModule } from '@nestjs/config';
+import { CapabilityController } from './capabilities/capability.controller';
+import { CapabilityService } from './capabilities/capability.service';
 @Module({
   imports: [
     JwtModule.register({}),
@@ -56,6 +58,7 @@ import { ConfigModule } from '@nestjs/config';
     AttributeController,
     ProductAttributesController,
     SubCategoryController,
+    CapabilityController
 
   ],
   providers: [
@@ -77,6 +80,7 @@ import { ConfigModule } from '@nestjs/config';
     AttributeService,
     ProductAttributesService,
     SubCategoryService,
+    CapabilityService
   ],
 })
 export class AppModule {

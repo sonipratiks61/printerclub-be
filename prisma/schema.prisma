@@ -47,11 +47,29 @@ model Address {
   updatedAt DateTime @updatedAt
 }
 
+// model Role {
+//   id                       Int                        @id @default(autoincrement())
+//   capabilityId             Int
+//   capabilities             Capability                 @relation(fields: [capabilityId], references: [id])
+//   name                     String                     @unique
+//   roleAndCapabilityMapping RoleAndCapabilityMapping[]
+//   users                    User[]
+//   createdAt                DateTime                   @default(now())
+//   updatedAt                DateTime                   @updatedAt
+// }
+
+// model Capability {
+//   id                       Int                        @id @default(autoincrement())
+//   name                     String                     
+//   roleAndCapabilityMapping RoleAndCapabilityMapping[]
+//   role                     Role[]
+//   createdAt                DateTime                   @default(now())
+//   updatedAt                DateTime                   @updatedAt
+// }
 model Role {
   id                       Int                        @id @default(autoincrement())
-  capabilities             Capability[] // Linked to capabilities
   name                     String                     @unique
-  roleAndCapabilityMapping RoleAndCapabilityMapping[]
+  capabilityIds  RoleAndCapabilityMapping[]
   users                    User[]
   createdAt                DateTime                   @default(now())
   updatedAt                DateTime                   @updatedAt
@@ -61,11 +79,18 @@ model Capability {
   id                       Int                        @id @default(autoincrement())
   name                     String                     @unique
   roleAndCapabilityMapping RoleAndCapabilityMapping[]
-  roleId                   Int
-  role                     Role                       @relation(fields: [roleId], references: [id]) // Explicit relation to Role
   createdAt                DateTime                   @default(now())
   updatedAt                DateTime                   @updatedAt
 }
+
+model RoleAndCapabilityMapping {
+  roleId                  Int
+  capabilityId            Int
+  role                    Role                       @relation(fields: [roleId], references: [id])
+  capability              Capability                 @relation(fields: [capabilityId], references: [id])
+  @@id([roleId, capabilityId])
+}
+
 
 model GeoLocation {
   id      Int    @id @default(autoincrement())
@@ -87,16 +112,16 @@ model Attachment {
   @@map("attachments") // Optional: maps the model to a table named "attachments"
 }
 
-model RoleAndCapabilityMapping {
-  capabilityId Int
-  roleId       Int
-  capability   Capability @relation(fields: [capabilityId], references: [id])
-  role         Role       @relation(fields: [roleId], references: [id])
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+// model RoleAndCapabilityMapping {
+//   capabilityId Int
+//   roleId       Int
+//   capability   Capability @relation(fields: [capabilityId], references: [id])
+//   role         Role       @relation(fields: [roleId], references: [id])
+//   createdAt    DateTime   @default(now())
+//   updatedAt    DateTime   @updatedAt
 
-  @@id([capabilityId, roleId])
-}
+//   @@id([capabilityId, roleId])
+// }
 
 model Category {
   id                     Int                     @id @default(autoincrement())
@@ -129,7 +154,7 @@ model Product {
   userId                Int
   isFitmentRequired     Boolean
   isMeasurementRequired Boolean
-  ProductAttribute      ProductAttribute[]
+  attributes            ProductAttribute[]
 }
 
 model ProductAttribute {
