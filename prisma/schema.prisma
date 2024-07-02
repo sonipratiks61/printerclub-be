@@ -110,6 +110,7 @@ model Category {
   attachmentAssociations AttachmentAssociation[] @relation("category_attachmentAssociations")
   user                   User                    @relation(fields: [userId], references: [id])
   type                   CategoryType
+  includeSubCategory     Boolean                 @default(false)
   createdAt              DateTime                @default(now())
   updatedAt              DateTime                @updatedAt
 }
