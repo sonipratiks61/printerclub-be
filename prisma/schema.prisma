@@ -48,25 +48,6 @@ model Address {
   updatedAt DateTime        @updatedAt
 }
 
-// model Role {
-//   id                       Int                        @id @default(autoincrement())
-//   capabilityId             Int
-//   capabilities             Capability                 @relation(fields: [capabilityId], references: [id])
-//   name                     String                     @unique
-//   roleAndCapabilityMapping RoleAndCapabilityMapping[]
-//   users                    User[]
-//   createdAt                DateTime                   @default(now())
-//   updatedAt                DateTime                   @updatedAt
-// }
-
-// model Capability {
-//   id                       Int                        @id @default(autoincrement())
-//   name                     String                     
-//   roleAndCapabilityMapping RoleAndCapabilityMapping[]
-//   role                     Role[]
-//   createdAt                DateTime                   @default(now())
-//   updatedAt                DateTime                   @updatedAt
-// }
 model Role {
   id            Int                        @id @default(autoincrement())
   name          String                     @unique
@@ -250,60 +231,6 @@ model OrderHistory {
   order     Order    @relation(fields: [orderId], references: [id])
 }
 
-model OrderCustomer {
-  id                Int      @id @default(autoincrement())
-  name              String
-  email             String?
-  additionalDetails String?  @db.Text
-  mobileNumber      String
-  addressId         Int
-  orders            Order[]
-  address           Address? @relation(fields: [addressId], references: [id])
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-}
-
-model OrderItem {
-  id                Int      @id @default(autoincrement())
-  name              String
-  price             String
-  quantity          Int
-  productId         Int
-  additionalDetails String   @db.Text
-  product           Product  @relation(fields: [productId], references: [id])
-  attributes        Json?
-  ownerName         String
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  order             Order[]
-}
-
-model OrderHistory {
-  id        Int      @id @default(autoincrement())
-  status    String
-  ownerName String
-  timestamp DateTime @default(now())
-  order     Order[]
-}
-
-model Order {
-  id               Int           @id @default(autoincrement())
-  orderHistoryId   Int
-  orderItemId      Int
-  orderItem        OrderItem     @relation(fields: [orderItemId], references: [id])
-  orderHistory     OrderHistory  @relation(fields: [orderHistoryId], references: [id])
-  orderCustomer    OrderCustomer @relation(fields: [orderCustomerId], references: [id])
-  orderCustomerId  Int
-  advancePayment   Decimal
-  remainingPayment Decimal
-  totalPayment     Decimal
-  invoiceVarient   String
-  GST              String
-  discount         Int
-  ownerName        String
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
-}
 
 enum CategoryType {
   service
