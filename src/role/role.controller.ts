@@ -21,6 +21,7 @@ export class RoleController {
       const data = await this.roleService.findAll();
       this.responseService.sendSuccess(res, 'Fetch Successfully!', data);
     } catch (error) {
+      console.log(error);
       this.responseService.sendInternalError(
         res,
         'Something Went Wrong',
@@ -84,14 +85,19 @@ export class RoleController {
         this.responseService.sendBadRequest(res,'Failed to  Role Fetch')
       }
     } catch (error) {
-      this.responseService.sendInternalError(
-        res,
-        'Something Went Wrong',
-      );
-
+      console.log(error);
+      if (error instanceof NotFoundException) {
+        this.responseService.sendNotFound(res, error.message);
+      }
+      else {
+        this.responseService.sendInternalError(
+          res,
+          error.message || 'Something Went Wrong',
+          error,
+        );
+      }
     }
   }
-
 
   @Delete(':id')
   @UseGuards(AuthGuard('jwt'))
