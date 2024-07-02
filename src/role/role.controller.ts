@@ -59,7 +59,7 @@ export class RoleController {
       else {
         this.responseService.sendInternalError(
           res,
-          'Something Went Wrong',
+          error.message || 'Something Went Wrong',
           error,
         );
       }
@@ -78,26 +78,17 @@ export class RoleController {
           "Invalid Role Id ",
         );
       }
-      if(role){
-      this.responseService.sendSuccess(res, 'Role Fetch Successfully', role);
-      }
-      else{
-        this.responseService.sendBadRequest(res,'Failed to  Role Fetch')
-      }
+      this.responseService.sendSuccess(res, 'Fetch Successfully', role);
     } catch (error) {
       console.log(error);
-      if (error instanceof NotFoundException) {
-        this.responseService.sendNotFound(res, error.message);
-      }
-      else {
-        this.responseService.sendInternalError(
-          res,
-          error.message || 'Something Went Wrong',
-          error,
-        );
-      }
+      this.responseService.sendInternalError(
+        res,
+        error.message || 'Something Went Wrong',
+      );
+      return;
     }
   }
+
 
   @Delete(':id')
   @UseGuards(AuthGuard('jwt'))
@@ -111,27 +102,18 @@ export class RoleController {
           'Invalid Role Id',
         );
       }
-      const data=await this.roleService.delete(roleId);
-      if(data){
+      await this.roleService.delete(roleId);
       this.responseService.sendSuccess(res, 'Role Deleted Successfully');
-      }
-      else{
-        this.responseService.sendBadRequest(res,"Failed to Role Delete")
-      }
     } catch (error) {
-      console.log(error);
-      if (error instanceof NotFoundException) {
-        this.responseService.sendNotFound(res, error.message);
-      }
-      else {
-        this.responseService.sendInternalError(
-          res,
-          error.message || 'Something Went Wrong',
-          error,
-        );
-      }
+      console.error(error);
+
+      this.responseService.sendInternalError(
+        res,
+        'Something Went Wrong',
+      );
     }
   }
+
 
 
 }
