@@ -20,7 +20,7 @@ export class CategoryService {
 
         if (!parentCategory) {
           throw new NotFoundException(
-            `Category with ID ${createCategoryDto.parentId} not found`,
+            'Invaild Category Id',
           );
         }
   
@@ -123,7 +123,7 @@ export class CategoryService {
 
       if (!parentCategory) {
         throw new NotFoundException(
-          `Parent category with ID ${updateCategoryDto.parentId} not found`,
+          'Invalid Category Id',
         );
       }
 
