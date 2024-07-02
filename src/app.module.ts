@@ -101,7 +101,6 @@ import { CapabilityService } from './capabilities/capability.service';
     CustomerDetailsService,
     OrderHistoryService,
     OrderStatusService,
-    CapabilityService
   ],
 })
 export class AppModule {
