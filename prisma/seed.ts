@@ -60,24 +60,41 @@ async function main() {
   });
 
 
-const capability1 = await prisma.capability.create({
-    data: {
+  const capability1 = await prisma.capability.upsert({
+    where: { name: 'Read' },
+    create: {
       name: 'Read',
+      createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    update: {
+      createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
     },
   });
-
-  const capability2 = await prisma.capability.create({
-    data: {
+  
+  const capability2 = await prisma.capability.upsert({
+    where: { name: 'Write' },
+    create: {
       name: 'Write',
+      createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    update: {
+      createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
     },
   });
 
 
   await prisma.roleAndCapabilityMapping.createMany({
     data: [
-      { roleId: role1.id, capabilityId: capability1.id },
-      { roleId: role1.id, capabilityId: capability2.id },
-      { roleId: role2.id, capabilityId: capability1.id },
+      { roleId: role1.id, capabilityId: capability1.id,createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),},
+      { roleId: role1.id, capabilityId: capability2.id,createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),},
+      { roleId: role2.id, capabilityId: capability1.id,createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'), },
     ],
   });
   const userData = {
@@ -94,7 +111,6 @@ const capability1 = await prisma.capability.create({
     updatedAt: new Date('2023-07-09'),
   };
 
-  // Hash the password
   const hashedPassword1 = await bcrypt.hash(userData.password, 8);
   userData.password = hashedPassword1;
 
