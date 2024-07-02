@@ -42,29 +42,54 @@ model Address {
   city      String
   pinCode   String
   address   String?
-  user      User            @relation(fields: [userId], references: [id])
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
+// model Role {
+//   id                       Int                        @id @default(autoincrement())
+//   capabilityId             Int
+//   capabilities             Capability                 @relation(fields: [capabilityId], references: [id])
+//   name                     String                     @unique
+//   roleAndCapabilityMapping RoleAndCapabilityMapping[]
+//   users                    User[]
+//   createdAt                DateTime                   @default(now())
+//   updatedAt                DateTime                   @updatedAt
+// }
+
+// model Capability {
+//   id                       Int                        @id @default(autoincrement())
+//   name                     String                     
+//   roleAndCapabilityMapping RoleAndCapabilityMapping[]
+//   role                     Role[]
+//   createdAt                DateTime                   @default(now())
+//   updatedAt                DateTime                   @updatedAt
+// }
 model Role {
-  id                       Int                        @id @default(autoincrement())
-  capabilities             Capability[] // Linked to capabilities
-  name                     String                     @unique
-  roleAndCapabilityMapping RoleAndCapabilityMapping[]
-  users                    User[]
-  createdAt                DateTime                   @default(now())
-  updatedAt                DateTime                   @updatedAt
+  id            Int                        @id @default(autoincrement())
+  name          String                     @unique
+  capabilityIds RoleAndCapabilityMapping[]
+  users         User[]
+  createdAt     DateTime                   @default(now())
+  updatedAt     DateTime                   @updatedAt
 }
 
 model Capability {
   id                       Int                        @id @default(autoincrement())
   name                     String                     @unique
   roleAndCapabilityMapping RoleAndCapabilityMapping[]
-  roleId                   Int
-  role                     Role                       @relation(fields: [roleId], references: [id]) // Explicit relation to Role
   createdAt                DateTime                   @default(now())
   updatedAt                DateTime                   @updatedAt
+}
+
+model RoleAndCapabilityMapping {
+  roleId       Int
+  capabilityId Int
+  role         Role       @relation(fields: [roleId], references: [id])
+  capability   Capability @relation(fields: [capabilityId], references: [id])
+
+  @@id([roleId, capabilityId])
 }
 
 model GeoLocation {
@@ -87,16 +112,16 @@ model Attachment {
   @@map("attachments") // Optional: maps the model to a table named "attachments"
 }
 
-model RoleAndCapabilityMapping {
-  capabilityId Int
-  roleId       Int
-  capability   Capability @relation(fields: [capabilityId], references: [id])
-  role         Role       @relation(fields: [roleId], references: [id])
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+// model RoleAndCapabilityMapping {
+//   capabilityId Int
+//   roleId       Int
+//   capability   Capability @relation(fields: [capabilityId], references: [id])
+//   role         Role       @relation(fields: [roleId], references: [id])
+//   createdAt    DateTime   @default(now())
+//   updatedAt    DateTime   @updatedAt
 
-  @@id([capabilityId, roleId])
-}
+//   @@id([capabilityId, roleId])
+// }
 
 model Category {
   id                     Int                     @id @default(autoincrement())
@@ -127,9 +152,9 @@ model Product {
   updatedAt             DateTime                @updatedAt
   User                  User                    @relation(fields: [userId], references: [id])
   userId                Int
-  isFitmentRequired     Boolean?
-  isMeasurementRequired Boolean?
-  ProductAttribute      ProductAttribute[]
+  isFitmentRequired     Boolean?                @default(false)
+  isMeasurementRequired Boolean?                @default(false)
+  attributes            ProductAttribute[]
   orderItems            OrderItem[]
 }
 
@@ -168,7 +193,6 @@ model AttachmentAssociation {
   updatedAt    DateTime   @updatedAt
 }
 
-
 model OrderStatus {
   id             Int           @id @default(autoincrement())
   status         String
@@ -185,7 +209,7 @@ model OrderCustomer {
   name              String
   email             String?
   additionalDetails String?
-  mobileNumber      String  
+  mobileNumber      String
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   orderId           Int

@@ -1,28 +1,159 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateRoleDto } from './dto/create-role.dto';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class RoleService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
-  async createRole(createRoleDto: CreateRoleDto) {
-    const data = this.prisma.role.create({
-      data: {
-        name: createRoleDto.name,
-        capabilities: {
-          create: createRoleDto.capabilities,
-        },
-      },
-    });
-    return data;
+  async findByName(name: string) {
+    const roleName = await this.prisma.role.findUnique({
+      where: {
+        name: name
+      }
+    })
+    return roleName;
   }
 
-  async findAll() {
-    return await this.prisma.role.findMany({
-      include: {
-        capabilities: true,
+  async create(createRoleDto: CreateRoleDto) {
+    const capabilityIds = createRoleDto.capabilityIds;
+    const existingCapabilities = await this.prisma.capability.findMany({
+      where: {
+        id: { in: capabilityIds },
       },
     });
+    if (existingCapabilities?.length !== capabilityIds?.length) {
+      console.log(existingCapabilities?.length !== capabilityIds?.length)
+      throw new NotFoundException("One or more capability IDs are invalid");
+    }
+
+    const role = await this.prisma.role.create({
+      data: {
+        name: createRoleDto.name,
+        capabilityIds: {
+          create: createRoleDto.capabilityIds.map((capabilityId) => ({
+            capability: {
+              connect: { id: capabilityId },
+            },
+          })),
+        },
+      },
+
+    });
+    console.log(role)
+    return role;
+  }
+  //   async create(createRoleDto: CreateRoleDto) {
+  //     const capabilityIds = createRoleDto.capabilityIds;
+  //     const existingCapabilities = await this.prisma.capability.findMany({
+  //       where: {
+  //         id: { in: capabilityIds },
+  //       },
+  //     });
+  // console.log(existingCapabilities ,existingCapabilities .length)
+  //     if (existingCapabilities?.length !== capabilityIds?.length) {
+  //       console.log(existingCapabilities?.length !== capabilityIds?.length)
+  //       throw new NotFoundException("One or more capability IDs are invalid");
+  //     }
+
+  //     const role = await this.prisma.role.create({
+  //       data: {
+  //         name: createRoleDto.name,
+  //         capabilities: {
+  //           create: capabilityIds?.map((capabilityId) => ({
+  //             capability: {
+  //               connect: { id: capabilityId },
+  //             },
+  //           })),
+  //         },
+  //       },
+  //       include: {
+  //         capabilities: {
+  //           include: {
+  //             capability: true,
+  //           },
+  //         },
+  //       },
+  //     });
+
+  //     return role;
+  //   }
+
+  async findAll() {
+    const role = await this.prisma.role.findMany(
+      {
+        include: {
+          capabilityIds: {
+            select: {
+              capability: {
+                select: {
+                  id: true,
+                  name: true,
+                }
+              }
+            }
+          }
+        }
+      }
+    );
+    const formattedRoles = role.map((role) => {
+      return {
+        name: role.name,
+        capabilities: role.capabilityIds.map((capability) => {
+          return {
+            id: capability.capability.id,
+            name: capability.capability.name,
+          };
+        }),
+      };
+    });
+
+    return formattedRoles;
+  }
+
+  async findOne(id: number) {
+    const role = await this.prisma.role.findUnique({
+      where: {
+        id: id
+      },
+      include: {
+        capabilityIds: {
+          select: {
+            capability: {
+              select: {
+                id: true,
+                name: true,
+              }
+            }
+          }
+        }
+      }
+    }
+    );
+
+    return role;
+  }
+
+  async delete(id: number) {
+    const role = await this.prisma.role.delete({
+      where: {
+        id: id
+      },
+      include: {
+        capabilityIds: {
+          select: {
+            capability: {
+              select: {
+                id: true,
+                name: true,
+              }
+            }
+          }
+        }
+      }
+    }
+    );
+    return role;
   }
 }
