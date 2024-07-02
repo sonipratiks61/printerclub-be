@@ -119,13 +119,19 @@ export class RoleController {
         this.responseService.sendBadRequest(res,"Failed to Role Delete")
       }
     } catch (error) {
-      this.responseService.sendInternalError(
-        res,
-        'Something Went Wrong',
-      );
+      console.log(error);
+      if (error instanceof NotFoundException) {
+        this.responseService.sendNotFound(res, error.message);
+      }
+      else {
+        this.responseService.sendInternalError(
+          res,
+          error.message || 'Something Went Wrong',
+          error,
+        );
+      }
     }
   }
-
 
 
 }
