@@ -55,14 +55,15 @@ export class CategoryService {
   }
 
   async findAll(includeSubCategory:boolean) {
-    return this.prisma.category.findMany({
-      where:{
-        parentId: null
-      },
-      include:{
-        subCategories: includeSubCategory ? true : undefined,
-      },
-    });
+    if(includeSubCategory===true){
+    return this.prisma.category.findMany();
+  }
+  else{
+    return this.prisma.category.findMany(
+    {  where:{
+        parent:null
+      }});
+  }
   }
 
   async update(id: number, updateCategoryDto: UpdateCategoryDto) {
