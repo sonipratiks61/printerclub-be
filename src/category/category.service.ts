@@ -20,7 +20,7 @@ export class CategoryService {
 
         if (!parentCategory) {
           throw new NotFoundException(
-            "Invalid CategoryId"
+            'Invaild Category Id',
           );
         }
   
@@ -39,17 +39,7 @@ export class CategoryService {
           userId: userId,
         },
       });
-      const data = {
-        id: newCategory.id,
-        name: newCategory.name,
-        description: newCategory.description,
-        type: newCategory.type,
-        parentId: newCategory.parentId,
-        userId: newCategory.userId,
-        createdAt: newCategory.createdAt,
-        updatedAt: newCategory.updatedAt,
-      }
-      return { data, message };
+      return { newCategory, message };
     } catch (error) {
       console.error('Error creating category:', error);
       throw error; 
