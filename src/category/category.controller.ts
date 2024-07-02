@@ -58,7 +58,7 @@ export class CategoryController {
       const categories = await this.categoryService.findAll(includeSubCategory);
       this.responseService.sendSuccess(
         res,
-        'Categories Fetched Successfully',
+        'Fetched Successfully',
         categories,
       );
     } catch (error) {
