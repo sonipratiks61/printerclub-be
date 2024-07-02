@@ -10,6 +10,7 @@ import {
   Delete,
   Param,
   NotFoundException,
+  Query,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/category.dto';
@@ -43,7 +44,7 @@ export class CategoryController {
       } else {
         this.responseService.sendInternalError(
           res,
-          error.message|| 'Something Went Wrong',
+          error.message || 'Something Went Wrong',
         );
       }
     }
@@ -52,12 +53,12 @@ export class CategoryController {
 
   @Get()
   @UseGuards(AuthGuard('jwt')) // Ensures only authenticated users can access this route
-  async fetchAll(@Res() res) {
+  async fetchAll(@Res() res, @Query('includeSubCategory') includeSubCategory: boolean) {
     try {
-      const categories = await this.categoryService.findAll();
+      const categories = await this.categoryService.findAll(includeSubCategory);
       this.responseService.sendSuccess(
         res,
-        'Categories Fetched Successfully',
+        'Fetched Successfully',
         categories,
       );
     } catch (error) {
@@ -77,19 +78,19 @@ export class CategoryController {
       if (!category) {
         this.responseService.sendNotFound(
           res,
-          "CategoryId Invalid",
+          "Invalid CategoryId",
         );
       }
       this.responseService.sendSuccess(res, 'Fetch Successfully', category);
     } catch (error) {
       console.log(error);
-        this.responseService.sendInternalError(
-          res,
-          error.message || 'Something Went Wrong',
-        );
-        return;
-      }
+      this.responseService.sendInternalError(
+        res,
+        error.message || 'Something Went Wrong',
+      );
+      return;
     }
+  }
 
   @Put(':id')
   @UseGuards(AuthGuard('jwt'))
@@ -104,7 +105,7 @@ export class CategoryController {
       if (!category) {
         this.responseService.sendNotFound(
           res,
-          `Category with ID ${id} not found`,
+          "Invalid CategoryId",
         );
       }
       const updatedCategory = await this.categoryService.update(
@@ -118,12 +119,12 @@ export class CategoryController {
       );
     } catch (error) {
       console.log(error);
-        this.responseService.sendInternalError(
-          res,
-          error.message || 'Something Went Wrong',
-        
-        );
-      
+      this.responseService.sendInternalError(
+        res,
+        error.message || 'Something Went Wrong',
+
+      );
+
     }
   }
 
@@ -136,19 +137,19 @@ export class CategoryController {
       if (!category) {
         this.responseService.sendNotFound(
           res,
-          `Category with ID ${id} not found`,
+          "Invalid CategoryId ",
         );
       }
       await this.categoryService.remove(categoryId);
       this.responseService.sendSuccess(res, 'Category Deleted Successfully');
     } catch (error) {
       console.error(error);
-     
-        this.responseService.sendInternalError(
-          res,
-          'Something Went Wrong',
-        );
-      }
+
+      this.responseService.sendInternalError(
+        res,
+        'Something Went Wrong',
+      );
     }
   }
+}
 
