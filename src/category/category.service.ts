@@ -54,7 +54,6 @@ export class CategoryService {
     });
   }
 
-
   async findAll(includeSubCategory: boolean) {
     if (includeSubCategory) {
       const data = await this.prisma.category.findMany({
