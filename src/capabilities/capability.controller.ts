@@ -13,10 +13,10 @@ import {
   } from '@nestjs/common';
   import { AuthGuard } from '@nestjs/passport';
 import { CapabilityService } from './capability.service';
-import { CreateCapabilityDto } from './dto/capability.dto';
 import { UpdateCategoryDto } from 'src/category/dto/update.category.dto';
 import { IdValidationPipe } from 'utils/validation/paramsValidation';
 import { ResponseService } from 'utils/response/customResponse';
+import { CreateCapabilityDto } from './dto/capabilities.dto';
   @Controller('capability')
   export class CapabilityController  {
     constructor(
@@ -25,11 +25,10 @@ import { ResponseService } from 'utils/response/customResponse';
     ) {}
   
     @Post()
-    @UseGuards(AuthGuard('jwt'))
     async create(@Body() createCapabilitiesDto: CreateCapabilityDto,@Res() res) {
       try {
         await this.capabilityService.create(createCapabilitiesDto);
-        this.responseService.sendSuccess(res, "Created Successfully");
+        this.responseService.sendSuccess(res, "Capability Created Successfully");
       } catch (error) {
         console.error(error);
        
@@ -69,7 +68,7 @@ import { ResponseService } from 'utils/response/customResponse';
       if (!capability) {
         this.responseService.sendNotFound(
           res,
-          "capabilityId Invalid",
+          "Invalid Capability Id",
         );
       }
       this.responseService.sendSuccess(res, 'Fetch Successfully', capability);
@@ -96,7 +95,7 @@ import { ResponseService } from 'utils/response/customResponse';
       if (!capability) {
         this.responseService.sendNotFound(
           res,
-          'Invalid CapabilityId',
+          'Invalid Capability Id',
         );
       }
       const updatedCategory = await this.capabilityService.update(
@@ -128,7 +127,7 @@ import { ResponseService } from 'utils/response/customResponse';
       if (!capability) {
         this.responseService.sendNotFound(
           res,
-          'Invalid capabilityId',
+          'Invalid Capability Id',
         );
       }
       await this.capabilityService.delete(capabilityId);
