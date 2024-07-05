@@ -57,5 +57,4 @@ export class UpdateCustomerDetailsDto {
     @IsNotEmpty({ message: ' AdditionalDetails must not be empty' })
     @IsString({ message: 'AdditionalDetails must be a String' })
     additionalDetails: string
-
 }
