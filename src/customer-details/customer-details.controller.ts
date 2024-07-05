@@ -97,7 +97,6 @@ export class CustomerDetailsController {
     @Delete(':id')
     @UseGuards(AuthGuard('jwt'))
     async remove(@Param('id', IdValidationPipe) id: string, @Res() res) {
-
         try {
             const customerDetailsId = parseInt(id, 10);
             const customerDetails = await this.customerDetailsService.findOne(customerDetailsId);
