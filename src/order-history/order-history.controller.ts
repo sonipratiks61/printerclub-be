@@ -60,24 +60,6 @@ export class OrderHistoryController  {
         }
     }
 
-    // @Get()
-    // @UseGuards(AuthGuard('jwt')) // Ensures only authenticated users can access this route
-    // async fetchAll(@Res() res) {
-    //     try {
-    //         const data= await this.orderHistoryService.findAll();
-    //         this.responseService.sendSuccess(
-    //             res,
-    //             'OrderHistory Fetched Successfully',
-    //             data,
-    //         );
-    //     } catch (error) {
-    //         this.responseService.sendInternalError(
-    //             res,
-    //             error.message || 'Something Went Wrong'
-    //         );
-    //     }
-    // }
-
     @Get(':id')
     @UseGuards(AuthGuard('jwt'))
     async findOne(@Param('id', IdValidationPipe) id: string, @Res() res) {

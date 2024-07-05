@@ -1,4 +1,4 @@
-import { BadRequestException, Body, ConflictException, Controller, Delete, Get, NotFoundException, Param, Post, Put, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Res, UseGuards } from '@nestjs/common';
 import { CustomerDetailsService } from './customer-details.service';
 import { CreateCustomerDetailsDto,UpdateCustomerDetailsDto } from './dto/customer-details.dto';
 import { ResponseService } from 'utils/response/customResponse';
@@ -10,10 +10,7 @@ import { UpdateCategoryDto } from 'src/category/dto/update.category.dto';
 export class CustomerDetailsController {
     constructor(private customerDetailsService: CustomerDetailsService,
         private responseService: ResponseService) { }
-
-    @Post()
-    @UseGuards(AuthGuard('jwt'))
-   
+ 
     @Get()
     @UseGuards(AuthGuard('jwt')) // Ensures only authenticated users can access this route
     async fetchAll(@Res() res) {
