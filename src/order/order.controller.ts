@@ -4,7 +4,6 @@ import { AuthGuard } from '@nestjs/passport';
 import { IdValidationPipe } from 'utils/validation/paramsValidation';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { CreateCustomerDetailsDto } from 'src/customer-details/dto/customer-details.dto';
 
 @Controller('order')
 export class OrderController  {

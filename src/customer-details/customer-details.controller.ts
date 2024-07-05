@@ -11,9 +11,7 @@ export class CustomerDetailsController {
     constructor(private customerDetailsService: CustomerDetailsService,
         private responseService: ResponseService) { }
 
-    @Post()
-    @UseGuards(AuthGuard('jwt'))
-   
+
     @Get()
     @UseGuards(AuthGuard('jwt')) // Ensures only authenticated users can access this route
     async fetchAll(@Res() res) {
