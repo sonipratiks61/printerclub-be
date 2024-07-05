@@ -35,16 +35,17 @@ model User {
 }
 
 model Address {
-  id        Int      @id @default(autoincrement())
+  id        Int             @id @default(autoincrement())
   userId    Int
   country   String
   state     String
   city      String
   pinCode   String
   address   String?
-  user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  user      User            @relation(fields: [userId], references: [id])
+  customer  OrderCustomer[]
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
 }
 
 model Role {
@@ -127,9 +128,10 @@ model Product {
   updatedAt             DateTime                @updatedAt
   User                  User                    @relation(fields: [userId], references: [id])
   userId                Int
-  isFitmentRequired     Boolean
-  isMeasurementRequired Boolean
+  isFitmentRequired     Boolean?
+  isMeasurementRequired Boolean?
   ProductAttribute      ProductAttribute[]
+  orderItems            OrderItem[]
 }
 
 model ProductAttribute {
@@ -174,6 +176,61 @@ model OrderStatus {
   dependOn    Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model OrderCustomer {
+  id                Int      @id @default(autoincrement())
+  name              String
+  email             String?
+  additionalDetails String?  @db.Text
+  mobileNumber      String
+  addressId         Int
+  orders            Order[]
+  address           Address? @relation(fields: [addressId], references: [id])
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model OrderItem {
+  id                Int      @id @default(autoincrement())
+  name              String
+  price             String
+  quantity          Int
+  productId         Int
+  additionalDetails String   @db.Text
+  product           Product  @relation(fields: [productId], references: [id])
+  attributes        Json?
+  ownerName         String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  order             Order[]
+}
+
+model OrderHistory {
+  id        Int      @id @default(autoincrement())
+  status    String
+  ownerName String
+  timestamp DateTime @default(now())
+  order     Order[]
+}
+
+model Order {
+  id               Int           @id @default(autoincrement())
+  orderHistoryId   Int
+  orderItemId      Int
+  orderItem        OrderItem     @relation(fields: [orderItemId], references: [id])
+  orderHistory     OrderHistory  @relation(fields: [orderHistoryId], references: [id])
+  orderCustomer    OrderCustomer @relation(fields: [orderCustomerId], references: [id])
+  orderCustomerId  Int
+  advancePayment   Decimal
+  remainingPayment Decimal
+  totalPayment     Decimal
+  invoiceVarient   String
+  GST              String
+  discount         Int
+  ownerName        String
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
 }
 
 enum CategoryType {

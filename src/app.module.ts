@@ -34,6 +34,14 @@ import { ProductAttributesController } from './product-attributes/product-attrib
 import { SubCategoryController } from './sub-category/sub-category.controller';
 import { SubCategoryService } from './sub-category/sub-category.service';
 import { ConfigModule } from '@nestjs/config';
+import { OrderService } from './order/order.service';
+import { OrderController } from './order/order.controller';
+import { OrderHistoryController } from './order-history/order-history.controller';
+import { OrderHistoryService } from './order-history/order-history.service';
+import { OrderItemsService } from './order-items/order-items.service';
+import { OrderItemsController } from './order-items/order-items.controller';
+import { CustomerDetailsService } from './customer-details/customer-details.service';
+import { CustomerDetailsController } from './customer-details/customer-details.controller';
 @Module({
   imports: [
     JwtModule.register({}),
@@ -56,6 +64,10 @@ import { ConfigModule } from '@nestjs/config';
     AttributeController,
     ProductAttributesController,
     SubCategoryController,
+    OrderController,
+    OrderHistoryController,
+    CustomerDetailsController,
+    OrderItemsController
 
   ],
   providers: [
@@ -77,6 +89,10 @@ import { ConfigModule } from '@nestjs/config';
     AttributeService,
     ProductAttributesService,
     SubCategoryService,
+    OrderService,
+    OrderItemsService,
+    CustomerDetailsService,
+    OrderHistoryService,
   ],
 })
 export class AppModule {
