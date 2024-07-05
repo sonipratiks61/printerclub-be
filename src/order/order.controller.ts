@@ -13,7 +13,7 @@ export class OrderController {
     @Post()
     @UseGuards(AuthGuard('jwt'))
     async create(
-        @Body() createOrderDto: CreateOrderDto,  
+        @Body() createOrderDto: CreateOrderDto,
         @Res() res,
         @Req() req
     ) {
@@ -50,7 +50,7 @@ export class OrderController {
         } catch (error) {
             this.responseService.sendInternalError(
                 res,
-                'Something Went Wrong'
+                error.message || 'Something Went Wrong'
             );
         }
     }
