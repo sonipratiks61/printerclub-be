@@ -9,32 +9,33 @@ export class CustomerDetailsService {
         private addressService:AddressService,  ) { }
     async create(createCustomerDetailsDto: CreateCustomerDetailsDto) {
 
-        const addressId = await this.addressService.findOne(createCustomerDetailsDto.addressId)
-        if(!addressId)
-        {
-            throw new NotFoundException("Invalid Address Id")
-        }
+        // const addressId = await this.addressService.findOne(createCustomerDetailsDto.addressId)
+        // if(!addressId)
+        // {
+        //     throw new NotFoundException("Invalid Address Id")
+        // }
         const customer = await this.prisma.orderCustomer.create({
             data: {
                 name: createCustomerDetailsDto.name,
                 email: createCustomerDetailsDto.email,
                 mobileNumber: createCustomerDetailsDto.mobileNumber,
-                addressId: createCustomerDetailsDto.addressId,
+                // addressId: createCustomerDetailsDto.addressId,
                 additionalDetails:createCustomerDetailsDto. additionalDetails,
          
             },
-            include: {
-                address: true
-            }
+            // include: {
+            //     address: true
+            // }
         });
 
         const formattedOutput = {
             name: customer.name,
             email: customer.email,
             mobileNumber: customer.mobileNumber,
-            address: customer.address.address,
-            city: customer.address.city,
-            state: customer.address.state
+            additionalDetails:customer.additionalDetails
+            // address: customer.address.address,
+            // city: customer.address.city,
+            // state: customer.address.state
         };
         return formattedOutput;
     }
@@ -52,30 +53,30 @@ export class CustomerDetailsService {
 
     async findAll() {
         const customers = await this.prisma.orderCustomer.findMany(
-            {
-                include:{
-                    address:true
-                }
-            }
+            // {
+            //     include:{
+            //         address:true
+            //     }
+            // }
         )
         const formattedOutput = customers.map(customer => ({
             name: customer.name,
             email: customer.email,
             mobileNumber: customer.mobileNumber,
-            address: customer.address.address,
-            city: customer.address.city,
-            state: customer.address.state
+            // address: customer.address.address,
+            // city: customer.address.city,
+            // state: customer.address.state
         }));
     
         return formattedOutput;
     }
 
     async update(id: number, updateCustomerDetailsDto: UpdateCustomerDetailsDto) {
-        const addressId = await this.addressService.findOne(updateCustomerDetailsDto.addressId)
-        if(!addressId)
-        {
-            throw new NotFoundException("Invalid Address Id")
-        }
+        // const addressId = await this.addressService.findOne(updateCustomerDetailsDto.addressId)
+        // if(!addressId)
+        // {
+        //     throw new NotFoundException("Invalid Address Id")
+        // }
         const customer = await this.prisma.orderCustomer.update({
             where: {
                 id: id
@@ -85,7 +86,7 @@ export class CustomerDetailsService {
                 email: updateCustomerDetailsDto.email,
                 mobileNumber: updateCustomerDetailsDto.mobileNumber,
                 additionalDetails:updateCustomerDetailsDto.additionalDetails,
-                addressId:updateCustomerDetailsDto.addressId
+                // addressId:updateCustomerDetailsDto.addressId
             }
         })
         return customer

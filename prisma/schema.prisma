@@ -43,7 +43,6 @@ model Address {
   pinCode   String
   address   String?
   user      User            @relation(fields: [userId], references: [id])
-  customer  OrderCustomer[]
   createdAt DateTime        @default(now())
   updatedAt DateTime        @updatedAt
 }
@@ -182,11 +181,11 @@ model OrderCustomer {
   id                Int      @id @default(autoincrement())
   name              String
   email             String?
-  additionalDetails String?  @db.Text
+  additionalDetails String?  
   mobileNumber      String
-  addressId         Int
+  // addressId         Int?
   orders            Order[]
-  address           Address? @relation(fields: [addressId], references: [id])
+  // address           Address? @relation(fields: [addressId], references: [id])
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 }
