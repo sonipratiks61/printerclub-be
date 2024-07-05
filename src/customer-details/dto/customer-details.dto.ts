@@ -23,9 +23,9 @@ export class CreateCustomerDetailsDto {
     @IsTenDigitNumber({ message: 'Mobile number must be a 10-digit number' })
     mobileNumber: string;
 
-    @IsNotEmpty({ message: 'Address must not be empty' })
-    @IsInt({ message: 'Address must be a Integer' })
-    addressId: number
+    // @IsNotEmpty({ message: 'Address must not be empty' })
+    // @IsInt({ message: 'Address must be a Integer' })
+    // addressId: number
 
     @IsNotEmpty({ message: ' AdditionalDetails must not be empty' })
     @IsString({ message: 'AdditionalDetails must be a String' })
