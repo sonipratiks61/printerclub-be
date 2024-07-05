@@ -15,11 +15,11 @@ export class CustomerDetailsController {
     @UseGuards(AuthGuard('jwt')) // Ensures only authenticated users can access this route
     async fetchAll(@Res() res) {
         try {
-            const customerDetails = await this.customerDetailsService.findAll();
+            const categories = await this.customerDetailsService.findAll();
             this.responseService.sendSuccess(
                 res,
                 'CustomerDetails Fetched Successfully',
-                customerDetails,
+                categories,
             );
         } catch (error) {
             this.responseService.sendInternalError(
