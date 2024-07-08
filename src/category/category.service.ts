@@ -72,28 +72,29 @@ export class CategoryService {
               }
             }
           }
-        })
-      
-        const formatted = data.flatMap(category => [
-          {
-            id: category.id,
-            name: category.name,
-            parentId: category.parentId,
-            type: category.type,
-            description: category.description
-          },
-          ...category.subCategories.map(subCategory => ({
-            id: subCategory.id,
-            name: category.name,
-            subCategory: subCategory.name,
-            parentId: subCategory.parentId,
-            type: subCategory.type,
-            description: subCategory.description
-          }))
-        ])
-      
-        return formatted 
-      }
+        });
+    
+
+      const formatted = data.flatMap(category => [
+        {
+          id: category.id,
+          name: category.name,
+          parentId: category.parentId,
+          type: category.type,
+          description: category.description,
+        },
+        ...category.subCategories.map(subCategory => ({
+          id: subCategory.id,
+          name: subCategory.name,
+          parent: category.name,
+          parentId: subCategory.parentId,
+          type: subCategory.type,
+          description: subCategory.description,
+        }))
+      ])
+
+      return formatted
+    }
     else {
       return this.prisma.category.findMany(
         {
