@@ -23,9 +23,9 @@ export class CreateOrderItemsDto {
     @IsNotEmpty()
     productId: number;
 
-    @IsString()
+    @IsInt()
     @IsNotEmpty()
-    gst:string
+    gst:number;
 
     @IsOptional()
     @IsString()

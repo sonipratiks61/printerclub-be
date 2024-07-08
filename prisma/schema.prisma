@@ -168,13 +168,16 @@ model AttachmentAssociation {
   updatedAt    DateTime   @updatedAt
 }
 
+
 model OrderStatus {
-  id          Int      @id @default(autoincrement())
-  status      String
-  description String   @db.Text
-  dependOn    Int
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id             Int           @id @default(autoincrement())
+  status         String
+  description    String        @db.Text
+  dependOn       Int?
+  orderStatus    OrderStatus?  @relation("orderStatusTosubOrderStatus", fields: [dependOn], references: [id])
+  subOrderStatus OrderStatus[] @relation("orderStatusTosubOrderStatus")
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 }
 
 model OrderCustomer {
@@ -201,7 +204,7 @@ model OrderItem {
   product           Product  @relation(fields: [productId], references: [id])
   attributes        Json?
   ownerName         String
-  gst               String
+  gst               Int
   measurement       String?
   address           String?
   discount          Int
