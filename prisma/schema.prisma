@@ -35,7 +35,7 @@ model User {
 }
 
 model Address {
-  id        Int             @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   userId    Int
   country   String
   state     String
@@ -278,7 +278,9 @@ model OrderItem {
   product           Product  @relation(fields: [productId], references: [id])
   attributes        Json?
   ownerName         String
-  GSTNumber         String
+  gst               String
+  measurement       String?
+  address           String?
   discount          Int
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
@@ -306,8 +308,9 @@ model Order {
   totalPayment     Decimal
   invoiceVarient   String
   ownerName        String
-  createdAt        DateTime      @default(now())
-  updatedAt        DateTime      @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum CategoryType {
