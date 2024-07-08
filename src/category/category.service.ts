@@ -81,15 +81,15 @@ export class CategoryService {
           name: category.name,
           parentId: category.parentId,
           type: category.type,
-          description: category.description
+          description: category.description,
         },
         ...category.subCategories.map(subCategory => ({
           id: subCategory.id,
-          name: category.name,
-          subCategory: subCategory.name,
+          name: subCategory.name,
+          parent: category.name,
           parentId: subCategory.parentId,
           type: subCategory.type,
-          description: subCategory.description
+          description: subCategory.description,
         }))
       ])
 
