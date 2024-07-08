@@ -197,9 +197,12 @@ model OrderItem {
   quantity          Int
   productId         Int
   additionalDetails String   @db.Text
+  description       String   @db.Text
   product           Product  @relation(fields: [productId], references: [id])
   attributes        Json?
   ownerName         String
+  GSTNumber         String
+  discount          Int
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   order             Order[]
@@ -225,8 +228,6 @@ model Order {
   remainingPayment Decimal
   totalPayment     Decimal
   invoiceVarient   String
-  GST              String
-  discount         Int
   ownerName        String
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
@@ -236,3 +237,11 @@ enum CategoryType {
   service
   physical
 }
+
+// enum OrderStatusType {
+//   OrderConfirm
+//   Dispatched
+//   Received
+//   Delivered
+//   Cancelled
+// }
