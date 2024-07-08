@@ -25,7 +25,17 @@ export class CreateOrderItemsDto {
 
     @IsString()
     @IsNotEmpty()
-    GSTNumber:string
+    gst:string
+
+    @IsOptional()
+    @IsString()
+    @IsNotEmpty()
+    address:string
+
+    @IsOptional()
+    @IsString()
+    @IsNotEmpty()
+    measurement:string
 
     @IsString()
     @IsNotEmpty()

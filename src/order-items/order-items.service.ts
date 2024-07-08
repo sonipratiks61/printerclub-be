@@ -21,12 +21,14 @@ export class OrderItemsService {
                 additionalDetails,
                 productId,
                 attributes,
-                GSTNumber,
+                gst,
                 discount,
                 description,
+                measurement,
+                address,
             } = item;
-            
-           
+
+
             const product = await this.prisma.product.findUnique({
                 where: {
                     id: productId,
@@ -49,10 +51,12 @@ export class OrderItemsService {
                 price,
                 additionalDetails,
                 productId,
-                GSTNumber,
+                gst,
+                address,
+                measurement,
                 discount,
                 ownerName,
-description,
+                description,
                 attributes: {
                     create: mappedAttributes,
                 }
@@ -64,13 +68,14 @@ description,
 
         return createdOrderItems;
     }
-    
-  
+
+
     async findAll() {
         return await this.prisma.orderItem.findMany({
-        include:{
-        product:true
-        }})
+            include: {
+                product: true
+            }
+        })
     }
 
     async findOne(id: number) {
