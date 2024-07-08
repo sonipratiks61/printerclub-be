@@ -1,5 +1,5 @@
 // CreateOrderItemsDto.ts
-import { IsNotEmpty, IsNumber, IsString, ValidateNested, IsArray, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString, ValidateNested, IsArray, IsOptional, IsInt } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateOrderItemsDto {
@@ -22,6 +22,18 @@ export class CreateOrderItemsDto {
     @IsNumber({}, { each: true }) 
     @IsNotEmpty()
     productId: number;
+
+    @IsString()
+    @IsNotEmpty()
+    GSTNumber:string
+
+    @IsString()
+    @IsNotEmpty()
+    description: string;
+
+    @IsInt()
+    @IsNotEmpty()
+    discount:number
 
     @IsArray()
     @ValidateNested({ each: true })

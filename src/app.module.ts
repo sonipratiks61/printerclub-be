@@ -42,6 +42,8 @@ import { OrderItemsService } from './order-items/order-items.service';
 import { OrderItemsController } from './order-items/order-items.controller';
 import { CustomerDetailsService } from './customer-details/customer-details.service';
 import { CustomerDetailsController } from './customer-details/customer-details.controller';
+import { OrderStatusController } from './order-status/order-status.controller';
+import { OrderStatusService } from './order-status/order-status.service';
 @Module({
   imports: [
     JwtModule.register({}),
@@ -67,7 +69,8 @@ import { CustomerDetailsController } from './customer-details/customer-details.c
     OrderController,
     OrderHistoryController,
     CustomerDetailsController,
-    OrderItemsController
+    OrderItemsController,
+    OrderStatusController
 
   ],
   providers: [
@@ -93,6 +96,7 @@ import { CustomerDetailsController } from './customer-details/customer-details.c
     OrderItemsService,
     CustomerDetailsService,
     OrderHistoryService,
+    OrderStatusService,
   ],
 })
 export class AppModule {

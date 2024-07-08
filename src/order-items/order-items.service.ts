@@ -21,6 +21,9 @@ export class OrderItemsService {
                 additionalDetails,
                 productId,
                 attributes,
+                GSTNumber,
+                discount,
+                description,
             } = item;
             
            
@@ -46,7 +49,10 @@ export class OrderItemsService {
                 price,
                 additionalDetails,
                 productId,
+                GSTNumber,
+                discount,
                 ownerName,
+description,
                 attributes: {
                     create: mappedAttributes,
                 }
@@ -59,7 +65,7 @@ export class OrderItemsService {
         return createdOrderItems;
     }
     
-    
+  
     async findAll() {
         return await this.prisma.orderItem.findMany({
         include:{

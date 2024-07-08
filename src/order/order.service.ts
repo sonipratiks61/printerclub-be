@@ -42,9 +42,7 @@ export class OrderService {
                 advancePayment:createOrderDto.advancePayment,
                 remainingPayment:createOrderDto.remainingPayment,
                 totalPayment:createOrderDto.totalPayment,
-                GST:createOrderDto.GST,
                 ownerName:ownerName,
-                discount:createOrderDto.discount,
                 invoiceVarient:createOrderDto.invoiceVarient
             }
         });
@@ -109,8 +107,6 @@ export class OrderService {
                 advancePayment: createOrderDto.advancePayment,
                 remainingPayment: createOrderDto.remainingPayment,
                 totalPayment: createOrderDto.totalPayment,
-                GST: createOrderDto.GST,
-                discount:createOrderDto.discount,
                 invoiceVarient: createOrderDto.invoiceVarient
 
             }
