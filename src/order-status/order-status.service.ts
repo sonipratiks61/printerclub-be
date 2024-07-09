@@ -9,20 +9,26 @@ export class OrderStatusService {
         private prisma:PrismaService,
     ){}
    
-    
       async create(createOrderStatusDto: CreateOrderStatusDto) {
+    const dependOnId = createOrderStatusDto.dependOn
+    ? createOrderStatusDto.dependOn
+    : null;
         const orderStatus = await this.prisma.orderStatus.create({
           data: {
             status: createOrderStatusDto.status,
             description: createOrderStatusDto.description,
-            dependOn: createOrderStatusDto.dependOn
+            dependOn: dependOnId
           },
         });
         return orderStatus;
       }
 
   async findAll() {
-    const orderStatuses = await this.prisma.orderStatus.findMany();
+    const orderStatuses = await this.prisma.orderStatus.findMany({
+      include:{
+        subOrderStatus : true
+      }
+    });
     return orderStatuses;
   }
 
