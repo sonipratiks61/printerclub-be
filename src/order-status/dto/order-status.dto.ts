@@ -12,6 +12,7 @@ export class CreateOrderStatusDto {
     @IsNotEmpty()
     description: string;
 
+    @IsOptional()
     @IsInt()
     @IsNotEmpty()
     dependOn: number
