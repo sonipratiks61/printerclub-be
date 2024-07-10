@@ -1,115 +1,115 @@
-import { Injectable } from '@nestjs/common';
-import { NotFoundException } from '@nestjs/common';
-import { ProductService } from 'src/product/product.service';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { OrderItemsService } from 'src/order-items/order-items.service';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaClient } from '@prisma/client';
+
 import { CustomerDetailsService } from 'src/customer-details/customer-details.service';
-import { OrderHistoryService } from 'src/order-history/order-history.service';
+import { CreateOrderItemsDto } from 'src/order-items/dto/create-order-Item.dto';
+import { CreateOrderDto } from './dto/create-order.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { CreateCustomerDetailsDto } from 'src/customer-details/dto/customer-details.dto';
+import { ProductService } from 'src/product/product.service';
 
 @Injectable()
 export class OrderService {
-    constructor(
-        private prisma: PrismaService,
-        private orderItemService: OrderItemsService,
-        private orderHistoryService: OrderHistoryService,
-        private customerDetailsService: CustomerDetailsService) {
+  constructor(private prisma: PrismaService,
+    private productService: ProductService) { }
+
+  async create(createOrderDto: CreateOrderDto, ownerName: string) {
+    const { advancePayment, remainingPayment, totalPayment, paymentMode, orderItems, customerDetails } = createOrderDto;
+    const productIds = [...new Set(orderItems.map(item => item.productId))];
+
+    for (const productId of productIds) {
+      const product = await this.productService.findOne(productId);
+      if (!product) {
+        throw new NotFoundException("One of the Product does not exist");
+      }
     }
+    const createdOrder = await this.prisma.order.create({
+      data: {
+        advancePayment,
+        remainingPayment,
+        totalPayment,
+        paymentMode,
+        ownerName,
+        customerDetails: {
+          create: customerDetails
+        },
+        orderItems: {
+          createMany: {
+            data: orderItems.map((item: CreateOrderItemsDto) => ({
+              quantity: item.quantity,
+              name: item.name,
+              price: item.price,
+              additionalDetails: item.additionalDetails,
+              productId: item.productId,
+              gst: item.gst,
+              address: item.address,
+              measurement: item.measurement,
+              discount: item.discount,
+              ownerName,
+              description: item.description,
+              attributes: item.attributes.map(attr => ({
+                  name: attr.name,
+                  value: attr.value,
+                })),
+              
+            })),
+          },
+        },
+      },
+      include: {
+        orderItems: true,
+        customerDetails: true
 
-    async create(createOrderDto: CreateOrderDto,ownerName:string) {
-     
-        const orderCustomer = await this.customerDetailsService.findOne(createOrderDto.orderCustomerId);
+      },
+    });
+    return createdOrder;
 
-        if (!orderCustomer) {
-            throw new NotFoundException("Invalid OrderCustomer  Id");
-        }
+  }
 
-        const orderItem = await this.orderItemService.findOne(createOrderDto.orderItemId);
-        if (!orderItem) {
-            throw new NotFoundException("Invalid OrderItem  Id");
-        }
+  async findAll() {
+    return await this.prisma.order.findMany({
+      include: {
+        orderItems: true,
+        customerDetails: true,
+        orderHistory: true,
+      }
+    })
+  }
 
-        const orderHistory = await this.orderHistoryService.findOne(createOrderDto.orderHistoryId)
-        if (!orderHistory) {
-            throw new NotFoundException("Invalid OrderHistory Id");
-        }
+  async findOne(id: number) {
 
-        const data = await this.prisma.order.create({
-            data: {
-                orderHistoryId:createOrderDto.orderHistoryId,
-                orderItemId:createOrderDto.orderItemId,
-                orderCustomerId:createOrderDto.orderCustomerId,
-                advancePayment:createOrderDto.advancePayment,
-                remainingPayment:createOrderDto.remainingPayment,
-                totalPayment:createOrderDto.totalPayment,
-                ownerName:ownerName,
-                invoiceVarient:createOrderDto.invoiceVarient
-            }
-        });
+    return await this.prisma.order.findUnique({
+      where: {
+        id: id
+      },
+      include: {
+        customerDetails: true,
+        orderItems: true,
+        orderHistory: true,
+      }
+    })
+  }
+  async remove(id: number) {
+    return await this.prisma.order.delete({
+      where: {
+        id: id
+      }
+    })
+  }
+  async update(id: number, createOrderDto: CreateOrderDto) {
 
-        return data;
-    }
+
+    return await this.prisma.order.update({
+      where: {
+        id: id
+      },
+      data: {
+        advancePayment: createOrderDto.advancePayment,
+        remainingPayment: createOrderDto.remainingPayment,
+        totalPayment: createOrderDto.totalPayment,
 
 
-    async findAll() {
-        return await this.prisma.order.findMany({
-            include: {
-                orderCustomer: true,
-                orderHistory: true,
-                orderItem: true,
-            }
-        })
-    }
-
-    async findOne(id: number) {
-
-        return await this.prisma.order.findUnique({
-            where: {
-                id: id
-            },
-            include: {
-                orderCustomer: true,
-                orderHistory: true,
-                orderItem: true,
-            }
-        })
-    }
-    async remove(id: number) {
-        return await this.prisma.order.delete({
-            where: {
-                id: id
-            }
-        })
-    }
-    async update(id: number, createOrderDto: CreateOrderDto) {
-
-        const orderCustomer = await this.customerDetailsService.findOne(createOrderDto.orderCustomerId);
-        if (!orderCustomer) {
-            throw new NotFoundException("Invalid OrderCustomer  Id");
-        }
-        const orderItem = await this.orderItemService.findOne(createOrderDto.orderItemId);
-        if (!orderItem) {
-            throw new NotFoundException("Invalid OrderItem  Id");
-        }
-        const orderHistory=await this.orderHistoryService.findOne(createOrderDto.orderHistoryId);
-        if (!orderHistory) {
-            throw new NotFoundException("Invalid OrderHistory Id");
-        }
-
-        return await this.prisma.order.update({
-            where: {
-                id: id
-            },
-            data: {
-                orderHistoryId: createOrderDto.orderHistoryId,
-                orderItemId: createOrderDto.orderItemId,
-                orderCustomerId: createOrderDto.orderCustomerId,
-                advancePayment: createOrderDto.advancePayment,
-                remainingPayment: createOrderDto.remainingPayment,
-                totalPayment: createOrderDto.totalPayment,
-                invoiceVarient: createOrderDto.invoiceVarient
-
-            }
-        })
-    }
+      }
+    })
+  }
 }

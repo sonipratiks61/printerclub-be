@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Res, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, ConflictException, Controller, Delete, Get, NotFoundException, Param, Post, Put, Res, UseGuards } from '@nestjs/common';
 import { CustomerDetailsService } from './customer-details.service';
 import { CreateCustomerDetailsDto,UpdateCustomerDetailsDto } from './dto/customer-details.dto';
 import { ResponseService } from 'utils/response/customResponse';
@@ -13,26 +13,7 @@ export class CustomerDetailsController {
 
     @Post()
     @UseGuards(AuthGuard('jwt'))
-    async create(
-        @Body() createCustomerDetailsDto: CreateCustomerDetailsDto,
-        @Res() res
-    ) {
-        try {
-            const data = await this.customerDetailsService.create(createCustomerDetailsDto);
-            this.responseService.sendSuccess(res, 'Created Customer Details Successfully', data);
-        }
-        catch (error) {
-            console.log(error)
-            if (error instanceof NotFoundException) {
-                this.responseService.sendBadRequest(res, error.message)
-            }
-            else {
-                this.responseService.sendInternalError(res, 'Error in Creating Customer Details');
-            }
-        }
-    }
-
-
+   
     @Get()
     @UseGuards(AuthGuard('jwt')) // Ensures only authenticated users can access this route
     async fetchAll(@Res() res) {

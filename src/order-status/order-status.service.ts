@@ -25,11 +25,38 @@ export class OrderStatusService {
 
   async findAll() {
     const orderStatuses = await this.prisma.orderStatus.findMany({
-      include:{
-        subOrderStatus : true
+      select:{
+        id:true,
+        status:true,
+        description:true,
+        dependOn:true,
+        subOrderStatus : {
+          select:{
+            id:true,
+            status:true,
+            description:true,
+            dependOn:true,
+
+          }
+
+        }
       }
-    });
-    return orderStatuses;
+    })
+      const formatted = orderStatuses.flatMap((orderStatus) => [
+        {
+          id: orderStatus.id,
+          status: orderStatus.status,
+          description: orderStatus.description,
+          dependOn:orderStatus.dependOn
+        },
+        ...orderStatus.subOrderStatus.map((subOrderStatus) => ({
+          id: subOrderStatus.id,
+          status: subOrderStatus.status,
+          description:subOrderStatus.description,
+          dependOn:subOrderStatus.dependOn
+        })),
+      ])
+    return formatted;
   }
 
   async findOne(id: number) {
