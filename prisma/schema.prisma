@@ -67,12 +67,12 @@ model Address {
 //   updatedAt                DateTime                   @updatedAt
 // }
 model Role {
-  id            Int                        @id @default(autoincrement())
-  name          String                     @unique
-  capabilityIds RoleAndCapabilityMapping[]
-  users         User[]
-  createdAt     DateTime                   @default(now())
-  updatedAt     DateTime                   @updatedAt
+  id                       Int                        @id @default(autoincrement())
+  name                     String                     @unique
+  capabilityIds  RoleAndCapabilityMapping[]
+  users                    User[]
+  createdAt                DateTime                   @default(now())
+  updatedAt                DateTime                   @updatedAt
 }
 
 model Capability {
@@ -82,9 +82,15 @@ model Capability {
   createdAt                DateTime                   @default(now())
   updatedAt                DateTime                   @updatedAt
 }
-
-
-
+model RoleAndCapabilityMapping {
+  capabilityId Int
+  roleId       Int
+  capability   Capability @relation(fields: [capabilityId], references: [id])
+  role         Role       @relation(fields: [roleId], references: [id])
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  @@id([capabilityId, roleId])
+}
 model GeoLocation {
   id      Int    @id @default(autoincrement())
   state   String
@@ -103,17 +109,6 @@ model Attachment {
   updatedAt      DateTime                @updatedAt
 
   @@map("attachments") // Optional: maps the model to a table named "attachments"
-}
-
-model RoleAndCapabilityMapping {
-  capabilityId Int
-  roleId       Int
-  capability   Capability @relation(fields: [capabilityId], references: [id])
-  role         Role       @relation(fields: [roleId], references: [id])
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-
-  @@id([capabilityId, roleId])
 }
 
 model Category {
