@@ -1,7 +1,7 @@
 // import { Injectable, NotFoundException } from '@nestjs/common';
 
 
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { ProductService } from 'src/product/product.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateOrderItemsDto } from './dto/create-order-Item.dto';
@@ -12,63 +12,25 @@ export class OrderItemsService {
     constructor(private productService: ProductService,
         private prisma: PrismaService) {
     }
-    async create(createOrderItemsDto: CreateOrderItemsDto[], ownerName: string) {
-        const orderItemsData = await Promise.all(createOrderItemsDto.map(async (item) => {
-            const {
-                quantity,
-                name,
-                price,
-                additionalDetails,
-                productId,
-                attributes,
-                gst,
-                discount,
-                description,
-                measurement,
-                address,
-            } = item;
+    
+    async orderItemsSearchByOrderId(orderId: number) {
 
-
-            const product = await this.prisma.product.findUnique({
-                where: {
-                    id: productId,
-                },
-            });
-
-            if (!product) {
-                throw new NotFoundException("Invalid Product Id");
+        const checkOrderIdExist = await this.prisma.orderItem.findFirst({
+            where: {
+                orderId: orderId
             }
+        })
+        if (!checkOrderIdExist) {
+            throw new NotFoundException("Invalid Order Id")
+        }
+        const data = await this.prisma.orderItem.findMany({
+            where: {
+                orderId: orderId
+            },
 
-            // Map attributes to a format suitable for database creation
-            const mappedAttributes = attributes.map(attr => ({
-                name: attr.name,
-                value: attr.value,
-            }));
-
-            return {
-                quantity,
-                name,
-                price,
-                additionalDetails,
-                productId,
-                gst,
-                address,
-                measurement,
-                discount,
-                ownerName,
-                description,
-                attributes: {
-                    create: mappedAttributes,
-                }
-            };
-        }));
-        const createdOrderItems = await this.prisma.orderItem.createMany({
-            data: orderItemsData,
-        });
-
-        return createdOrderItems;
+        })
+        return data;
     }
-
 
     async findAll() {
         return await this.prisma.orderItem.findMany({

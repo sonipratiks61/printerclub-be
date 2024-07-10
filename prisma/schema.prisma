@@ -185,12 +185,11 @@ model OrderCustomer {
   name              String
   email             String?
   additionalDetails String?
-  mobileNumber      String
-  // addressId         Int?
-  orders            Order[]
-  // address           Address? @relation(fields: [addressId], references: [id])
+  mobileNumber      String  
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
+  orderId           Int
+  order             Order    @relation(fields: [orderId], references: [id])
 }
 
 model OrderItem {
@@ -208,9 +207,24 @@ model OrderItem {
   measurement       String?
   address           String?
   discount          Int
+  orderId           Int
+  order             Order    @relation(fields: [orderId], references: [id])
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
-  order             Order[]
+}
+
+model Order {
+  id               Int             @id @default(autoincrement())
+  advancePayment   Decimal
+  remainingPayment Decimal
+  totalPayment     Decimal
+  ownerName        String
+  paymentMode      String
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  orderHistory     OrderHistory[]
+  customerDetails  OrderCustomer[]
+  orderItems       OrderItem[]
 }
 
 model OrderHistory {
@@ -218,36 +232,11 @@ model OrderHistory {
   status    String
   ownerName String
   timestamp DateTime @default(now())
-  order     Order[]
-}
-
-model Order {
-  id               Int           @id @default(autoincrement())
-  orderHistoryId   Int
-  orderItemId      Int
-  orderItem        OrderItem     @relation(fields: [orderItemId], references: [id])
-  orderHistory     OrderHistory  @relation(fields: [orderHistoryId], references: [id])
-  orderCustomer    OrderCustomer @relation(fields: [orderCustomerId], references: [id])
-  orderCustomerId  Int
-  advancePayment   Decimal
-  remainingPayment Decimal
-  totalPayment     Decimal
-  invoiceVarient   String
-  ownerName        String
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  orderId   Int
+  order     Order    @relation(fields: [orderId], references: [id])
 }
 
 enum CategoryType {
   service
   physical
 }
-
-// enum OrderStatusType {
-//   OrderConfirm
-//   Dispatched
-//   Received
-//   Delivered
-//   Cancelled
-// }

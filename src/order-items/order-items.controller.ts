@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { IdValidationPipe } from 'utils/validation/paramsValidation';
 import { CreateOrderItemsDto } from './dto/create-order-Item.dto';
@@ -11,31 +11,50 @@ export class OrderItemsController {
     constructor(private orderItemsService: OrderItemsService,
         private responseService: ResponseService) { }
 
-    @Post()
+    // @Post()
+    // @UseGuards(AuthGuard('jwt'))
+    // async create(
+    //     @Body() createOrderItemsDto: CreateOrderItemsDto[],
+    //     @Res() res,
+    //     @Req() req
+    // ) {
+    //     try {
+    //         const ownerName = req.user.name;
+    //         await this.orderItemsService.create(createOrderItemsDto, ownerName);
+    //         this.responseService.sendSuccess(res, 'Created Order Items Successfully');
+    //     }
+    //     catch (error) {
+    //         console.log(error)
+    //         if (error instanceof NotFoundException) {
+    //             this.responseService.sendBadRequest(res, error.message)
+    //         }
+    //         else {
+    //             this.responseService.sendInternalError(res, 'Error in Creating Customer Details');
+    //         }
+    //     }
+    // }
+
+    @Get()
     @UseGuards(AuthGuard('jwt'))
-    async create(
-        @Body() createOrderItemsDto: CreateOrderItemsDto[],
-        @Res() res,
-        @Req() req
-    ) {
+    async orderItemSearchByOrderId(@Query('orderId') orderId: string, @Res() res) {
         try {
-            const ownerName = req.user.name;
-            await this.orderItemsService.create(createOrderItemsDto, ownerName);
-            this.responseService.sendSuccess(res, 'Created Order Items Successfully');
+            const orderItemId = parseInt(orderId, 10);
+            const orderItems = await this.orderItemsService.orderItemsSearchByOrderId(orderItemId);
+            this.responseService.sendSuccess(res, "Fetch All OrderItems", orderItems);
         }
         catch (error) {
-            console.log(error)
             if (error instanceof NotFoundException) {
-                this.responseService.sendBadRequest(res, error.message)
+                this.responseService.sendBadRequest(res, error.message);
             }
             else {
-                this.responseService.sendInternalError(res, 'Error in Creating Customer Details');
+                console.log(error);
+                this.responseService.sendInternalError(res, 'Something Went Wrong');
             }
         }
     }
 
-    @Get()
-    @UseGuards(AuthGuard('jwt')) // Ensures only authenticated users can access this route
+    @Get('/all')
+    @UseGuards(AuthGuard('jwt'))
     async fetchAll(@Res() res) {
         try {
             const orderItems = await this.orderItemsService.findAll();

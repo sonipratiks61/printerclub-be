@@ -18,8 +18,7 @@ export class CreateOrderItemsDto {
     @IsString()
     additionalDetails: string;
 
-    @IsArray()
-    @IsNumber({}, { each: true }) 
+    @IsInt()
     @IsNotEmpty()
     productId: number;
 
@@ -44,6 +43,7 @@ export class CreateOrderItemsDto {
     @IsInt()
     @IsNotEmpty()
     discount:number
+    
 
     @IsArray()
     @ValidateNested({ each: true })
