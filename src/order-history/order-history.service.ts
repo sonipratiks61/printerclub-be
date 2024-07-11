@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateOrderHistoryDto } from './dto/order-history.dto';
 
@@ -31,6 +31,25 @@ export class OrderHistoryService {
             }
         })
     }
+
+    async findOrderById(orderId: number) {
+     const checkOrderIdExist= await this.prisma.orderHistory.findFirst({
+            where: {
+                orderId: orderId
+            }
+        })
+        if (!checkOrderIdExist) {
+            throw new NotFoundException("Invalid Order Id")
+        }
+        const data = await this.prisma.orderHistory.findMany({
+            where: {
+                orderId: orderId
+            },
+
+        })
+        return data;
+    }
+
 
     async remove(id: number) {
         return await this.prisma.orderHistory.delete({

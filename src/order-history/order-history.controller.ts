@@ -1,5 +1,5 @@
 
-import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { ResponseService } from 'utils/response/customResponse';
 import { AuthGuard } from '@nestjs/passport';
 import { IdValidationPipe } from 'utils/validation/paramsValidation';
@@ -36,12 +36,17 @@ export class OrderHistoryController  {
         }
     }
 
-
     @Get()
     @UseGuards(AuthGuard('jwt')) // Ensures only authenticated users can access this route
-    async fetchAll(@Res() res) {
+    async fetchAll(@Query('orderId') orderId: string, @Res() res) {
         try {
-            const data= await this.orderHistoryService.findAll();
+            const id= parseInt(orderId, 10);
+            let data;
+            if (orderId) {
+                data = await this.orderHistoryService.findOrderById(id);
+            } else {
+                data = await this.orderHistoryService.findAll();
+            }
             this.responseService.sendSuccess(
                 res,
                 'OrderHistory Fetched Successfully',
@@ -54,6 +59,24 @@ export class OrderHistoryController  {
             );
         }
     }
+
+    // @Get()
+    // @UseGuards(AuthGuard('jwt')) // Ensures only authenticated users can access this route
+    // async fetchAll(@Res() res) {
+    //     try {
+    //         const data= await this.orderHistoryService.findAll();
+    //         this.responseService.sendSuccess(
+    //             res,
+    //             'OrderHistory Fetched Successfully',
+    //             data,
+    //         );
+    //     } catch (error) {
+    //         this.responseService.sendInternalError(
+    //             res,
+    //             error.message || 'Something Went Wrong'
+    //         );
+    //     }
+    // }
 
     @Get(':id')
     @UseGuards(AuthGuard('jwt'))
