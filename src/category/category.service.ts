@@ -20,7 +20,7 @@ export class CategoryService {
 
         if (!parentCategory) {
           throw new NotFoundException(
-            `Category with ID ${createCategoryDto.parentId} not found`,
+            "Invalid CategoryId"
           );
         }
   
