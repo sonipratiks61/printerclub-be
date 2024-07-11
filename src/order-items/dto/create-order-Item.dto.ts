@@ -40,11 +40,12 @@ export class CreateOrderItemsDto {
     @IsNotEmpty()
     description: string;
 
+    @IsOptional()
     @IsInt()
     @IsNotEmpty()
     discount:number
     
-
+    @IsOptional()
     @IsArray()
     @ValidateNested({ each: true })
     @Type(() => CreateOrderItemAttributeDto)

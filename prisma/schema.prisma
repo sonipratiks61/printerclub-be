@@ -206,7 +206,7 @@ model OrderItem {
   gst               Int
   measurement       String?
   address           String?
-  discount          Int
+  discount          Int?
   orderId           Int
   order             Order    @relation(fields: [orderId], references: [id])
   createdAt         DateTime @default(now())
