@@ -213,7 +213,7 @@ model OrderItem {
   price             String
   quantity          Int
   productId         Int
-  additionalDetails String   @db.Text
+  additionalDetails String?  @db.Text
   description       String   @db.Text
   product           Product  @relation(fields: [productId], references: [id])
   attributes        Json?
