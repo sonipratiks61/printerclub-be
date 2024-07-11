@@ -47,7 +47,7 @@ export class OrderService {
               discount: item.discount,
               ownerName,
               description: item.description,
-              attributes: item.attributes.map(attr => ({
+              attributes: item.attributes?.map(attr => ({
                   name: attr.name,
                   value: attr.value,
                 })),
