@@ -20,7 +20,7 @@ export class CategoryService {
 
         if (!parentCategory) {
           throw new NotFoundException(
-            'Invaild Category Id',
+            "Invalid CategoryId"
           );
         }
   
