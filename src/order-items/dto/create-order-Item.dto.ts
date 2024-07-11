@@ -15,6 +15,7 @@ export class CreateOrderItemsDto {
     @IsNotEmpty()
     price: string;
 
+    @IsOptional()
     @IsString()
     additionalDetails: string;
 
