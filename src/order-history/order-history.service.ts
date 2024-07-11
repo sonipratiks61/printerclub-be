@@ -11,7 +11,8 @@ export class OrderHistoryService {
         const data = await this.prisma.orderHistory.create({
             data: {
                 status: createOrderHistoryDto.status,
-                ownerName: ownerName
+                ownerName: ownerName,
+                orderId:createOrderHistoryDto.orderId
             }
         });
 
