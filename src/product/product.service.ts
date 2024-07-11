@@ -70,19 +70,50 @@ export class ProductService {
           select: {
             id: true,
             name: true,
-            subCategories: {
-             select:{ id:true,
-              name:true,}
-
-            }
+            parentId: true,
           }
         },
-        attributes :true
+        attributes: true
       }
     });
-  
 
-    return products;
+    const formattedProducts = await Promise.all(products.map(async product => {
+      let parentCategory;
+
+      if (product.category.parentId) {
+        parentCategory = await this.categoryService.findOne(product.category.parentId);
+      }
+  
+      return {
+        id: product.id,
+        categoryId: product.category.id,
+        name: product.name,
+        description: product.description,
+        quantity: product.quantity,
+        price: product.price,
+        createdAt: product.createdAt,
+        updatedAt: product.updatedAt,
+        userId: product.userId,
+        isFitmentRequired: product.isFitmentRequired,
+        isMeasurementRequired: product.isMeasurementRequired,
+        category: {
+          id: product.category.id,
+          name: product.category.name,
+          parentId: parentCategory.id,
+          parent: parentCategory.name
+          
+        },
+        attributes: product.attributes.map(attribute => ({
+          id: attribute.id,
+          productId: attribute.productId,
+          name: attribute.name,
+          type: attribute.type,
+          options: attribute.options
+        }))
+      };
+    }));
+  
+    return formattedProducts;
   }
   
   async findOne(id: number) {
