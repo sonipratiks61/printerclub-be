@@ -400,7 +400,7 @@ await prisma.user.upsert({
   })
   await prisma.orderStatus.upsert({
     where: {
-      id: 10
+      id: 9
     },
     create: {
       status: "Received for Packing",
@@ -414,7 +414,7 @@ await prisma.user.upsert({
   })
    await prisma.orderStatus.upsert({
     where: {
-      id: 11
+      id: 10
     },
     create: {
       status: "Dispatched",

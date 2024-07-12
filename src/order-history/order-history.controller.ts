@@ -1,5 +1,5 @@
 
-import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, ConflictException, Controller, Delete, Get, NotFoundException, Param, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { ResponseService } from 'utils/response/customResponse';
 import { AuthGuard } from '@nestjs/passport';
 import { IdValidationPipe } from 'utils/validation/paramsValidation';
@@ -28,7 +28,13 @@ export class OrderHistoryController  {
         catch (error) {
             console.log(error)
             if (error instanceof NotFoundException) {
+                this.responseService.sendNotFound(res, error.message)
+            }
+            else if (error instanceof BadRequestException) {
                 this.responseService.sendBadRequest(res, error.message)
+            }
+            else   if (error instanceof ConflictException) {
+                this.responseService.sendConflict(res, error.message)
             }
             else {
                 this.responseService.sendInternalError(res, 'Error in Creating Customer Details');
@@ -59,24 +65,6 @@ export class OrderHistoryController  {
             );
         }
     }
-
-    // @Get()
-    // @UseGuards(AuthGuard('jwt')) // Ensures only authenticated users can access this route
-    // async fetchAll(@Res() res) {
-    //     try {
-    //         const data= await this.orderHistoryService.findAll();
-    //         this.responseService.sendSuccess(
-    //             res,
-    //             'OrderHistory Fetched Successfully',
-    //             data,
-    //         );
-    //     } catch (error) {
-    //         this.responseService.sendInternalError(
-    //             res,
-    //             error.message || 'Something Went Wrong'
-    //         );
-    //     }
-    // }
 
     @Get(':id')
     @UseGuards(AuthGuard('jwt'))

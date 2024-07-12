@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateOrderHistoryDto } from './dto/order-history.dto';
 
@@ -8,12 +8,33 @@ export class OrderHistoryService {
         private prisma: PrismaService,) { }
 
     async create(createOrderHistoryDto: CreateOrderHistoryDto, ownerName: string) {
+        const { status, orderId } = createOrderHistoryDto;
+
+        const existingOrderHistory = await this.prisma.orderHistory.findFirst({
+            where: {
+                orderId: orderId,
+                status: status,
+            },
+        });
+
+        if (existingOrderHistory) {
+            throw new ConflictException("Status already exists for this orderId");
+        }
+
+        const checkOrderStatus = await this.prisma.orderStatus.findFirst({
+            where: {
+                status: createOrderHistoryDto.status
+            }
+        })
+        if (!checkOrderStatus) {
+            throw new BadRequestException("Invalid Status");
+        }
         const data = await this.prisma.orderHistory.create({
             data: {
-                status: createOrderHistoryDto.status,
+                status: status,
                 ownerName: ownerName,
-                orderId:createOrderHistoryDto.orderId
-            }
+                orderId: orderId,
+            },
         });
 
         return data;
@@ -33,7 +54,7 @@ export class OrderHistoryService {
     }
 
     async findOrderById(orderId: number) {
-     const checkOrderIdExist= await this.prisma.orderHistory.findFirst({
+        const checkOrderIdExist = await this.prisma.orderHistory.findFirst({
             where: {
                 orderId: orderId
             }

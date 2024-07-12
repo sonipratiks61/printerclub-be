@@ -55,6 +55,12 @@ export class OrderService {
             })),
           },
         },
+        orderHistory:{
+          create: {
+          status: "Pending",
+          ownerName:ownerName
+          }
+        }
       },
       include: {
         orderItems: true,

@@ -10,6 +10,7 @@ export class ResponseService {
     authenticationFailed: HttpStatus.UNAUTHORIZED,
     notFound: HttpStatus.NOT_FOUND,
     internalError: HttpStatus.INTERNAL_SERVER_ERROR,
+    conflict:HttpStatus.CONFLICT
   };
 
   private sendResponse(
@@ -37,6 +38,10 @@ export class ResponseService {
 
   sendBadRequest(res: Response, message: string, error: any = {}) {
     this.sendResponse(res, this.responseCodes.badRequest, message, {}, error);
+  }
+  
+  sendConflict(res: Response, message: string, error: any = {}) {
+    this.sendResponse(res, this.responseCodes.conflict, message, {}, error);
   }
 
   sendAuthenticationFailed(res: Response, message: string, error: any = {}) {
