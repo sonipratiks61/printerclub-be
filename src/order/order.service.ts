@@ -74,7 +74,7 @@ export class OrderService {
   }
 
   async findAll() {
-    return await this.prisma.order.findMany({
+   const orders= await this.prisma.order.findMany({
       include: {
         orderItems: {
           select: {
@@ -120,6 +120,14 @@ export class OrderService {
         }
       }
     })
+    const formattedOrders = orders.map(order => ({
+     id: order.id,
+     orderItems: order.orderItems,
+     customerDetails: order.customerDetails[0],
+     orderHistory: order.orderHistory[0]
+    }));
+  
+    return formattedOrders;
 
   }
 
