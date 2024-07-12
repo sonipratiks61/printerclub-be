@@ -75,41 +75,6 @@ export class RoleService {
 
     return formattedRoles;
   }
-  //   async create(createRoleDto: CreateRoleDto) {
-  //     const capabilityIds = createRoleDto.capabilityIds;
-  //     const existingCapabilities = await this.prisma.capability.findMany({
-  //       where: {
-  //         id: { in: capabilityIds },
-  //       },
-  //     });
-  // console.log(existingCapabilities ,existingCapabilities .length)
-  //     if (existingCapabilities?.length !== capabilityIds?.length) {
-  //       console.log(existingCapabilities?.length !== capabilityIds?.length)
-  //       throw new NotFoundException("One or more capability IDs are invalid");
-  //     }
-
-  //     const role = await this.prisma.role.create({
-  //       data: {
-  //         name: createRoleDto.name,
-  //         capabilities: {
-  //           create: capabilityIds?.map((capabilityId) => ({
-  //             capability: {
-  //               connect: { id: capabilityId },
-  //             },
-  //           })),
-  //         },
-  //       },
-  //       include: {
-  //         capabilities: {
-  //           include: {
-  //             capability: true,
-  //           },
-  //         },
-  //       },
-  //     });
-
-  //     return role;
-  //   }
 
   async findOne(id: number) {
     const role = await this.prisma.role.findUnique({
@@ -133,41 +98,6 @@ export class RoleService {
 
     return role;
   }
-  //   async create(createRoleDto: CreateRoleDto) {
-  //     const capabilityIds = createRoleDto.capabilityIds;
-  //     const existingCapabilities = await this.prisma.capability.findMany({
-  //       where: {
-  //         id: { in: capabilityIds },
-  //       },
-  //     });
-  // console.log(existingCapabilities ,existingCapabilities .length)
-  //     if (existingCapabilities?.length !== capabilityIds?.length) {
-  //       console.log(existingCapabilities?.length !== capabilityIds?.length)
-  //       throw new NotFoundException("One or more capability IDs are invalid");
-  //     }
-
-  //     const role = await this.prisma.role.create({
-  //       data: {
-  //         name: createRoleDto.name,
-  //         capabilities: {
-  //           create: capabilityIds?.map((capabilityId) => ({
-  //             capability: {
-  //               connect: { id: capabilityId },
-  //             },
-  //           })),
-  //         },
-  //       },
-  //       include: {
-  //         capabilities: {
-  //           include: {
-  //             capability: true,
-  //           },
-  //         },
-  //       },
-  //     });
-
-  //     return role;
-  //   }
 
   async delete(id: number) {
     const role = await this.prisma.role.delete({
