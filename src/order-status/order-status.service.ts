@@ -25,6 +25,7 @@ export class OrderStatusService {
 
   async findAll() {
     const orderStatuses = await this.prisma.orderStatus.findMany({
+      where:{dependOn:null},
       select:{
         id:true,
         status:true,

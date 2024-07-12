@@ -39,9 +39,18 @@ export class OrderItemsController {
     async orderItemSearchByOrderId(@Query('orderId') orderId: string, @Res() res) {
         try {
             const orderItemId = parseInt(orderId, 10);
-            const orderItems = await this.orderItemsService.orderItemsSearchByOrderId(orderItemId);
+            if(orderItemId)
+            {const orderItems = await this.orderItemsService.orderItemsSearchByOrderId(orderItemId);
             this.responseService.sendSuccess(res, "Fetch All OrderItems", orderItems);
-        }
+       }
+    else{
+        const orderItems = await this.orderItemsService.findAll();
+        this.responseService.sendSuccess(
+            res,
+            'OrderItems Fetched Successfully',
+            orderItems,
+        );
+    } }
         catch (error) {
             if (error instanceof NotFoundException) {
                 this.responseService.sendBadRequest(res, error.message);
@@ -50,24 +59,6 @@ export class OrderItemsController {
                 console.log(error);
                 this.responseService.sendInternalError(res, 'Something Went Wrong');
             }
-        }
-    }
-
-    @Get('/all')
-    @UseGuards(AuthGuard('jwt'))
-    async fetchAll(@Res() res) {
-        try {
-            const orderItems = await this.orderItemsService.findAll();
-            this.responseService.sendSuccess(
-                res,
-                'OrderItems Fetched Successfully',
-                orderItems,
-            );
-        } catch (error) {
-            this.responseService.sendInternalError(
-                res,
-                error.message || 'Something Went Wrong'
-            );
         }
     }
 
