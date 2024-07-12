@@ -55,10 +55,10 @@ export class OrderService {
             })),
           },
         },
-        orderHistory: {
+        orderHistory:{
           create: {
-            status: "Pending",
-            ownerName: ownerName
+          status: "Pending",
+          ownerName:ownerName
           }
         }
       },
