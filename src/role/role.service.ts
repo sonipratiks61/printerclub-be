@@ -41,45 +41,9 @@ export class RoleService {
       },
 
     });
-    console.log(role)
     return role;
   }
-  //   async create(createRoleDto: CreateRoleDto) {
-  //     const capabilityIds = createRoleDto.capabilityIds;
-  //     const existingCapabilities = await this.prisma.capability.findMany({
-  //       where: {
-  //         id: { in: capabilityIds },
-  //       },
-  //     });
-  // console.log(existingCapabilities ,existingCapabilities .length)
-  //     if (existingCapabilities?.length !== capabilityIds?.length) {
-  //       console.log(existingCapabilities?.length !== capabilityIds?.length)
-  //       throw new NotFoundException("One or more capability IDs are invalid");
-  //     }
-
-  //     const role = await this.prisma.role.create({
-  //       data: {
-  //         name: createRoleDto.name,
-  //         capabilities: {
-  //           create: capabilityIds?.map((capabilityId) => ({
-  //             capability: {
-  //               connect: { id: capabilityId },
-  //             },
-  //           })),
-  //         },
-  //       },
-  //       include: {
-  //         capabilities: {
-  //           include: {
-  //             capability: true,
-  //           },
-  //         },
-  //       },
-  //     });
-
-  //     return role;
-  //   }
-
+ 
   async findAll() {
     const role = await this.prisma.role.findMany(
       {
@@ -99,6 +63,7 @@ export class RoleService {
     );
     const formattedRoles = role.map((role) => {
       return {
+        id: role.id,
         name: role.name,
         capabilities: role.capabilityIds.map((capability) => {
           return {
