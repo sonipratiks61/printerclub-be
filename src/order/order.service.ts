@@ -48,23 +48,24 @@ export class OrderService {
               ownerName,
               description: item.description,
               attributes: item.attributes?.map(attr => ({
-                  name: attr.name,
-                  value: attr.value,
-                })),
-              
+                name: attr.name,
+                value: attr.value,
+              })),
+
             })),
           },
         },
-        orderHistory:{
+        orderHistory: {
           create: {
-          status: "Pending",
-          ownerName:ownerName
+            status: "Pending",
+            ownerName: ownerName
           }
         }
       },
       include: {
         orderItems: true,
-        customerDetails: true
+        customerDetails: true,
+        orderHistory: true
 
       },
     });
@@ -75,11 +76,51 @@ export class OrderService {
   async findAll() {
     return await this.prisma.order.findMany({
       include: {
-        orderItems: true,
-        customerDetails: true,
-        orderHistory: true,
+        orderItems: {
+          select: {
+            id: true,
+            quantity: true,
+            name: true,
+            price: true,
+            additionalDetails: true,
+            productId: true,
+            gst: true,
+            address: true,
+            measurement: true,
+            discount: true,
+            description: true,
+            attributes: true,
+            ownerName: true,
+
+          }
+        },
+        customerDetails:
+        {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            mobileNumber: true,
+            additionalDetails: true
+          }
+
+        },
+        orderHistory: {
+          orderBy: {
+            timestamp: 'desc'
+          },
+          take: 1,
+          select: {
+            id: true,
+            status: true,
+            ownerName: true,
+            timestamp: true,
+
+          }
+        }
       }
     })
+
   }
 
   async findOne(id: number) {
