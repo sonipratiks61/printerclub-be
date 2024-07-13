@@ -48,12 +48,12 @@ model Address {
 }
 
 model Role {
-  id                       Int                        @id @default(autoincrement())
-  name                     String                     @unique
-  capabilityIds  RoleAndCapabilityMapping[]
-  users                    User[]
-  createdAt                DateTime                   @default(now())
-  updatedAt                DateTime                   @updatedAt
+  id            Int                        @id @default(autoincrement())
+  name          String                     @unique
+  capabilityIds RoleAndCapabilityMapping[]
+  users         User[]
+  createdAt     DateTime                   @default(now())
+  updatedAt     DateTime                   @updatedAt
 }
 
 model Capability {
@@ -63,6 +63,7 @@ model Capability {
   createdAt                DateTime                   @default(now())
   updatedAt                DateTime                   @updatedAt
 }
+
 model RoleAndCapabilityMapping {
   capabilityId Int
   roleId       Int
@@ -70,8 +71,10 @@ model RoleAndCapabilityMapping {
   role         Role       @relation(fields: [roleId], references: [id])
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
+
   @@id([capabilityId, roleId])
 }
+
 model GeoLocation {
   id      Int    @id @default(autoincrement())
   state   String
@@ -121,8 +124,8 @@ model Product {
   updatedAt             DateTime                @updatedAt
   User                  User                    @relation(fields: [userId], references: [id])
   userId                Int
-  isFitmentRequired     Boolean
-  isMeasurementRequired Boolean
+  isFitmentRequired     Boolean                 @default(false)
+  isMeasurementRequired Boolean                 @default(false)
   attributes            ProductAttribute[]
 }
 
