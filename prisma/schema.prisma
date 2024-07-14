@@ -124,9 +124,9 @@ model Product {
   updatedAt             DateTime                @updatedAt
   User                  User                    @relation(fields: [userId], references: [id])
   userId                Int
-  isFitmentRequired     Boolean                 @default(false)
-  isMeasurementRequired Boolean                 @default(false)
-  attributes            ProductAttribute[]
+  isFitmentRequired     Boolean? @default(false)
+  isMeasurementRequired Boolean? @default(false)
+  attributes      ProductAttribute[]
 }
 
 model ProductAttribute {
