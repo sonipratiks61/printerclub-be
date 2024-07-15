@@ -63,7 +63,7 @@ export class ProductController {
     try {
       let data;
       const category= parseInt(categoryId,10)
-      if (!isNaN(category)) {
+      if (category) {
         data = await this.productService.findProductByCategoryId(category);
         this.responseService.sendSuccess(res, 'Products fetched successfully by subCategory', data);
       } else {
