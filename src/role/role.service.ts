@@ -24,8 +24,7 @@ export class RoleService {
       },
     });
     if (existingCapabilities?.length !== capabilityIds?.length) {
-      console.log(existingCapabilities?.length !== capabilityIds?.length)
-      throw new NotFoundException("One or more capability IDs are invalid");
+    throw new NotFoundException("One or more capability IDs are invalid");
     }
 
     const role = await this.prisma.role.create({
@@ -136,6 +135,11 @@ export class RoleService {
   }
 
   async delete(id: number) {
+    const data= await this.prisma.user.deleteMany({
+      where: {
+        roleId:id
+      }
+    })
     const role = await this.prisma.role.delete({
       where: {
         id: id
