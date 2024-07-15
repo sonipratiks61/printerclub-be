@@ -21,7 +21,6 @@ export class RoleController {
       const data = await this.roleService.findAll();
       this.responseService.sendSuccess(res, 'Fetch Successfully!', data);
     } catch (error) {
-      console.log(error);
       this.responseService.sendInternalError(
         res,
         'Something Went Wrong',
@@ -59,7 +58,7 @@ export class RoleController {
       else {
         this.responseService.sendInternalError(
           res,
-          error.message || 'Something Went Wrong',
+          'Something Went Wrong',
           error,
         );
       }
@@ -78,14 +77,18 @@ export class RoleController {
           "Invalid Role Id ",
         );
       }
-      this.responseService.sendSuccess(res, 'Fetch Successfully', role);
+      if(role){
+      this.responseService.sendSuccess(res, 'Role Fetch Successfully', role);
+      }
+      else{
+        this.responseService.sendBadRequest(res,'Failed to  Role Fetch')
+      }
     } catch (error) {
-      console.log(error);
       this.responseService.sendInternalError(
         res,
-        error.message || 'Something Went Wrong',
+        'Something Went Wrong',
       );
-      return;
+
     }
   }
 
@@ -102,11 +105,14 @@ export class RoleController {
           'Invalid Role Id',
         );
       }
-      await this.roleService.delete(roleId);
+      const data=await this.roleService.delete(roleId);
+      if(data){
       this.responseService.sendSuccess(res, 'Role Deleted Successfully');
+      }
+      else{
+        this.responseService.sendBadRequest(res,"Failed to Role Delete")
+      }
     } catch (error) {
-      console.error(error);
-
       this.responseService.sendInternalError(
         res,
         'Something Went Wrong',
