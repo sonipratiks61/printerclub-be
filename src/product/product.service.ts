@@ -83,7 +83,6 @@ export class ProductService {
       if (product.category.parentId) {
         parentCategory = await this.categoryService.findOne(product.category.parentId);
       }
-  
       return {
         id: product.id,
         categoryId: product.category.id,
@@ -99,8 +98,8 @@ export class ProductService {
         category: {
           id: product.category.id,
           name: product.category.name,
-          parentId: parentCategory.id,
-          parent: parentCategory.name
+          parentId: parentCategory?.id,
+          parent: parentCategory?.name
           
         },
         attributes: product.attributes.map(attribute => ({
