@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, ConflictException, Controller, Delete, Get, Param, Post, Put, Req, Res, UseGuards } from '@nestjs/common';
 import { AttributeService } from './attribute.service';
 import { ResponseService } from 'utils/response/customResponse';
 import { AuthGuard } from '@nestjs/passport';
@@ -20,15 +20,21 @@ export class AttributeController {
     @Req() req,
     @Res() res) {
     try {
-      this.attributeService.create(createAttributeDto);
-      this.responseService.sendSuccess(res, "Attribute created Successfully")
+     const data= await this.attributeService.create(createAttributeDto);
+      this.responseService.sendSuccess(res, "Attribute created Successfully",data);
     } catch (error) {
-      this.responseService.sendInternalError(
-        res,
-        'Something went wrong',
-        error,
-      );
+      console.log(error);
+      if (error instanceof (ConflictException)) {
+        this.responseService.sendConflict(res, error.message);
+      }
+      else {
+        this.responseService.sendInternalError(
+          res,
+          'Something went wrong',
+          error,
+        );
 
+      }
     }
   }
 
@@ -69,7 +75,7 @@ export class AttributeController {
 
   @Put(':id')
   @UseGuards(AuthGuard('jwt'))
-  async updateAttribute(@Param('id', IdValidationPipe) id: string, @Res() res,@Body() createAttributeDto: CreateAttributeDto) {
+  async updateAttribute(@Param('id', IdValidationPipe) id: string, @Res() res, @Body() createAttributeDto: CreateAttributeDto) {
     try {
       const attributeId = parseInt(id, 10)
       const attribute = await this.attributeService.findOne(attributeId);
