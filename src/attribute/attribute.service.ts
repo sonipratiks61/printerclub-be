@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateAttributeDto } from './dto/attribute.dto';
 
@@ -7,12 +7,24 @@ export class AttributeService {
   constructor(private prisma: PrismaService) { }
 
   async create(createAttributeDto: CreateAttributeDto) {
-    return await this.prisma.attribute.create({
+    const existingOrderHistory = await this.prisma.attribute.findFirst({
+      where: {
+          name: createAttributeDto.name,
+      },
+  });
+    if (existingOrderHistory) {
+      throw new ConflictException("Attribute Name should be Unique")
+    }
+else{
+    const data = await this.prisma.attribute.create({
       data: {
         name: createAttributeDto.name,
       }
 
     })
+    return data;
+  }
+   
   }
 
   async findOne(id: number) {
