@@ -20,8 +20,13 @@ export class AttributeController {
     @Req() req,
     @Res() res) {
     try {
-     const data= await this.attributeService.create(createAttributeDto);
-      this.responseService.sendSuccess(res, "Attribute created Successfully",data);
+      const data = await this.attributeService.create(createAttributeDto);
+      if (data) {
+        this.responseService.sendSuccess(res, "Attribute created Successfully");
+      }
+      else {
+        this.responseService.sendBadRequest(res, "Failed to create attribute");
+      }
     } catch (error) {
       console.log(error);
       if (error instanceof (ConflictException)) {
@@ -84,7 +89,12 @@ export class AttributeController {
       }
 
       const data = await this.attributeService.update(attributeId, createAttributeDto);
-      this.responseService.sendSuccess(res, "Update Attribute Successfully", data);
+      if(data)
+      {this.responseService.sendSuccess(res, "Update Attribute Successfully", data);
+    }
+    else {
+      this.responseService.sendBadRequest(res, "Failed to Update Attribute");
+    }
 
     }
     catch (error) {
