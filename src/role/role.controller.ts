@@ -21,10 +21,9 @@ export class RoleController {
       const data = await this.roleService.findAll();
       this.responseService.sendSuccess(res, 'Fetch Successfully!', data);
     } catch (error) {
-      console.log(error);
       this.responseService.sendInternalError(
         res,
-        error.message || 'Something Went Wrong',
+        'Something Went Wrong',
         error,
       );
     }
@@ -41,21 +40,25 @@ export class RoleController {
     try {
       const data = await this.roleService.findByName(createRoleDto.name);
       if (data) {
-         this.responseService.sendBadRequest(res, "This Role Name is already exist")
+        this.responseService.sendBadRequest(res, "This Role Name is already exist")
       }
       else {
-        await this.roleService.create(createRoleDto);
-        this.responseService.sendSuccess(res, 'Create Successfully');
+        const data=await this.roleService.create(createRoleDto);
+        if(data){
+        this.responseService.sendSuccess(res, 'Role Create Successfully');
+        }
+        else{
+          this.responseService.sendBadRequest(res,'Failed to Role Create')
+        }
       }
     } catch (error) {
-      console.log(error);
       if (error instanceof NotFoundException) {
         this.responseService.sendNotFound(res, error.message);
       }
       else {
         this.responseService.sendInternalError(
           res,
-          error.message || 'Something Went Wrong',
+          'Something Went Wrong',
           error,
         );
       }
@@ -74,14 +77,18 @@ export class RoleController {
           "Invalid Role Id ",
         );
       }
-      this.responseService.sendSuccess(res, 'Fetch Successfully', role);
+      if(role){
+      this.responseService.sendSuccess(res, 'Role Fetch Successfully', role);
+      }
+      else{
+        this.responseService.sendBadRequest(res,'Failed to  Role Fetch')
+      }
     } catch (error) {
-      console.log(error);
       this.responseService.sendInternalError(
         res,
-        error.message || 'Something Went Wrong',
+        'Something Went Wrong',
       );
-      return;
+
     }
   }
 
@@ -98,11 +105,14 @@ export class RoleController {
           'Invalid Role Id',
         );
       }
-      await this.roleService.delete(roleId);
+      const data=await this.roleService.delete(roleId);
+      if(data){
       this.responseService.sendSuccess(res, 'Role Deleted Successfully');
+      }
+      else{
+        this.responseService.sendBadRequest(res,"Failed to Role Delete")
+      }
     } catch (error) {
-      console.error(error);
-
       this.responseService.sendInternalError(
         res,
         'Something Went Wrong',

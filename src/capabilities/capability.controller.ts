@@ -1,63 +1,71 @@
 import {
-    Controller,
-    Post,
-    UseGuards,
-    HttpException,
-    HttpStatus,
-    Get,
-    Body,
-    Delete,
-    Param,
-    Put,
-    Res,
-  } from '@nestjs/common';
-  import { AuthGuard } from '@nestjs/passport';
+  Controller,
+  Post,
+  UseGuards,
+  HttpException,
+  HttpStatus,
+  Get,
+  Body,
+  Delete,
+  Param,
+  Put,
+  Res,
+} from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import { CapabilityService } from './capability.service';
 import { UpdateCategoryDto } from 'src/category/dto/update.category.dto';
 import { IdValidationPipe } from 'utils/validation/paramsValidation';
 import { ResponseService } from 'utils/response/customResponse';
 import { CreateCapabilityDto } from './dto/capabilities.dto';
-  @Controller('capability')
-  export class CapabilityController  {
-    constructor(
-      private readonly capabilityService: CapabilityService,
-      private readonly responseService: ResponseService,
-    ) {}
-  
-    @Post()
-    async create(@Body() createCapabilitiesDto: CreateCapabilityDto,@Res() res) {
-      try {
-        await this.capabilityService.create(createCapabilitiesDto);
-        this.responseService.sendSuccess(res, "Capability Created Successfully");
-      } catch (error) {
-        console.error(error);
-       
-          this.responseService.sendInternalError(
-            res,
-            error.message|| 'Something Went Wrong',
-          );
-        
-      }
-    }
+@Controller('capability')
+export class CapabilityController {
+  constructor(
+    private readonly capabilityService: CapabilityService,
+    private readonly responseService: ResponseService,
+  ) { }
 
-    @Get()
-    @UseGuards(AuthGuard('jwt'))
-    async fetchAll(
-      @Res() res
-    ) {
-      try {
-       const data = await this.capabilityService.findAll();
-        this.responseService.sendSuccess(res, "Fetched Successfully",data);
-      } catch (error) {
-        console.error(error);
-       
-          this.responseService.sendInternalError(
-            res,
-            error.message|| 'Something Went Wrong',
-          );
-        
+  @Post()
+  async create(@Body() createCapabilitiesDto: CreateCapabilityDto, @Res() res) {
+    try {
+      const data = await this.capabilityService.create(createCapabilitiesDto);
+      if (data) {
+        this.responseService.sendSuccess(res, "Capability Created Successfully");
       }
+      else {
+        this.responseService.sendBadRequest(res, "Capability Not Created");
+      }
+    } catch (error) {
+      console.error(error);
+
+      this.responseService.sendInternalError(
+        res,
+        'Something Went Wrong',
+      );
+
     }
+  }
+
+  @Get()
+  @UseGuards(AuthGuard('jwt'))
+  async fetchAll(
+    @Res() res
+  ) {
+    try {
+      const data = await this.capabilityService.findAll();
+      if (data && data.length > 0) {
+        this.responseService.sendSuccess(res, "Capabilities Fetched Successfully", data);
+      }
+      else {
+        this.responseService.sendBadRequest(res, 'No Capabilities Found')
+      }
+    } catch (error) {
+      this.responseService.sendInternalError(
+        res,
+        'Something Went Wrong',
+      );
+
+    }
+  }
 
   @Get(':id')
   @UseGuards(AuthGuard('jwt'))
@@ -73,14 +81,13 @@ import { CreateCapabilityDto } from './dto/capabilities.dto';
       }
       this.responseService.sendSuccess(res, 'Fetch Successfully', capability);
     } catch (error) {
-      console.log(error);
-        this.responseService.sendInternalError(
-          res,
-          error.message || 'Something Went Wrong',
-        );
-        return;
-      }
+      this.responseService.sendInternalError(
+        res,
+        'Something Went Wrong',
+      );
+      return;
     }
+  }
 
   @Put(':id')
   @UseGuards(AuthGuard('jwt'))
@@ -108,13 +115,12 @@ import { CreateCapabilityDto } from './dto/capabilities.dto';
         updatedCategory,
       );
     } catch (error) {
-      console.log(error);
-        this.responseService.sendInternalError(
-          res,
-          error.message || 'Something Went Wrong',
-        
-        );
-      
+      this.responseService.sendInternalError(
+        res,
+        'Something Went Wrong',
+
+      );
+
     }
   }
 
@@ -133,13 +139,10 @@ import { CreateCapabilityDto } from './dto/capabilities.dto';
       await this.capabilityService.delete(capabilityId);
       this.responseService.sendSuccess(res, 'Capability Deleted Successfully');
     } catch (error) {
-      console.error(error);
-     
-        this.responseService.sendInternalError(
-          res,
-          'Something Went Wrong',
-        );
-      }
+      this.responseService.sendInternalError(
+        res,
+        'Something Went Wrong',
+      );
     }
   }
-  
+}
