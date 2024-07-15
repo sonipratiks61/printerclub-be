@@ -23,10 +23,15 @@ export class OrderHistoryController  {
             const ownerName=req.user.name
 
             const data = await this.orderHistoryService.create(createOrderHistoryDto,ownerName);
+           if(data){
             this.responseService.sendSuccess(res, 'Created OrderHistory Successfully', data);
         }
+        else{
+            this.responseService.sendBadRequest(res, 'Failed to Create OrderHistory');
+        }
+    }
         catch (error) {
-            console.log(error)
+            
             if (error instanceof NotFoundException) {
                 this.responseService.sendNotFound(res, error.message)
             }

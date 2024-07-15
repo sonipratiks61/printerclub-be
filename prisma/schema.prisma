@@ -35,16 +35,17 @@ model User {
 }
 
 model Address {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  country   String
-  state     String
-  city      String
-  pinCode   String
-  address   String?
-  user      User            @relation(fields: [userId], references: [id])
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
+  id            Int             @id @default(autoincrement())
+  userId        Int
+  country       String
+  state         String
+  city          String
+  pinCode       String
+  address       String?
+  user          User            @relation(fields: [userId], references: [id])
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  orderCustomer OrderCustomer[]
 }
 
 // model Role {
@@ -200,8 +201,10 @@ model OrderCustomer {
   id                Int      @id @default(autoincrement())
   name              String
   email             String?
-  additionalDetails String?
+  additionalDetails String?  @db.Text
   mobileNumber      String
+  addressId         Int?
+  address           Address?  @relation( fields: [addressId], references: [id])
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   orderId           Int
@@ -231,11 +234,12 @@ model OrderItem {
 
 model Order {
   id               Int             @id @default(autoincrement())
-  advancePayment   Decimal
+  advancePayment   Decimal?
   remainingPayment Decimal
   totalPayment     Decimal
   ownerName        String
   paymentMode      String
+  invoiceNumber    Int             @default(0)
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
   orderHistory     OrderHistory[]

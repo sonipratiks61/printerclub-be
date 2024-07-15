@@ -14,9 +14,7 @@ export class CustomerDetailsService {
             where: {
                 id: id
             }
-
         })
-
         return customer
     }
 
@@ -51,7 +49,6 @@ export class CustomerDetailsService {
     }
 
     async remove(id: number) {
-
         const data = await this.prisma.orderCustomer.delete({
             where: {
                 id: id

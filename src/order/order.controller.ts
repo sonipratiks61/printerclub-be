@@ -6,25 +6,27 @@ import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 
 @Controller('order')
-export class OrderController  {
+export class OrderController {
     constructor(private orderService: OrderService,
         private responseService: ResponseService) { }
 
     @Post()
     @UseGuards(AuthGuard('jwt'))
     async create(
-        @Body() createOrderDto: CreateOrderDto,
-      
+        @Body() createOrderDto: CreateOrderDto,  
         @Res() res,
         @Req() req
     ) {
         try {
-            const ownerName=req.user.name
-            const data = await this.orderService.create(createOrderDto,ownerName);
-            this.responseService.sendSuccess(res, 'Created Order Successfully', data);
+            const ownerName = req.user.name
+            const data = await this.orderService.create(createOrderDto, ownerName);
+            if (data) {
+                this.responseService.sendSuccess(res, 'Created Order Successfully', data);
+            } else {
+                this.responseService.sendBadRequest(res, "Failed to Created Order")
+            }
         }
         catch (error) {
-            console.log(error)
             if (error instanceof NotFoundException) {
                 this.responseService.sendBadRequest(res, error.message)
             }
@@ -39,7 +41,7 @@ export class OrderController  {
     @UseGuards(AuthGuard('jwt')) // Ensures only authenticated users can access this route
     async fetchAll(@Res() res) {
         try {
-            const data= await this.orderService.findAll();
+            const data = await this.orderService.findAll();
             this.responseService.sendSuccess(
                 res,
                 'Order Fetched Successfully',
@@ -48,7 +50,7 @@ export class OrderController  {
         } catch (error) {
             this.responseService.sendInternalError(
                 res,
-                error.message || 'Something Went Wrong'
+                'Something Went Wrong'
             );
         }
     }
@@ -58,7 +60,7 @@ export class OrderController  {
     async findOne(@Param('id', IdValidationPipe) id: string, @Res() res) {
         try {
             const orderId = parseInt(id, 10);
-            const order= await this.orderService.findOne(orderId);
+            const order = await this.orderService.findOne(orderId);
             if (!order) {
                 this.responseService.sendNotFound(
                     res,
@@ -70,7 +72,7 @@ export class OrderController  {
             console.log(error);
             this.responseService.sendInternalError(
                 res,
-                error.message || 'Something Went Wrong',
+                'Something Went Wrong',
             );
             return;
         }
@@ -96,16 +98,22 @@ export class OrderController  {
                 orderId,
                 createOrderDto,
             );
-            this.responseService.sendSuccess(
+            if(data)
+            
+         {   this.responseService.sendSuccess(
                 res,
                 'Order Updated Successfully',
                 data,
             );
+        }    else{
+            this.responseService.sendBadRequest(res,'Failed to Updated Successfully')
+      
+        }
         } catch (error) {
             console.log(error);
             this.responseService.sendInternalError(
                 res,
-                error.message || 'Something Went Wrong',
+                'Something Went Wrong',
 
             );
 
@@ -117,11 +125,20 @@ export class OrderController  {
     async remove(@Param('id', IdValidationPipe) id: string, @Res() res) {
         try {
             const orderId = parseInt(id, 10);
-            await this.orderService.remove(orderId);
+            const order = await this.orderService.findOne(orderId);
+            if(!order)
+            {
+                this.responseService.sendNotFound(res,'Invalid Order Id');
+            }
+           const data =await this.orderService.remove(orderId);
+           if(data)
+           {
             this.responseService.sendSuccess(res, 'Order Deleted Successfully');
-        } catch (error) {
-            console.error(error);
-
+        } 
+        else{
+            this.responseService.sendBadRequest(res,'Failed to Delete Successfully');
+        }
+    }catch (error) {
             this.responseService.sendInternalError(
                 res,
                 'Something Went Wrong',
