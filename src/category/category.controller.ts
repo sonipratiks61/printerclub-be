@@ -58,7 +58,7 @@ export class CategoryController {
       const categories = await this.categoryService.findAll(includeSubCategory);
       this.responseService.sendSuccess(
         res,
-        'Fetched Successfully',
+        'Categories Fetched Successfully',
         categories,
       );
     } catch (error) {
@@ -81,7 +81,7 @@ export class CategoryController {
           "Invalid CategoryId",
         );
       }
-      this.responseService.sendSuccess(res, 'Fetch Successfully', category);
+      this.responseService.sendSuccess(res, ' Category Fetch Successfully', category);
     } catch (error) {
       console.log(error);
       this.responseService.sendInternalError(
