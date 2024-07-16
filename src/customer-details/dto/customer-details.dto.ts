@@ -26,7 +26,8 @@ export class CreateCustomerDetailsDto {
     // @IsNotEmpty({ message: 'Address must not be empty' })
     // @IsInt({ message: 'Address must be a Integer' })
     // addressId: number
-
+    
+    @IsOptional()
     @IsNotEmpty({ message: ' AdditionalDetails must not be empty' })
     @IsString({ message: 'AdditionalDetails must be a String' })
     additionalDetails: string
