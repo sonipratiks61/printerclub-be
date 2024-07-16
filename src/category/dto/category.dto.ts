@@ -13,6 +13,7 @@ export class CreateCategoryDto {
   @IsString({ message: 'Name must be a string' })
   name: string;
 
+  @IsOptional()
   @IsNotEmpty({ message: 'Description cannot be empty' })
   @IsString({ message: 'Description must be a string' })
   description: string;
