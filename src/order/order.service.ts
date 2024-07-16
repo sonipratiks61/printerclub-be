@@ -41,6 +41,12 @@ export class OrderService {
               mobileNumber: customerDetails.mobileNumber,
               email: customerDetails.email,
               additionalDetails: customerDetails.additionalDetails,
+              address: customerDetails.address,
+              city:customerDetails.city,
+              state: customerDetails.state,
+              pinCode: customerDetails.pinCode,
+              country: customerDetails.country,
+
               }
             },
           orderItems: {
