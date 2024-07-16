@@ -121,7 +121,7 @@ model Category {
   parent                 Category?               @relation("CategoryToSubcategories", fields: [parentId], references: [id])
   subCategories          Category[]              @relation("CategoryToSubcategories")
   name                   String
-  description            String                  @db.Text
+  description            String?                 @db.Text
   product                Product[]
   attachmentAssociations AttachmentAssociation[] @relation("category_attachmentAssociations")
   user                   User                    @relation(fields: [userId], references: [id])
