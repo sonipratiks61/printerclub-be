@@ -31,6 +31,26 @@ export class CreateCustomerDetailsDto {
     @IsNotEmpty({ message: ' AdditionalDetails must not be empty' })
     @IsString({ message: 'AdditionalDetails must be a String' })
     additionalDetails: string
+  
+    @IsNotEmpty({ message: ' Address must not be empty' })
+    @IsString({ message: 'Address must be a String' })
+    address: string
+ 
+    @IsNotEmpty({ message: ' City must not be empty' })
+    @IsString({ message: 'City must be a String' })
+    city: string
+
+    @IsNotEmpty({ message: 'PinCode must not be empty' })
+    @IsString({ message: 'pinCode must be a String' })
+    pinCode: string
+
+    @IsNotEmpty({ message: ' Country must not be empty' })
+    @IsString({ message: 'Country must be a String' })
+    country: string
+
+    @IsNotEmpty({ message: 'State must not be empty' })
+    @IsString({ message: 'State must be a String' })
+    state: string
 
 }
 export class UpdateCustomerDetailsDto {
