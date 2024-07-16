@@ -43,7 +43,6 @@ export class ResponseService {
   sendConflict(res: Response, message: string, error: any = {}) {
     this.sendResponse(res, this.responseCodes.conflict, message, {}, error);
   }
-
   
   sendAuthenticationFailed(res: Response, message: string, error: any = {}) {
     this.sendResponse(
