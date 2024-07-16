@@ -264,6 +264,153 @@ await prisma.user.upsert({
     },
     update: {}
   })
+
+  await prisma.orderStatus.upsert({
+    where: {
+      id: 1
+    },
+    create: {
+      status: "Order Confirmed",
+      description:"order confirmed",  
+      createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+
+      
+    },
+    update: {}
+  })
+  await prisma.orderStatus.upsert({
+    where: {
+      id: 2
+    },
+    create: {
+      status: "Filed Uploaded",
+      description:"Filed Uploaded",  
+      createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+
+      
+    },
+    update: {}
+  })
+  await prisma.orderStatus.upsert({
+    where: {
+      id: 3
+    },
+    create: {
+      status: "Process Started",
+      description:"order confirmed",  
+      createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+
+      
+    },
+    update: {}
+  })
+  await prisma.orderStatus.upsert({
+    where: {
+      id: 4
+    },
+    create: {
+      status: "Job Verification",
+      description:"Job Verification",
+      dependOn:3,   
+      createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+
+      
+    },
+    update: {}
+  })
+  await prisma.orderStatus.upsert({
+    where: {
+      id: 5
+    },
+    create: {
+      status: "CTP Department",
+      description:"CTP Department", 
+      dependOn:3, 
+      createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+
+      
+    },
+    update: {}
+  })
+  await prisma.orderStatus.upsert({
+    where: {
+      id: 6
+    },
+    create: {
+      status: "Print Department",
+      description:"Print Department",
+      dependOn:3,  
+      createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+
+      
+    },
+    update: {}
+  })
+  await prisma.orderStatus.upsert({
+    where: {
+      id: 7
+    },
+    create: {
+      status: "Cutting Department",
+      description:"Cutting Department",  
+      dependOn:3,
+      createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+
+      
+    },
+    update: {}
+  })
+  await prisma.orderStatus.upsert({
+    where: {
+      id: 8
+    },
+    create: {
+      status: "Blinding Department",
+      description:"Blinding Department",  
+      dependOn:3,
+      createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+
+      
+    },
+    update: {}
+  })
+  await prisma.orderStatus.upsert({
+    where: {
+      id: 9
+    },
+    create: {
+      status: "Received for Packing",
+      description:"Received for Packing",  
+      createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+
+      
+    },
+    update: {}
+  })
+   await prisma.orderStatus.upsert({
+    where: {
+      id: 10
+    },
+    create: {
+      status: "Dispatched",
+      description:"dispatched",  
+      createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+
+      
+    },
+    update: {}
+  }) 
+ 
   console.log('insert Successfully');
 }
 
@@ -273,6 +420,5 @@ main()
     process.exit(1);
   })
   .finally(async () => {
-    // close Prisma Client at the end
     await prisma.$disconnect();
   });

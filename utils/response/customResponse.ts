@@ -39,8 +39,7 @@ export class ResponseService {
   sendBadRequest(res: Response, message: string, error: any = {}) {
     this.sendResponse(res, this.responseCodes.badRequest, message, {}, error);
   }
-
-
+  
   sendConflict(res: Response, message: string, error: any = {}) {
     this.sendResponse(res, this.responseCodes.conflict, message, {}, error);
   }

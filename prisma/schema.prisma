@@ -147,6 +147,7 @@ model Product {
   isFitmentRequired     Boolean?                @default(false)
   isMeasurementRequired Boolean?                @default(false)
   attributes            ProductAttribute[]
+  orderItems            OrderItem[]
 }
 
 model ProductAttribute {
@@ -185,15 +186,83 @@ model AttachmentAssociation {
 }
 
 model OrderStatus {
-  id          Int      @id @default(autoincrement())
-  status      String
-  description String   @db.Text
-  dependOn    Int
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id             Int           @id @default(autoincrement())
+  status         String
+  description    String        @db.Text
+  dependOn       Int?
+  orderStatus    OrderStatus?  @relation("orderStatusTosubOrderStatus", fields: [dependOn], references: [id])
+  subOrderStatus OrderStatus[] @relation("orderStatusTosubOrderStatus")
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 }
+
+model OrderCustomer {
+  id                Int      @id @default(autoincrement())
+  name              String
+  email             String?
+  additionalDetails String?
+  mobileNumber      String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  orderId           Int
+  order             Order    @relation(fields: [orderId], references: [id])
+}
+
+model OrderItem {
+  id                Int      @id @default(autoincrement())
+  name              String
+  price             String
+  quantity          Int
+  productId         Int
+  additionalDetails String?  @db.Text
+  description       String   @db.Text
+  product           Product  @relation(fields: [productId], references: [id])
+  attributes        Json?
+  ownerName         String
+  gst               Int
+  measurement       String?
+  address           String?
+  discount          Int?
+  orderId           Int
+  order             Order    @relation(fields: [orderId], references: [id])
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model Order {
+  id               Int             @id @default(autoincrement())
+  advancePayment   Decimal?
+  remainingPayment Decimal
+  totalPayment     Decimal
+  ownerName        String
+  paymentMode      String
+  invoiceNumber    String          
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  orderHistory     OrderHistory[]
+  customerDetails  OrderCustomer[]
+  orderItems       OrderItem[]
+}
+
+model OrderHistory {
+  id        Int      @id @default(autoincrement())
+  status    String
+  ownerName String
+  timestamp DateTime @default(now())
+  orderId   Int
+  order     Order    @relation(fields: [orderId], references: [id])
+}
+
 
 enum CategoryType {
   service
   physical
 }
+
+// enum OrderStatusType {
+//   OrderConfirm
+//   Dispatched
+//   Received
+//   Delivered
+//   Cancelled
+// }
