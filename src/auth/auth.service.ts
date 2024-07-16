@@ -95,6 +95,16 @@ export class AuthService {
         createdAt: true,
         updatedAt: true,
         role: true,
+        addresses:{
+          select:{
+            address:true,
+            city:true,
+            state:true,
+            pinCode:true,
+            country:true,
+            
+          }
+        }
       },
     });
     if (!user) {
