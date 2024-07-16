@@ -239,7 +239,7 @@ model Order {
   totalPayment     Decimal
   ownerName        String
   paymentMode      String
-  invoiceNumber    Int             @default(0)
+  invoiceNumber    String          
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
   orderHistory     OrderHistory[]
