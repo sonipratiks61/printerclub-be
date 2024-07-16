@@ -114,13 +114,17 @@ export class OrderHistoryController  {
                 orderHistoryId,
                 createOrderHistoryDto,
             );
+            if(data){
             this.responseService.sendSuccess(
                 res,
                 'OrderHistory Updated Successfully',
                 data,
             );
+            }
+            else{
+                this.responseService.sendBadRequest(res,'Failed to Updated OrderHistory');
+            }
         } catch (error) {
-            console.log(error);
             this.responseService.sendInternalError(
                 res,
                 error.message || 'Something Went Wrong',
