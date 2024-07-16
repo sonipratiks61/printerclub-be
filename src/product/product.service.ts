@@ -29,8 +29,8 @@ export class ProductService {
     const { type, min, max, options } = createProductDto.quantity;
 
     if (type === 'text') {
-      if (min === undefined || max === undefined) {
-        throw new BadRequestException('Both minimum and maximum quantity must be provided as a QuantityRange object for text type');
+      if (min === undefined) {
+        throw new BadRequestException('Minimum quantity must be provided  for text type');
       }
       productData = {
         ...productData,
