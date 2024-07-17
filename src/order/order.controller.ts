@@ -18,8 +18,9 @@ export class OrderController {
         @Req() req
     ) {
         try {
-            const ownerName = req.user.name
-            const data = await this.orderService.create(createOrderDto, ownerName);
+            const owner = req.user.name;
+            const userId=req.user.id;
+            const data = await this.orderService.create(createOrderDto, owner,userId);
             if (data) {
                 this.responseService.sendSuccess(res, 'Created Order Successfully', data);
             } else {
