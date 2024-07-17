@@ -35,16 +35,18 @@ model User {
 }
 
 model Address {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  country   String
-  state     String
-  city      String
-  pinCode   String
-  address   String?
-  user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              Int           @id @default(autoincrement())
+  userId          Int
+  country         String
+  state           String
+  city            String
+  pinCode         String
+  address         String?
+  user            User          @relation(fields: [userId], references: [id])
+  orderCustomerId Int?
+  orderCustomer   OrderCustomer? @relation(fields: [orderCustomerId], references: [id])
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 }
 
 // model Role {
@@ -197,20 +199,16 @@ model OrderStatus {
 }
 
 model OrderCustomer {
-  id                Int      @id @default(autoincrement())
+  id                Int       @id @default(autoincrement())
   name              String
   email             String?
   additionalDetails String?
   mobileNumber      String
-  address           String
-  city              String
-  state             String
-  pinCode           String
-  country           String
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  address           Address[]
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
   orderId           Int
-  order             Order    @relation(fields: [orderId], references: [id])
+  order             Order     @relation(fields: [orderId], references: [id])
 }
 
 model OrderItem {
@@ -227,6 +225,10 @@ model OrderItem {
   gst               Int
   measurement       String?
   address           String?
+  pinCode           String?
+  city              String?
+  state             String?
+  country           String?
   discount          Int?
   orderId           Int
   order             Order    @relation(fields: [orderId], references: [id])
@@ -257,7 +259,6 @@ model OrderHistory {
   orderId   Int
   order     Order    @relation(fields: [orderId], references: [id])
 }
-
 
 enum CategoryType {
   service
