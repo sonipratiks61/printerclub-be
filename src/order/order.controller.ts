@@ -6,6 +6,7 @@ import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { CustomerOrderInvoiceService } from './orderInvoice/orderCustomerInvoice.service';
 import { PaginationDto } from 'utils/pagination/pagination';
+import { CustomerOrderInvoiceService } from './orderInvoice/orderCustomerInvoice.service';
 
 @Controller('order')
 export class OrderController {
