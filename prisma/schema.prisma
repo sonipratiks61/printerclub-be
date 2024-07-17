@@ -43,7 +43,11 @@ model Address {
   pinCode         String
   address         String?
   user            User          @relation(fields: [userId], references: [id])
+<<<<<<< HEAD
   orderCustomerId Int?    @unique
+=======
+  orderCustomerId Int?
+>>>>>>> 6a4e91c (Add customer-address)
   orderCustomer   OrderCustomer? @relation(fields: [orderCustomerId], references: [id])
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
