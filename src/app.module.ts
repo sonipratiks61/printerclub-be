@@ -46,6 +46,7 @@ import { OrderStatusController } from './order-status/order-status.controller';
 import { OrderStatusService } from './order-status/order-status.service';
 import { CapabilityController } from './capabilities/capability.controller';
 import { CapabilityService } from './capabilities/capability.service';
+import { CustomerOrderInvoiceService } from './order/orderInvoice/orderCustomerInvoice.service';
 @Module({
   imports: [
     JwtModule.register({}),
@@ -101,6 +102,7 @@ import { CapabilityService } from './capabilities/capability.service';
     CustomerDetailsService,
     OrderHistoryService,
     OrderStatusService,
+    CustomerOrderInvoiceService,
     CapabilityService
   ],
 })

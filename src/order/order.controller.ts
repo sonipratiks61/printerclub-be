@@ -4,11 +4,13 @@ import { AuthGuard } from '@nestjs/passport';
 import { IdValidationPipe } from 'utils/validation/paramsValidation';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { CustomerOrderInvoiceService } from './orderInvoice/orderCustomerInvoice.service';
 
 @Controller('order')
 export class OrderController {
     constructor(private orderService: OrderService,
-        private responseService: ResponseService) { }
+        private responseService: ResponseService,
+        private customerOrderInvoiceService:CustomerOrderInvoiceService) { }
 
     @Post()
     @UseGuards(AuthGuard('jwt'))
@@ -120,6 +122,30 @@ export class OrderController {
 
         }
     }
+
+    @Get('invoice/:id')
+    @UseGuards(AuthGuard('jwt'))
+    async Invoice(@Param('id', IdValidationPipe) id: string, @Res() res) {
+        try {
+            const orderId = parseInt(id, 10);
+            const Invoice = await this.customerOrderInvoiceService.customerOrderInvoice(orderId);
+            if (!Invoice) {
+                this.responseService.sendNotFound(
+                    res,
+                    "Order Id Invalid",
+                );
+            }
+            this.responseService.sendSuccess(res, 'Fetch Successfully', Invoice);
+        } catch (error) {
+            console.log(error);
+            this.responseService.sendInternalError(
+                res,
+                'Something Went Wrong',
+            );
+            return;
+        }
+    }
+
 
     @Delete(':id')
     @UseGuards(AuthGuard('jwt'))
