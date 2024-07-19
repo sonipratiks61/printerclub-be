@@ -14,6 +14,7 @@ import { CreateAddressDto, UpdateAddressDto } from './create-and-update-address.
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsTenDigitNumber } from 'utils/validation/phoneNumberValidation';
+import { UpdateAddressDto } from './update-address.dto';
 
 
 export class CreateUserDto {
