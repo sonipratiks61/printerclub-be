@@ -93,7 +93,6 @@ export class OrderService {
           orderHistory: true
         },
       });
-    console.log(createdOrder.customerDetails);
       return createdOrder;
     }
     
