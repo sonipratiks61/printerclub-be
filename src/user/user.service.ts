@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { UpdateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async findAllUsersWithAddresses() {
     const users = await this.prisma.user.findMany({
@@ -58,5 +59,61 @@ export class UserService {
       where: { id: userId },
       data: { isActive },
     });
+  }
+  async updateProfile(id: number, updateUserDto: UpdateUserDto) {
+
+    // Fetch current address associated with the user
+    const address = await this.prisma.address.findFirst({
+      where: {
+        userId: id,
+      },
+    });
+    const data = await this.prisma.user.update({
+      where: {
+        id: id
+      },
+      data: {
+        name: updateUserDto.name,
+        businessName: updateUserDto.businessName,
+        mobileNumber: updateUserDto.mobileNumber,
+        gstNumber: updateUserDto.gstNumber,
+        addresses: {
+          update: {
+            where: {
+              id: address.id
+            },
+            data: {
+              address: updateUserDto.addresses.address,
+              city: updateUserDto.addresses.city,
+              state: updateUserDto.addresses.state,
+              pinCode: updateUserDto.addresses.pinCode,
+              country: updateUserDto.addresses.country,
+            }
+          }
+        },
+
+      },
+      include: { addresses: true }
+    })
+
+    const formattedResponse = {
+      id: data.id,
+      mobileNumber: data.mobileNumber,
+      businessName: data.businessName,
+      name: data.name,
+      gstNumber: data.gstNumber,
+      roleId: data.roleId,
+      acceptTerms: data.acceptTerms,
+      addresses: {
+        id: address.id,
+        country: address.country,
+        state: address.state,
+        city: address.city,
+        pinCode: address.pinCode,
+        address: address.address,
+      },
+
+    };
+    return formattedResponse;
   }
 }
