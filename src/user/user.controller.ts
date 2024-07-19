@@ -11,11 +11,14 @@ import {
   ForbiddenException,
   Res,
   Req,
+  BadRequestException,
+  NotFoundException,
+  Put,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { UserService } from './user.service';
 import { ApiBearerAuth, ApiOkResponse, ApiResponse } from '@nestjs/swagger';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto, UpdateUserDto } from './dto/create-user.dto';
 import { ResponseService } from 'utils/response/customResponse';
 import { IdValidationPipe } from 'utils/validation/paramsValidation';
 
@@ -122,4 +125,41 @@ export class UserController {
       }
     }
   }
+
+
+  @Put()
+  @UseGuards(AuthGuard('jwt')) // Assuming JWT is used for authentication
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: 200,
+    description: 'Updated Successfully',
+    type: CreateUserDto,
+  })
+  async update(
+    @Body() updateUserDto: UpdateUserDto,
+    @Res() res,
+    @Req() req
+  ) {
+    try {
+      const userId = req.user.id
+      const updatedMyProfile = await this.userService.updateProfile(
+        userId,
+        updateUserDto,
+      );
+      this.responseService.sendSuccess(
+        res,
+        'Profile Edit Successfully',
+        updatedMyProfile,
+      );
+    } catch (error) {
+     
+        this.responseService.sendInternalError(
+          res,
+          'Something Went Wrong',
+          error,
+        );
+      
+    }
+  }
+  
 }
