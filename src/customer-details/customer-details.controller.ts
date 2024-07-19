@@ -1,10 +1,11 @@
-import { BadRequestException, Body, ConflictException, Controller, Delete, Get, NotFoundException, Param, Post, Put, Res, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, ConflictException, Controller, Delete, Get, NotFoundException, Param, Post, Put, Query, Res, UseGuards } from '@nestjs/common';
 import { CustomerDetailsService } from './customer-details.service';
 import { CreateCustomerDetailsDto, UpdateCustomerDetailsDto } from './dto/customer-details.dto';
 import { ResponseService } from 'utils/response/customResponse';
 import { AuthGuard } from '@nestjs/passport';
 import { IdValidationPipe } from 'utils/validation/paramsValidation';
 import { UpdateCategoryDto } from 'src/category/dto/update.category.dto';
+import { PaginationDto } from 'utils/pagination/pagination';
 
 @Controller('customerDetails')
 export class CustomerDetailsController {
@@ -13,9 +14,9 @@ export class CustomerDetailsController {
 
     @Get()
     @UseGuards(AuthGuard('jwt')) // Ensures only authenticated users can access this route
-    async fetchAll(@Res() res) {
+    async fetchAll(@Res() res,@Query()paginationDto:PaginationDto) {
         try {
-            const categories = await this.customerDetailsService.findAll();
+            const categories = await this.customerDetailsService.findAll(paginationDto);
             this.responseService.sendSuccess(
                 res,
                 'CustomerDetails Fetched Successfully',

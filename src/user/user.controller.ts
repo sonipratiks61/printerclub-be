@@ -11,6 +11,10 @@ import {
   ForbiddenException,
   Res,
   Req,
+  Query,
+  Put,
+  BadRequestException,
+  NotFoundException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { UserService } from './user.service';
@@ -18,6 +22,7 @@ import { ApiBearerAuth, ApiOkResponse, ApiResponse } from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ResponseService } from 'utils/response/customResponse';
 import { IdValidationPipe } from 'utils/validation/paramsValidation';
+import { PaginationDto } from 'utils/pagination/pagination';
 
 @Controller('user')
 export class UserController {
@@ -61,9 +66,9 @@ export class UserController {
     description: 'Internal Server Error',
   })
   @ApiBearerAuth()
-  async findAllUsers(@Res() res) {
+  async findAllUsers(@Res() res,@Query() paginationDto:PaginationDto) {
     try {
-      const users = await this.userService.findAllUsersWithAddresses();
+      const users = await this.userService.findAllUsersWithAddresses(paginationDto);
       return this.responseService.sendSuccess(
         res,
         'Users retrieved successfully',
@@ -122,4 +127,5 @@ export class UserController {
       }
     }
   }
+
 }

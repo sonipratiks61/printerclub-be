@@ -2,6 +2,7 @@ import { BadRequestException, ConflictException, Injectable, NotFoundException }
 import { CreateCustomerDetailsDto,UpdateCustomerDetailsDto } from './dto/customer-details.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AddressService } from 'src/address/address.service';
+import { PaginationDto } from 'utils/pagination/pagination';
 
 @Injectable()
 export class CustomerDetailsService {
@@ -18,18 +19,29 @@ export class CustomerDetailsService {
         return customer
     }
 
-    async findAll() {
-        const customers = await this.prisma.orderCustomer.findMany(
-          
-        )
-        const formattedOutput = customers.map(customer => ({
-            name: customer.name,
-            email: customer.email,
-            mobileNumber: customer.mobileNumber,
-            
-        }));
-    
-        return formattedOutput;
+    async findAll(paginationDto:PaginationDto) {
+        const { page = 1, pageSize = 10} = paginationDto;
+        const skip = (page - 1) * pageSize;
+  
+    const [orderCustomers, totalOrderCustomers]= await Promise.all([
+        this.prisma.orderCustomer.findMany({
+          skip,
+          take: pageSize,
+        }),
+        this.prisma.orderCustomer.count(),
+      ]);
+      const formattedOutput = orderCustomers.map(customer => ({
+        name: customer.name,
+        email: customer.email,
+        mobileNumber: customer.mobileNumber,
+    }));
+      return{
+        row:formattedOutput,
+        count: totalOrderCustomers,
+        page:page,
+        pageSize:pageSize
+      }
+
     }
 
     async update(id: number, updateCustomerDetailsDto: UpdateCustomerDetailsDto) {
