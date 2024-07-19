@@ -19,6 +19,7 @@ import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/product.dto';
 import { IdValidationPipe } from 'utils/validation/paramsValidation';
 import { UpdateProductDto } from './dto/updateProduct.dto';
+import { PaginationDto } from 'utils/pagination/pagination';
 
 @Controller('product')
 export class ProductController {
@@ -59,7 +60,7 @@ export class ProductController {
 
   @Get()
   @UseGuards(AuthGuard('jwt'))
-  async findProductByCategoryId(@Res() res, @Query('categoryId') categoryId?: string) {
+  async findProductByCategoryId(@Res() res,@Query() paginationDto:PaginationDto, @Query('categoryId') categoryId?: string) {
     try {
       let data;
       const category= parseInt(categoryId,10)
@@ -67,7 +68,7 @@ export class ProductController {
         data = await this.productService.findProductByCategoryId(category);
         this.responseService.sendSuccess(res, 'Products fetched successfully by subCategory', data);
       } else {
-        data = await this.productService.findAll();
+        data = await this.productService.findAll(paginationDto);
         this.responseService.sendSuccess(res, 'Products fetched successfully', data);
       }
       
@@ -182,3 +183,4 @@ export class ProductController {
     }
   }
 }
+ 

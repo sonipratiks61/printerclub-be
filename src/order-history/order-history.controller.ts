@@ -6,9 +6,10 @@ import { IdValidationPipe } from 'utils/validation/paramsValidation';
 import { CreateOrderDto } from 'src/order/dto/create-order.dto';
 import { CreateOrderHistoryDto } from './dto/order-history.dto';
 import { OrderHistoryService } from './order-history.service';
+import { PaginationDto } from 'utils/pagination/pagination';
 
 @Controller('orderHistory')
-export class OrderHistoryController  {
+export class OrderHistoryController {
     constructor(private orderHistoryService: OrderHistoryService,
         private responseService: ResponseService) { }
 
@@ -20,25 +21,25 @@ export class OrderHistoryController  {
         @Req() req
     ) {
         try {
-            const ownerName=req.user.name
+            const ownerName = req.user.name
 
-            const data = await this.orderHistoryService.create(createOrderHistoryDto,ownerName);
-           if(data){
-            this.responseService.sendSuccess(res, 'Created OrderHistory Successfully', data);
+            const data = await this.orderHistoryService.create(createOrderHistoryDto, ownerName);
+            if (data) {
+                this.responseService.sendSuccess(res, 'Created OrderHistory Successfully', data);
+            }
+            else {
+                this.responseService.sendBadRequest(res, 'Failed to Create OrderHistory');
+            }
         }
-        else{
-            this.responseService.sendBadRequest(res, 'Failed to Create OrderHistory');
-        }
-    }
         catch (error) {
-            
+
             if (error instanceof NotFoundException) {
                 this.responseService.sendNotFound(res, error.message)
             }
             else if (error instanceof BadRequestException) {
                 this.responseService.sendBadRequest(res, error.message)
             }
-            else   if (error instanceof ConflictException) {
+            else if (error instanceof ConflictException) {
                 this.responseService.sendConflict(res, error.message)
             }
             else {
@@ -49,14 +50,14 @@ export class OrderHistoryController  {
 
     @Get()
     @UseGuards(AuthGuard('jwt')) // Ensures only authenticated users can access this route
-    async fetchAll(@Query('orderId') orderId: string, @Res() res) {
+    async fetchAll(@Query('orderId') orderId: string, @Res() res, @Query() paginationDto: PaginationDto) {
         try {
-            const id= parseInt(orderId, 10);
+            const id = parseInt(orderId, 10);
             let data;
             if (orderId) {
                 data = await this.orderHistoryService.findOrderById(id);
             } else {
-                data = await this.orderHistoryService.findAll();
+                data = await this.orderHistoryService.findAll(paginationDto);
             }
             this.responseService.sendSuccess(
                 res,
@@ -75,8 +76,8 @@ export class OrderHistoryController  {
     @UseGuards(AuthGuard('jwt'))
     async findOne(@Param('id', IdValidationPipe) id: string, @Res() res) {
         try {
-            const orderHistoryId= parseInt(id, 10);
-            const orderHistory= await this.orderHistoryService.findOne(orderHistoryId);
+            const orderHistoryId = parseInt(id, 10);
+            const orderHistory = await this.orderHistoryService.findOne(orderHistoryId);
             if (!orderHistory) {
                 this.responseService.sendNotFound(
                     res,
@@ -114,15 +115,15 @@ export class OrderHistoryController  {
                 orderHistoryId,
                 createOrderHistoryDto,
             );
-            if(data){
-            this.responseService.sendSuccess(
-                res,
-                'OrderHistory Updated Successfully',
-                data,
-            );
+            if (data) {
+                this.responseService.sendSuccess(
+                    res,
+                    'OrderHistory Updated Successfully',
+                    data,
+                );
             }
-            else{
-                this.responseService.sendBadRequest(res,'Failed to Updated OrderHistory');
+            else {
+                this.responseService.sendBadRequest(res, 'Failed to Updated OrderHistory');
             }
         } catch (error) {
             this.responseService.sendInternalError(

@@ -1,12 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { PaginationDto } from 'utils/pagination/pagination';
 
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService) {}
 
-  async findAllUsersWithAddresses() {
-    const users = await this.prisma.user.findMany({
+  async findAllUsersWithAddresses(paginationDto:PaginationDto) {
+    const { page = 1, pageSize = 10 } = paginationDto;
+    const skip = (page - 1) * pageSize;
+    const [users,totalUsers] = await Promise.all([this.prisma.user.findMany({
+      skip,
+      take:pageSize,
       select: {
         id: true,
         email: true,
@@ -33,9 +38,11 @@ export class UserService {
           },
         },
       },
-    });
+    }),
+    this.prisma.user.count()
+  ]);
 
-    return users.map((user) => ({
+    const formatted= users.map((user) => ({
       id: user.id,
       name: user.name,
       businessName: user.businessName,
@@ -49,6 +56,12 @@ export class UserService {
       role: user.role.name,
       addresses: user.addresses,
     }));
+    return {
+      row:formatted,
+      count:totalUsers,
+      page:page,
+      pageSize:pageSize
+    }
   }
 
   async setActiveStatus(userId: number, isActive: boolean) {

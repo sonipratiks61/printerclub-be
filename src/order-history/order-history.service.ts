@@ -1,6 +1,7 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateOrderHistoryDto } from './dto/order-history.dto';
+import { PaginationDto } from 'utils/pagination/pagination';
 
 @Injectable()
 export class OrderHistoryService {
@@ -41,9 +42,25 @@ export class OrderHistoryService {
     }
 
 
-    async findAll() {
-        return await this.prisma.orderHistory.findMany()
-    }
+    async findAll(paginationDto:PaginationDto) {
+        const { page = 1, pageSize = 10 } = paginationDto;
+    const skip = (page - 1) * pageSize;
+
+        const [orderHistories, totalOrderHistories]= await Promise.all([
+            this.prisma.orderHistory.findMany({
+              skip,
+              take: pageSize,
+            }),
+            this.prisma.orderHistory.count(),
+          ]);
+          return{
+            row:orderHistories,
+            count: totalOrderHistories,
+            page:page,
+            pageSize:pageSize
+          }
+          
+        }
 
     async findOne(id: number) {
         return await this.prisma.orderHistory.findUnique({

@@ -8,6 +8,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCustomerDetailsDto } from 'src/customer-details/dto/customer-details.dto';
 import { ProductService } from 'src/product/product.service';
 import { generateInvoiceNumber } from 'utils/invoiceFunction/invoiceFunction';
+import { PaginationDto } from 'utils/pagination/pagination';
 
 @Injectable()
 export class OrderService {
@@ -76,80 +77,86 @@ export class OrderService {
                 attributes: item.attributes?.map(attr => ({
                   name: attr.name,
                   value: attr.value,
-                })),
+               
               })),
+            })),
+          },
+        },
+        orderHistory: {
+          create: {
+            status: "Pending",
+            ownerName: ownerName
+          }
+        }
+      },
+      include: {
+        orderItems: true,
+        customerDetails: true,
+        orderHistory: true
+      },
+    });
+
+    return createdOrder;
+  }
+
+  async findAll(paginationDto: PaginationDto) {
+    const { page = 1, pageSize = 10 } = paginationDto;
+    const skip = (page - 1) * pageSize;
+    const [orders, totalOrders] = await Promise.all([
+      this.prisma.order.findMany({
+        skip,
+        take: pageSize,
+        select: {
+          id: true,
+          paymentMode: true,
+          remainingPayment: true,
+          totalPayment: true,
+          advancePayment: true,
+          ownerName: true,
+          invoiceNumber: true,
+          orderItems: {
+            select: {
+              id: true,
+              quantity: true,
+              name: true,
+              price: true,
+              additionalDetails: true,
+              productId: true,
+              gst: true,
+              address: true,
+              measurement: true,
+              discount: true,
+              description: true,
+              attributes: true,
+              ownerName: true,
+            },
+          },
+          customerDetails: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              mobileNumber: true,
+              additionalDetails: true,
             },
           },
           orderHistory: {
-            create: {
-              status: "Pending",
-              ownerName: ownerName
-            }
-          }
-        },
-        include: {
-          orderItems: true,
-          customerDetails: true,
-          orderHistory: true
-        },
-      });
-      return createdOrder;
-    }
-    
-
-  async findAll() {
-    const orders = await this.prisma.order.findMany({
-      select: {
-        id: true,
-        paymentMode: true,
-        remainingPayment: true,
-        totalPayment: true,
-        advancePayment: true,
-        ownerName: true,
-        invoiceNumber:true,
-        orderItems: {
-          select: {
-            id: true,
-            quantity: true,
-            name: true,
-            price: true,
-            additionalDetails: true,
-            productId: true,
-            gst: true,
-            address: true,
-            measurement: true,
-            discount: true,
-            description: true,
-            attributes: true,
-            ownerName: true,
-        }},
-        customerDetails:
-        {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            mobileNumber: true,
-            additionalDetails: true,
-            address:true
-          }
-
-        },
-        orderHistory: {
-          orderBy: {
-            timestamp: 'desc'
+            orderBy: {
+              timestamp: 'desc',
+            },
+            take: 1,
+            select: {
+              id: true,
+              status: true,
+              ownerName: true,
+              timestamp: true,
+            },
           },
-          take: 1,
-          select: {
-            id: true,
-            status: true,
-            ownerName: true,
-            timestamp: true,
+        },
+      }),
+      this.prisma.order.count(),
+    ]);
 
-          }
-        }
-      }
-    })
     const formattedOrders = orders.map(order => ({
       id: order.id,
       advancePayment: order.advancePayment,
@@ -161,8 +168,13 @@ export class OrderService {
       customerDetails: order.customerDetails[0],
       orderHistory: order.orderHistory[0],
     }));
-  
-    return formattedOrders;
+
+    return {
+      count: totalOrders,
+      row: formattedOrders,
+      page,
+      pageSize,
+    };
 
   }
 

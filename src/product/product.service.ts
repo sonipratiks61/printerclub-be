@@ -4,6 +4,7 @@ import { CreateProductDto } from './dto/product.dto';
 import { UpdateProductDto } from './dto/updateProduct.dto';
 import { CategoryService } from 'src/category/category.service';
 import { SubCategoryService } from 'src/sub-category/sub-category.service';
+import { PaginationDto } from 'utils/pagination/pagination';
 
 @Injectable()
 export class ProductService {
@@ -63,8 +64,10 @@ export class ProductService {
     return createdProduct;
   }
 
-  async findAll() {
-    const products = await this.prisma.product.findMany({
+  async findAll(paginationDto:PaginationDto) {
+    const { page = 1, pageSize = 10 } = paginationDto;
+    const skip = (page - 1) * pageSize;
+    const [products,totalProducts] = await Promise.all([this.prisma.product.findMany({
       include: {
         category: {
           select: {
@@ -75,7 +78,8 @@ export class ProductService {
         },
         attributes: true
       }
-    });
+    }),
+    this.prisma.product.count()]);
 
     const formattedProducts = await Promise.all(products.map(async product => {
       let parentCategory;
@@ -112,7 +116,10 @@ export class ProductService {
       };
     }));
   
-    return formattedProducts;
+    return {row:formattedProducts,
+    count:totalProducts,
+  page:page,
+pageSize:pageSize};
   }
 
   async findOne(id: number) {
