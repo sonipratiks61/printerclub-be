@@ -15,7 +15,7 @@ export class OrderService {
     private productService: ProductService) { }
 
 
-    async create(createOrderDto: CreateOrderDto, ownerName: string) {
+    async create(createOrderDto: CreateOrderDto, ownerName: string,userId:number) {
       const { advancePayment, remainingPayment, totalPayment, paymentMode, orderItems, customerDetails } = createOrderDto;
       const productIds = [...new Set(orderItems.map(item => item.productId))];
     
@@ -41,6 +41,18 @@ export class OrderService {
               mobileNumber: customerDetails.mobileNumber,
               email: customerDetails.email,
               additionalDetails: customerDetails.additionalDetails,
+              address:{
+                create: {
+                  userId:userId,
+                  address: customerDetails.address.address,
+                  city:customerDetails.address.city,
+                  state:customerDetails.address.state,
+                  pinCode: customerDetails.address.pinCode,
+                  country: customerDetails.address.country,
+
+              }
+            }
+
               }
             },
           orderItems: {
@@ -53,6 +65,10 @@ export class OrderService {
                 productId: item.productId,
                 gst: item.gst,
                 address: item.address,
+                pinCode:item.pinCode,
+                city:item.city,
+                state:item.state,
+                country:item.country,
                 measurement: item.measurement,
                 discount: item.discount,
                 ownerName,
@@ -77,7 +93,6 @@ export class OrderService {
           orderHistory: true
         },
       });
-    
       return createdOrder;
     }
     
@@ -115,7 +130,8 @@ export class OrderService {
             name: true,
             email: true,
             mobileNumber: true,
-            additionalDetails: true
+            additionalDetails: true,
+            address:true
           }
 
         },
@@ -141,7 +157,6 @@ export class OrderService {
       remainingPayment: order.remainingPayment,
       paymentMode: order.paymentMode,
       ownerName: order.ownerName,
-      invoiceNumber:order.invoiceNumber,
       orderItems: order.orderItems,
       customerDetails: order.customerDetails[0],
       orderHistory: order.orderHistory[0],

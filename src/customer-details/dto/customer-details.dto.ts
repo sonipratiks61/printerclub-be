@@ -5,9 +5,11 @@ import {
     IsNotEmpty,
     IsInt,
     IsEmail,
+    IsDefined,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { IsTenDigitNumber } from 'utils/validation/phoneNumberValidation';
+import { CreateAddressDto } from 'src/user/dto/create-address.dto';
 
 export class CreateCustomerDetailsDto {
     @IsNotEmpty({ message: 'Name cannot be empty' })
@@ -28,9 +30,15 @@ export class CreateCustomerDetailsDto {
     // addressId: number
     
     @IsOptional()
-    @IsNotEmpty({ message: ' AdditionalDetails must not be empty' })
-    @IsString({ message: 'AdditionalDetails must be a String' })
+    @IsNotEmpty({ message: ' Additional Details must not be empty' })
+    @IsString({ message: 'Additional Details must be a String' })
     additionalDetails: string
+  
+    @IsNotEmpty({ message: 'Customer Details must not be empty.' })
+    @ValidateNested()
+    @IsDefined()
+    @Type(() => CreateAddressDto)
+    address:CreateAddressDto
 
 }
 export class UpdateCustomerDetailsDto {
