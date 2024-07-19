@@ -18,6 +18,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ResponseService } from 'utils/response/customResponse';
 import { IdValidationPipe } from 'utils/validation/paramsValidation';
 import { UpdateCategoryDto } from './dto/update.category.dto';
+import { PaginationDto } from 'utils/pagination/pagination';
 
 @Controller('category')
 export class CategoryController {
@@ -53,9 +54,9 @@ export class CategoryController {
 
   @Get()
   @UseGuards(AuthGuard('jwt')) // Ensures only authenticated users can access this route
-  async fetchAll(@Res() res, @Query('includeSubCategory') includeSubCategory: boolean) {
+  async fetchAll(@Res() res, @Query('includeSubCategory') includeSubCategory: boolean,@Query()paginationDto:PaginationDto) {
     try {
-      const categories = await this.categoryService.findAll(includeSubCategory);
+      const categories = await this.categoryService.findAll(includeSubCategory,paginationDto);
       this.responseService.sendSuccess(
         res,
         'Categories Fetched Successfully',

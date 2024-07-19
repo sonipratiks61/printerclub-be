@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateCategoryDto } from './dto/category.dto';
 import { CategoryType } from '@prisma/client';
 import { UpdateCategoryDto } from './dto/update.category.dto';
+import { PaginationDto } from 'utils/pagination/pagination';
 @Injectable()
 export class CategoryService {
   constructor(private prisma: PrismaService) { }
@@ -10,7 +11,7 @@ export class CategoryService {
   async create(createCategoryDto: CreateCategoryDto, userId: number) {
     try {
       let message = 'Category created successfully';
-  
+
       if (createCategoryDto.parentId) {
         const parentCategory = await this.prisma.category.findUnique({
           where: {
@@ -23,10 +24,10 @@ export class CategoryService {
             "Invalid CategoryId"
           );
         }
-  
+
         message = 'Subcategory created successfully';
       }
-  
+
       const parentId = createCategoryDto.parentId
         ? createCategoryDto.parentId
         : null;
@@ -52,7 +53,7 @@ export class CategoryService {
       return { data, message };
     } catch (error) {
       console.error('Error creating category:', error);
-      throw error; 
+      throw error;
     }
   }
 
@@ -65,13 +66,16 @@ export class CategoryService {
   }
 
 
-  async findAll(includeSubCategory: boolean) {
+  async findAll(includeSubCategory: boolean, paginationDto: PaginationDto) {
+    const { page = 1, pageSize = 10 } = paginationDto;
+    const skip = (page - 1) * pageSize;
     if (includeSubCategory) {
-      const data = await this.prisma.category.findMany({
+      const [data, totalData] = await Promise.all([this.prisma.category.findMany({
         where: {
           parentId: null
         },
-
+        skip,
+        take: pageSize,
         include: {
           subCategories: {
             select: {
@@ -83,7 +87,9 @@ export class CategoryService {
             }
           }
         }
-      })
+      }),
+      this.prisma.category.count()
+      ])
 
       const formatted = data.flatMap(category => [
         {
@@ -103,10 +109,15 @@ export class CategoryService {
         }))
       ])
 
-      return formatted
+      return {
+        row: formatted,
+        count: totalData,
+        page: page,
+        pageSize: pageSize
+      }
     }
     else {
-      return this.prisma.category.findMany(
+      const [data, totalData] = await Promise.all([this.prisma.category.findMany(
         {
           where: {
             parent: null
@@ -118,7 +129,18 @@ export class CategoryService {
             type: true,
             description: true
           }
-        });
+        }),
+      this.prisma.category.count({
+        where: {
+          parent: null
+        },
+      })])
+      return {
+        row: data,
+        count: totalData,
+        page: page,
+        pageSize: pageSize
+      }
     }
   }
 

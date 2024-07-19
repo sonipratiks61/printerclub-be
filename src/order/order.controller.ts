@@ -1,10 +1,11 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { ResponseService } from 'utils/response/customResponse';
 import { AuthGuard } from '@nestjs/passport';
 import { IdValidationPipe } from 'utils/validation/paramsValidation';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { CustomerOrderInvoiceService } from './orderInvoice/orderCustomerInvoice.service';
+import { PaginationDto } from 'utils/pagination/pagination';
 
 @Controller('order')
 export class OrderController {
@@ -42,9 +43,9 @@ export class OrderController {
 
     @Get()
     @UseGuards(AuthGuard('jwt')) // Ensures only authenticated users can access this route
-    async fetchAll(@Res() res) {
+    async fetchAll(@Res() res,@Query() paginationDto: PaginationDto,) {
         try {
-            const data = await this.orderService.findAll();
+            const data = await this.orderService.findAll(paginationDto);
             this.responseService.sendSuccess(
                 res,
                 'Order Fetched Successfully',

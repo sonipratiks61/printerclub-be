@@ -6,6 +6,7 @@ import { ProductService } from 'src/product/product.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateOrderItemsDto } from './dto/create-order-Item.dto';
 import { validate } from 'class-validator';
+import { PaginationDto } from 'utils/pagination/pagination';
 
 @Injectable()
 export class OrderItemsService {
@@ -32,13 +33,27 @@ export class OrderItemsService {
         return data;
     }
 
-    async findAll() {
-        return await this.prisma.orderItem.findMany({
-            include: {
-                product: true
-            }
-        })
-    }
+    async findAll( paginationDto: PaginationDto) {
+        const { page = 1, pageSize = 10 } = paginationDto;
+        const skip = (page - 1) * pageSize;
+        const [orderItems, totalOrderItems]= await Promise.all([
+            this.prisma.orderItem.findMany({
+              skip,
+              take: pageSize,
+              include: {
+                        product: true
+                    }
+            }),
+            this.prisma.orderHistory.count(),
+          ]);return{
+            row:orderItems,
+            count: totalOrderItems,
+            page:page,
+            pageSize:pageSize
+          }
+          
+        }
+    
 
     async findOne(id: number) {
 

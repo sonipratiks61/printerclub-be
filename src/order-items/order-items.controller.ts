@@ -4,6 +4,7 @@ import { IdValidationPipe } from 'utils/validation/paramsValidation';
 import { CreateOrderItemsDto } from './dto/create-order-Item.dto';
 import { OrderItemsService } from './order-items.service';
 import { ResponseService } from 'utils/response/customResponse';
+import { PaginationDto } from 'utils/pagination/pagination';
 
 @Controller('orderItems')
 export class OrderItemsController {
@@ -13,7 +14,7 @@ export class OrderItemsController {
 
     @Get()
     @UseGuards(AuthGuard('jwt'))
-    async orderItemSearchByOrderId(@Query('orderId') orderId: string, @Res() res) {
+    async orderItemSearchByOrderId(@Query('orderId') orderId: string, @Res() res,@Query()paginationDto:PaginationDto) {
         try {
             const orderItemId = parseInt(orderId, 10);
             if(orderItemId)
@@ -26,7 +27,7 @@ export class OrderItemsController {
             }
        }
     else{
-        const orderItems = await this.orderItemsService.findAll();
+        const orderItems = await this.orderItemsService.findAll(paginationDto);
         this.responseService.sendSuccess(
             res,
             'OrderItems Fetched Successfully',
