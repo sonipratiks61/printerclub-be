@@ -9,7 +9,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-import { CreateAddressDto } from './create-address.dto';
+import { CreateAddressDto } from './create-and-update-address.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsTenDigitNumber } from 'utils/validation/phoneNumberValidation';
