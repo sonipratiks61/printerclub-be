@@ -26,8 +26,9 @@ export async function generateInvoiceNumber() {
         newInvoiceNumber = lastInvoiceNumber + 1;
     } else {
         newInvoiceNumber = 1;
-        return newInvoiceNumber;
     }
+        return newInvoiceNumber;
+    
 }
 
 export async function FinancialYear() {
