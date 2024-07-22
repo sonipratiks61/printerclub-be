@@ -98,25 +98,11 @@ export class CustomerOrderInvoiceService {
                     totalPrice: parseFloat(totalPrice)
                 };
             }),
+            customerDetails: order.customerDetails[0]
+                
+            }
 
-            customerDetails: order.customerDetails.map((item) => {
-                return {
-                    name: item.name,
-                    email: item.email,
-                    mobileNumber: item.mobileNumber,
-                    address: item.address.map(item => {
-                        return {
-                            address: item.address,
-                            city: item.city,
-                            state: item.state,
-                            pinCode: item.pinCode,
-                            country: item.country
-                        }
-                    })
-                }
-            })
-
-        };
+        
         return formattedOrder;
 
 
