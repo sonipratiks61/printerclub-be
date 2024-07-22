@@ -2,7 +2,7 @@ import { Body, ConflictException, Controller, Delete, Get, Param, Post, Put, Req
 import { AttributeService } from './attribute.service';
 import { ResponseService } from 'utils/response/customResponse';
 import { AuthGuard } from '@nestjs/passport';
-import { CreateAddressDto } from 'src/user/dto/create-address.dto';
+import { CreateAddressDto } from 'src/user/dto/create-and-update-address.dto';
 import { CreateAttributeDto } from './dto/attribute.dto';
 import { IdValidationPipe } from 'utils/validation/paramsValidation';
 
