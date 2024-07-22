@@ -11,7 +11,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AddressService } from './address.service';
-import { CreateAddressDto } from '../user/dto/create-address.dto';
+import { CreateAddressDto,UpdateAddressDto } from '../user/dto/create-and-update-address.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { NotFoundException } from '@nestjs/common';
 import {
@@ -24,7 +24,6 @@ import { ValidationError } from 'class-validator';
 import { getCustomValidationError } from 'utils/validation/validationFunction';
 import { ResponseService } from '../../utils/response/customResponse';
 import { IdValidationPipe } from 'utils/validation/paramsValidation';
-import { UpdateAddressDto } from 'src/user/dto/update-address.dto';
 @Controller('address')
 export class AddressController {
   constructor(
