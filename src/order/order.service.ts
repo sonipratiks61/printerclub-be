@@ -26,7 +26,7 @@ export class OrderService {
         }
       }
     
-      const invoiceNumber = await generateInvoiceNumber(); // Await the promise to get the bigint value
+      const invoiceNumber = await generateInvoiceNumber();
       const createdOrder = await this.prisma.order.create({
         data: {
           advancePayment,
