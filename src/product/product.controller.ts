@@ -101,7 +101,7 @@ export class ProductController {
       if (!product) {
         this.responseService.sendNotFound(
           res,
-          'Invalid Product',
+          'Product not Found',
         );
       }
       this.responseService.sendSuccess(res, ' Product Fetch Successfully', product);
@@ -171,7 +171,7 @@ export class ProductController {
       if (!product) {
         this.responseService.sendNotFound(
           res,
-          'Invalid Product Id'
+          'Product not Found'
         );
       }
     const data=await this.productService.remove(productId);
