@@ -37,12 +37,16 @@ export class ProductController {
     try {
       const userId = req.user.id;
       const data = await this.productService.create(createProductDto, userId);
+      if(data){
       this.responseService.sendSuccess(res, 'Product Created Successfully', data
       );
+      }
+      else{
+        this.responseService.sendBadRequest(res, 'Product Not Created')
+      }
     } catch (error) {
-      console.log(error);
       if (error instanceof BadRequestException) {
-        this.responseService.sendBadRequest(res, error.message, error);
+        this.responseService.sendBadRequest(res, error.message);
       } else if (error instanceof NotFoundException) {
         this.responseService.sendNotFound(res, error.message);
         return;
@@ -97,7 +101,7 @@ export class ProductController {
       if (!product) {
         this.responseService.sendNotFound(
           res,
-          'Product not found',
+          'Invalid Product',
         );
       }
       this.responseService.sendSuccess(res, ' Product Fetch Successfully', product);
@@ -127,17 +131,21 @@ export class ProductController {
          "Product not Found",
         );
       }
-      const updatedCategory = await this.productService.update(
+      const data = await this.productService.update(
         productId,
         updateProductDto,
       );
-      this.responseService.sendSuccess(
+      if(data)
+     { this.responseService.sendSuccess(
         res,
         'Product Updated Successfully',
-        updatedCategory,
-      );
+        data,
+      );}
+      else{
+        this.responseService.sendBadRequest(res, ' Failed to Product Updated')
+
+      }
     } catch (error) {
-      console.log(error);
       if (error instanceof BadRequestException) {
         this.responseService.sendBadRequest(res, error.message, error);
       } else if (error instanceof NotFoundException) {
@@ -163,19 +171,23 @@ export class ProductController {
       if (!product) {
         this.responseService.sendNotFound(
           res,
-          'Product not Found'
+          'Invalid Product Id'
         );
       }
-      await this.productService.remove(productId);
+    const data=await this.productService.remove(productId);
+    if(data){
       this.responseService.sendSuccess(res, 'Product Deleted Successfully');
+    }
+    else{
+      this.responseService.sendBadRequest(res, 'Failed to Product Deleted');
+    }
     } catch (error) {
-      console.error(error);
       if (error instanceof NotFoundException) {
         this.responseService.sendNotFound(res, error.message);
       } else {
         this.responseService.sendInternalError(
           res,
-          error.message || 'Something Went Wrong',
+         'Something Went Wrong',
           error,
         );
       }

@@ -8,9 +8,7 @@ import { SubCategoryService } from 'src/sub-category/sub-category.service';
 @Injectable()
 export class ProductService {
   constructor(private prisma: PrismaService,
-    private categoryService: CategoryService,
-    private subCategoryService: SubCategoryService) { }
-
+    private categoryService: CategoryService,) { }
   async create(createProductDto: CreateProductDto, userId: number) {
     const categoryId = await this.categoryService.findOne(createProductDto.categoryId);
     if (!categoryId) {
@@ -65,6 +63,9 @@ export class ProductService {
 
   async findAll() {
     const products = await this.prisma.product.findMany({
+      where: {
+        exclude: false
+      },
       include: {
         category: {
           select: {
@@ -117,7 +118,25 @@ export class ProductService {
 
   async findOne(id: number) {
     return await this.prisma.product.findUnique({
-      where: { id },
+      where: {
+        id,
+        exclude: false
+      },
+      select: {
+        id: true,
+        name: true,
+        userId: true,
+        categoryId: true,
+        description: true,
+        quantity: true,
+        attributes: true,
+        isFitmentRequired: true,
+        isMeasurementRequired: true,
+        price: true,
+        category: true,
+        createdAt: true,
+        updatedAt: true,
+      }
     });
   }
 
@@ -167,8 +186,8 @@ export class ProductService {
     const { type, min, max, options } = updateProductDto.quantity;
 
     if (type === 'text') {
-      if (min === undefined || max === undefined) {
-        throw new BadRequestException('Both minimum and maximum quantity must be provided as a QuantityRange object for text type');
+      if (min === undefined) {
+        throw new BadRequestException('Minimum quantity must be provided for text type');
       }
       productData = {
         ...productData,
@@ -197,7 +216,11 @@ export class ProductService {
         productId: id,
       },
     });
-    const data = this.prisma.product.delete({ where: { id } });
+    const data = this.prisma.product.update({
+      where: { id: id }, data: {
+        exclude: true
+      }
+    });
     return data;
   }
 }
