@@ -171,7 +171,7 @@ export class ProductController {
       if (!product) {
         this.responseService.sendNotFound(
           res,
-          'Product not Found'
+          'Invalid Product Id'
         );
       }
     const data=await this.productService.remove(productId);
