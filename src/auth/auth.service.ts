@@ -22,7 +22,10 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(user.password, 8);
     try {
       const defaultRole = await this.prisma.role.findUnique({
-        where: { name: 'user' },
+        where: { name: 'User' },
+        include: {
+          capabilityIds: true
+        },
       });
       if (!defaultRole) {
         this.responseService.sendBadRequest(
@@ -94,7 +97,23 @@ export class AuthService {
         gstNumber: true,
         createdAt: true,
         updatedAt: true,
-        role: true,
+        role: {
+          select: {
+            id: true,
+            name: true,
+            capabilityIds: {
+              include: {
+                capability: {
+                  select: {
+                    id: true,
+                    name: true,
+                  }
+                }
+              }
+            }
+          }
+        },
+
         addresses:{
           select:{
             address:true,
@@ -116,9 +135,12 @@ export class AuthService {
 
     if (user.isActive && (await bcrypt.compare(pass, user.password))) {
       const { password: _password, role, ...result } = user;
+      const capabilityIds = user.role.capabilityIds.map((item) => item.capability.id);
       return {
         ...result,
+        roleId: role.id,
         role: role.name,
+        capabilities: capabilityIds
       };
     }
     return null;
