@@ -124,14 +124,11 @@ export class OrderController {
         try {
             const orderId = parseInt(id, 10);
             const Invoice = await this.customerOrderInvoiceService.customerOrderInvoice(orderId);
-            if (!Invoice) {
-                this.responseService.sendNotFound(
-                    res,
-                    "Order Id Invalid",
-                );
-            }
             this.responseService.sendSuccess(res, 'Fetch Successfully', Invoice);
         } catch (error) {
+            if(error instanceof(NotFoundException)){
+                this.responseService.sendNotFound(res, error.message);
+            }
             this.responseService.sendInternalError(
                 res,
                 'Something Went Wrong',
