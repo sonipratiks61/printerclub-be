@@ -55,6 +55,7 @@ const capabilities = [
   { name: "Edit Order Status" },
   { name: "Delete Order Status" },
   { name: "View Order Status" },
+  { name: "Edit Attribute" },
 
 ]
 async function main() {
@@ -224,6 +225,10 @@ async function main() {
     },
     {
       roleId: 1, capabilityId: 29, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 30, createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
     },
     {
