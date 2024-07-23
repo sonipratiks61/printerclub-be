@@ -29,6 +29,7 @@ export class UserService {
         },
         role: {
           select: {
+            id:true,
             name: true,
           },
         },
@@ -46,6 +47,7 @@ export class UserService {
       gstNumber: user.gstNumber,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
+      roleId:user.role.id,
       role: user.role.name,
       addresses: user.addresses,
     }));
