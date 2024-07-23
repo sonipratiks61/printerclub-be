@@ -2,10 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { RoleAndCapabilityDto } from './dto/role-and-capability.dto';
 import { RoleAndCapabilityMapping } from '@prisma/client';
+import { CapabilityService } from 'src/capabilities/capability.service';
 
 @Injectable()
 export class RoleAndCapabilityService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly capabilityService: CapabilityService,
+  ) {}
 
   async create(
     roleAndCapabilityDto: RoleAndCapabilityDto,
@@ -72,5 +76,37 @@ export class RoleAndCapabilityService {
         capability: true,
       },
     });
+  }
+
+  async delete(
+    roleAndCapabilityDto: RoleAndCapabilityDto,
+  ): Promise<RoleAndCapabilityMapping[]> {
+    try {
+      const { roleId, capabilityIds } = roleAndCapabilityDto;
+
+      let deletedEntries = [];
+
+      for (const capabilityId of capabilityIds) {
+
+        const checkCapability = await this.capabilityService.findOne(capabilityId);
+
+        if(!checkCapability) {
+          throw new Error('Invalid capability ID');
+        }
+
+        const data = await this.prisma.roleAndCapabilityMapping.delete({
+          where: {
+            capabilityId_roleId: { roleId, capabilityId },
+          },
+        });
+
+        deletedEntries.push(data);
+      }
+
+      return deletedEntries;
+    } catch (error) {
+      console.error('Error deleting RoleAndCapabilityMapping:', error);
+      throw error;
+    }
   }
 }

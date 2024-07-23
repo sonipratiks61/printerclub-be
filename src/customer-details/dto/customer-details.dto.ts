@@ -9,7 +9,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { IsTenDigitNumber } from 'utils/validation/phoneNumberValidation';
-import { CreateAddressDto } from 'src/user/dto/create-address.dto';
+import { CreateAddressDto } from 'src/user/dto/create-and-update-address.dto';
 
 export class CreateCustomerDetailsDto {
     @IsNotEmpty({ message: 'Name cannot be empty' })

@@ -1,19 +1,32 @@
 // attachments.controller.ts
-import { Controller, Post, UseGuards, Get, Body, Res, Param, NotFoundException, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  UseGuards,
+  Get,
+  Body,
+  Res,
+  Param,
+  NotFoundException,
+  Delete,
+  Patch,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiResponse } from '@nestjs/swagger';
-import { CreateRoleDto } from './dto/create-role.dto';
+import { CreateRoleDto, UpdateRoleDto } from './dto/role.dto';
 // import { RoleService } from './role.service';
 import { ResponseService } from 'utils/response/customResponse';
 import { RoleService } from './role.service';
 import { IdValidationPipe } from 'utils/validation/paramsValidation';
+import { RoleAndCapabilityController } from 'src/role-and-capability/role-and-capability.controller';
 
 @Controller('role')
 export class RoleController {
   constructor(
     private readonly roleService: RoleService,
-    private readonly responseService: ResponseService, // Inject the ResponseService
-  ) { }
+    private readonly responseService: ResponseService,
+    private readonly roleAndCapabilityController: RoleAndCapabilityController,
+  ) {}
 
   @Get()
   async fetchAll(@Res() res) {
@@ -29,7 +42,6 @@ export class RoleController {
     }
   }
 
-
   @Post()
   @ApiResponse({
     status: 200,
@@ -40,22 +52,22 @@ export class RoleController {
     try {
       const data = await this.roleService.findByName(createRoleDto.name);
       if (data) {
-        this.responseService.sendBadRequest(res, "This Role Name is already exist")
-      }
-      else {
-        const data=await this.roleService.create(createRoleDto);
-        if(data){
-        this.responseService.sendSuccess(res, 'Role Create Successfully');
-        }
-        else{
-          this.responseService.sendBadRequest(res,'Failed to Role Create')
+        this.responseService.sendBadRequest(
+          res,
+          'This Role Name is already exist',
+        );
+      } else {
+        const data = await this.roleService.create(createRoleDto);
+        if (data) {
+          this.responseService.sendSuccess(res, 'Role Create Successfully');
+        } else {
+          this.responseService.sendBadRequest(res, 'Failed to Role Create');
         }
       }
     } catch (error) {
       if (error instanceof NotFoundException) {
         this.responseService.sendNotFound(res, error.message);
-      }
-      else {
+      } else {
         this.responseService.sendInternalError(
           res,
           'Something Went Wrong',
@@ -72,26 +84,17 @@ export class RoleController {
       const roleId = parseInt(id, 10);
       const role = await this.roleService.findOne(roleId);
       if (!role) {
-        this.responseService.sendNotFound(
-          res,
-          "Invalid Role Id ",
-        );
+        this.responseService.sendNotFound(res, 'Invalid Role Id ');
       }
-      if(role){
-      this.responseService.sendSuccess(res, 'Role Fetch Successfully', role);
-      }
-      else{
-        this.responseService.sendBadRequest(res,'Failed to  Role Fetch')
+      if (role) {
+        this.responseService.sendSuccess(res, 'Role Fetch Successfully', role);
+      } else {
+        this.responseService.sendBadRequest(res, 'Failed to  Role Fetch');
       }
     } catch (error) {
-      this.responseService.sendInternalError(
-        res,
-        'Something Went Wrong',
-      );
-
+      this.responseService.sendInternalError(res, 'Something Went Wrong');
     }
   }
-
 
   @Delete(':id')
   @UseGuards(AuthGuard('jwt'))
@@ -100,26 +103,67 @@ export class RoleController {
     try {
       const role = await this.roleService.findOne(roleId);
       if (!role) {
-        this.responseService.sendNotFound(
-          res,
-          'Invalid Role Id',
-        );
+        this.responseService.sendNotFound(res, 'Invalid Role Id');
       }
-      const data=await this.roleService.delete(roleId);
-      if(data){
-      this.responseService.sendSuccess(res, 'Role Deleted Successfully');
-      }
-      else{
-        this.responseService.sendBadRequest(res,"Failed to Role Delete")
+      const data = await this.roleService.delete(roleId);
+      if (data) {
+        this.responseService.sendSuccess(res, 'Role Deleted Successfully');
+      } else {
+        this.responseService.sendBadRequest(res, 'Failed to Role Delete');
       }
     } catch (error) {
-      this.responseService.sendInternalError(
-        res,
-        'Something Went Wrong',
-      );
+      this.responseService.sendInternalError(res, 'Something Went Wrong');
     }
   }
 
+  @Patch(':id')
+  @UseGuards(AuthGuard('jwt'))
+  async updateRole(
+    @Param('id', IdValidationPipe) id: string,
+    @Body() updateRoleDto: UpdateRoleDto,
+    @Res() res,
+  ) {
+    try {
+      const roleId = parseInt(id, 10);
+      const { name, capabilityIds } = updateRoleDto;
 
+      const role = await this.roleService.findOne(roleId);
 
+      if (!role) {
+        this.responseService.sendNotFound(res, 'Invalid role ID!');
+      }
+
+      let existingCapabilities = role.capabilityIds.map((cap, index) => {
+        return cap.capability.id;
+      });
+
+      const capabilitiesToAdd = capabilityIds.filter(
+        (id) => !existingCapabilities.includes(id),
+      );
+
+      const capabilitiesToDelete = existingCapabilities.filter(
+        (id) => !capabilityIds.includes(id),
+      );
+
+      const updatedCapabilities =
+        await this.roleAndCapabilityController.udpateRoleAndCapabilities(
+          { roleId, capabilitiesToAdd, capabilitiesToDelete },
+          res,
+        );
+
+      const updatedRole = await this.roleService.updateRoleName(roleId, name);
+
+      if (!updatedRole || !updatedCapabilities) {
+        this.responseService.sendInternalError(res, 'Something Went Wrong');
+      }
+
+      this.responseService.sendSuccess(
+        res,
+        'Role Updated Successfully',
+        updatedRole,
+      );
+    } catch (error) {
+      this.responseService.sendInternalError(res, 'Something Went Wrong');
+    }
+  }
 }
