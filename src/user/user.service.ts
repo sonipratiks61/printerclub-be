@@ -141,14 +141,6 @@ export class UserService {
 
   async updateUserByAdmin(id: number, updateUserDto: UpdateUserDto) {
     const role = await this.roleService.findOne(updateUserDto.roleId);
-    const userMobileNumber = await this.prisma.user.findFirst({
-      where: {
-        mobileNumber: updateUserDto.mobileNumber
-      }
-    })
-    if (userMobileNumber) {
-      throw new ConflictException("Mobile is Already Exist ")
-    }
     if (!role) {
       throw new NotFoundException("Role not Found")
     }
