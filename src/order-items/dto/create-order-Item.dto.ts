@@ -29,37 +29,31 @@ export class CreateOrderItemsDto {
 
     @IsOptional()
     @IsString()
-    @IsNotEmpty()
     address:string
 
     @IsOptional()
     @IsString()
-    @IsNotEmpty()
     pinCode:string
 
     @IsOptional()
     @IsString()
-    @IsNotEmpty()
     state:string
 
     @IsOptional()
     @IsString()
-    @IsNotEmpty()
     country:string
 
     @IsOptional()
     @IsString()
-    @IsNotEmpty()
     city:string
 
     @IsOptional()
     @IsString()
-    @IsNotEmpty()
     measurement:string
 
     @IsString()
     @IsNotEmpty()
-    description: string;
+    description: string
 
     @IsOptional()
     @IsInt()
