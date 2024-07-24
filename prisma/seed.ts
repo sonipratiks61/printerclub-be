@@ -9,7 +9,7 @@ const attributes = [
   { name: 'textureType' },
   { name: 'paperQuality' },
   { name: 'colour' },
-  { name: 'paperQuanlity' }, // Assuming it's not a typo, otherwise 'paperQuality' might be intended.
+  { name: 'paperQuanlity' }, 
   { name: 'pocket' },
   { name: 'binding' },
   { name: 'envelopeCode' },
@@ -25,12 +25,44 @@ const attributes = [
   { name: 'stickersCountPerSheet' },
   { name: 'OpenType' },
 ];
+const capabilities = [
+  { name: "Add Category" },
+  { name: "Edit Category" },
+  { name: "Delete Category" },
+  { name: "View Category" },
+  { name: "Add Product" },
+  { name: "Edit Product" },
+  { name: "Delete Product" },
+  { name: "View Product" },
+  { name: "Add Order" },
+  { name: "Delete Order" },
+  { name: "View Order" }, 
+  { name: 'Add Attribute' },
+  { name: "View Attribute" },
+  { name: "Delete Attribute" },
+  { name: "Edit Order Item" },
+  { name: "View Order Item" },
+  { name: "Delete Order Item" },
+  { name: "Add User" },
+  { name: "Edit User" },
+  { name: "View User" },
+  { name: "Delete User" },
+  { name: "Add Order History" },
+  { name: "View Order History" },
+  { name: "Edit Order History" },
+  { name: "Delete Order History" },
+  { name: "Add Order Status" },
+  { name: "Edit Order Status" },
+  { name: "Delete Order Status" },
+  { name: "View Order Status" },
+  { name: "Edit Attribute" },
 
+]
 async function main() {
   for (const attribute of attributes) {
     await prisma.attribute.upsert({
       where: { name: attribute.name },
-      update: {}, // No need to update anything if it already exists
+      update: {}, 
       create: {
         ...attribute,
         createdAt: new Date(), // Use the current date for createdAt
@@ -38,20 +70,27 @@ async function main() {
       },
     });
   }
-  // create two dummy articles
-  const role1=await prisma.role.upsert({
-    where: { name: 'User' },
-    update: {}, // No need to update anything if it already exists
-    create: {
-      name: 'User',
+  for (const capability of capabilities) {
+    await prisma.capability.upsert({
+      where: { name: capability.name },
+      update: {}, 
+      create: {
+        ...capability,
+        createdAt: new Date(), 
+        updatedAt: new Date(),
+      },
+    });
+  }
+
+
+  await prisma.role.upsert({
+    where: { name: 'Admin' },
+    update: {
+      name: 'Admin',
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
-    },
-  });
-
-  const role2=await prisma.role.upsert({
-    where: { name: 'Admin' },
-    update: {}, // No need to update anything if it already exists
+  
+    }, 
     create: {
       name: 'Admin',
       createdAt: new Date('2023-07-09'),
@@ -59,51 +98,156 @@ async function main() {
     },
   });
 
+  await prisma.role.upsert({
+    where: { name: 'User' },
+    update: {}, 
+    create: {
+      name: 'User',
+      createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+  });
 
-  const capability1 = await prisma.capability.upsert({
-    where: { name: 'Read' },
-    create: {
-      name: 'Read',
-      createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-    update: {
-      createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-  });
-  
-  const capability2 = await prisma.capability.upsert({
-    where: { name: 'Write' },
-    create: {
-      name: 'Write',
-      createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-    update: {
-      createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-  });
+
+
 
 
   await prisma.roleAndCapabilityMapping.createMany({
-    data: [
-      { roleId: role1.id, capabilityId: capability1.id,createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),},
-      { roleId: role1.id, capabilityId: capability2.id,createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),},
-      { roleId: role2.id, capabilityId: capability1.id,createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'), },
-    ],
-  });
+    data: [{
+      roleId: 1, capabilityId: 1, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 2, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 3, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 4, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 5, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 6, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 7, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 8, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 9, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 10, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 11, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 12, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 13, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 14, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 15, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 16, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 17, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 18, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 19, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 20, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 21, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 22, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 23, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 24, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 25, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 26, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    }, {
+      roleId: 1, capabilityId: 27, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    }, {
+      roleId: 1, capabilityId: 28, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 29, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 30, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 2, capabilityId: 4, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+  {
+     roleId: 2, capabilityId: 8, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },]
+  })
+
   const userData = {
-    businessName: "John",
-    name: "John",
-    email: "user@gmail.com",
-    mobileNumber: "1111111111",
-    password: "password123",  // This should be replaced with the actual password input
-    isActive: false,
+    businessName: " Admin-Company",
+    name: "Admin",
+    email: "admin@gmail.com",
+    mobileNumber: "123456789",
+    password: "Admin@123",  
+    isActive: true,
     gstNumber: "1234567890",
     acceptTerms: true,
     roleId: 1,
@@ -116,12 +260,12 @@ async function main() {
 
   
   const data = {
-    businessName: "Admin",
-    name: "Admin",
-    email: "admin@gmail.com",
+    businessName: "User-Company",
+    name: "User",
+    email: "user@gmail.com",
     mobileNumber: "1212121212",
-    password: "password123", 
-    isActive: true,
+    password: "User@123",
+    isActive: false,
     gstNumber: "1234567890",
     acceptTerms: true,
     roleId: 2,
@@ -129,19 +273,18 @@ async function main() {
     updatedAt: new Date('2023-07-09'),
   };
 
-  // Hash the password
-  const hashedPassword2= await bcrypt.hash(data.password, 8);
+  const hashedPassword2 = await bcrypt.hash(data.password, 8);
   data.password = hashedPassword2;
 
-await prisma.user.upsert({
+  await prisma.user.upsert({
     where: { email: userData.email },
     update: {
       ...userData,
-      updatedAt: new Date(),  
+      updatedAt: new Date(),
     },
     create: userData,
   });
-   await prisma.user.upsert({
+  await prisma.user.upsert({
     where: { email: data.email },
     update: {
       ...data,
@@ -149,7 +292,59 @@ await prisma.user.upsert({
     },
     create: data,
   });
- 
+
+  await prisma.address.upsert({
+    where: {
+      id: 1
+    },
+    create: {
+      address: "PU-54 Backbencher Technologies",
+      city: "Indore",
+      pinCode: "452010",
+      userId: 1,
+      state: "Madhya Pradesh",
+      country: "India",
+      createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    update: {
+      address: "PU-54 Backbencher Technologies",
+      city: "Indore",
+      pinCode: "452010",
+      userId: 1,
+      state: "Madhya Pradesh",
+      country: "India",
+      createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    }
+  })
+
+  await prisma.address.upsert({
+    where: {
+      id: 2
+    },
+    create: {
+      address: "SiyaRam Colony",
+      city: "Bhopal",
+      pinCode: "462001",
+      userId: 2,
+      state: "Madhya Pradesh",
+      country: "India",
+      createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    update: {
+      address: "SiyaRam Colony",
+      city: "Bhopal",
+      pinCode: "462001",
+      userId: 2,
+      state: "Madhya Pradesh",
+      country: "India",
+      createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    }
+  })
+
   await prisma.category.upsert({
     where: {
       id: 1
@@ -242,24 +437,6 @@ await prisma.user.upsert({
       name: "ProductAttribute 2",
       productId:1,
       type:"text",
-      
-    },
-    update: {}
-  })
-  await prisma.address.upsert({
-    where: {
-      id: 1
-    },
-    create: {
-      address: "Shyam Hill",
-      city:"Bhopal",
-      pinCode:"462001",
-      userId:1,
-      state:"Madhya Pradesh",
-      country:"India",
-      createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-
       
     },
     update: {}
