@@ -1,10 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { UpdateUserDto } from './dto/create-user.dto';
-
+import { CreateUserDto, UpdateUserDto } from './dto/create-user.dto';
+import * as bcrypt from 'bcrypt';
+import { RoleService } from 'src/role/role.service';
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService,
+    private roleService: RoleService) { }
 
   async findAllUsersWithAddresses() {
     const users = await this.prisma.user.findMany({
@@ -60,13 +62,106 @@ export class UserService {
       data: { isActive },
     });
   }
-  async updateProfile(id: number, updateUserDto: UpdateUserDto) {
 
-    // Fetch current address associated with the user
+  async findOne(id: number) {
+    return this.prisma.user.findUnique({
+      where: {
+        id,
+      },
+    });
+  }
+
+  async userCreateByAdmin(createUserDto: CreateUserDto) {
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 8);
+    const userEmail = await this.prisma.user.findFirst({
+      where: {
+        email: createUserDto.email
+
+      }
+    });
+    const userMobileNumber = await this.prisma.user.findFirst({
+      where: {
+        mobileNumber: createUserDto.mobileNumber
+
+      }
+    })
+    const role = await this.roleService.findOne(createUserDto.roleId)
+    if (!role) {
+      throw new NotFoundException('Role not found')
+    }
+    if (userEmail) {
+      throw new ConflictException("Email is Already Exist ")
+    }
+    if (userMobileNumber) {
+      throw new ConflictException("Mobile is Already Exist ")
+    }
+
+    const data = await this.prisma.user.create({
+      data: {
+        name: createUserDto.name,
+        businessName: createUserDto.businessName,
+        roleId: createUserDto.roleId,
+        gstNumber: createUserDto.gstNumber,
+        email: createUserDto.email,
+        mobileNumber: createUserDto.mobileNumber,
+        acceptTerms: createUserDto.acceptTerms,
+        isActive: false,
+        password: hashedPassword,
+        addresses: {
+          create: createUserDto.addresses
+        }
+      },
+      select: {
+        id: true,
+        name: true,
+        businessName: true,
+        email: true,
+        mobileNumber: true,
+        gstNumber: true,
+        roleId: true,
+        isActive: true,
+        acceptTerms: true,
+        addresses: {
+          select: {
+            address: true,
+            city: true,
+            state: true,
+            country: true,
+            pinCode: true
+          }
+        },
+        role: {
+          select: {
+            id: true,
+            name: true,
+          }
+        }
+      }
+    })
+    return data;
+  }
+
+  async updateUserByAdmin(id: number, updateUserDto: UpdateUserDto) {
+    const role = await this.roleService.findOne(updateUserDto.roleId);
+    const userMobileNumber = await this.prisma.user.findFirst({
+      where: {
+        mobileNumber: updateUserDto.mobileNumber
+      }
+    })
+    if (userMobileNumber) {
+      throw new ConflictException("Mobile is Already Exist ")
+    }
+    if (!role) {
+      throw new NotFoundException("Role not Found")
+    }
     const address = await this.prisma.address.findFirst({
       where: {
         userId: id,
       },
+      select: {
+        id: true,
+
+      }
     });
     const data = await this.prisma.user.update({
       where: {
@@ -77,6 +172,7 @@ export class UserService {
         businessName: updateUserDto.businessName,
         mobileNumber: updateUserDto.mobileNumber,
         gstNumber: updateUserDto.gstNumber,
+        roleId: updateUserDto.roleId,
         addresses: {
           update: {
             where: {
@@ -93,27 +189,28 @@ export class UserService {
         },
 
       },
-      include: { addresses: true }
+      select: {
+        id: true, name: true, businessName: true,
+
+        addresses: {
+          select: {
+            id: true,
+            address: true,
+            city: true,
+            state: true,
+            pinCode: true,
+            country: true,
+          }
+        }, role: {
+          select: {
+            id: true,
+            name: true,
+
+          }
+        }
+      }
     })
+    return data;
 
-    const formattedResponse = {
-      id: data.id,
-      mobileNumber: data.mobileNumber,
-      businessName: data.businessName,
-      name: data.name,
-      gstNumber: data.gstNumber,
-      roleId: data.roleId,
-      acceptTerms: data.acceptTerms,
-      addresses: {
-        id: address.id,
-        country: address.country,
-        state: address.state,
-        city: address.city,
-        pinCode: address.pinCode,
-        address: address.address,
-      },
-
-    };
-    return formattedResponse;
   }
 }

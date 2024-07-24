@@ -2,6 +2,7 @@ import {
   IsBoolean,
   IsDefined,
   IsEmail,
+  IsInt,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -9,11 +10,11 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-import { CreateAddressDto } from './create-and-update-address.dto';
+import { CreateAddressDto, UpdateAddressDto } from './create-and-update-address.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsTenDigitNumber } from 'utils/validation/phoneNumberValidation';
-import { UpdateAddressDto } from './update-address.dto';
+
 
 export class CreateUserDto {
   @ApiProperty({
@@ -76,6 +77,11 @@ export class CreateUserDto {
   @IsBoolean({ message: 'Accept Terms must be Boolean ' })
   acceptTerms: boolean;
 
+  @IsOptional()
+  @IsNotEmpty({ message: 'RoleId cannot be empty.' })
+  @IsInt({ message: 'RoleId must be a Integer' })
+  roleId: number;
+
   @ApiProperty({
     type: [CreateAddressDto],
     description: 'List of addresses associated with the user',
@@ -116,6 +122,15 @@ export class UpdateUserDto {
   @IsString({ message: 'Name must be a string' })
   name: string;
 
+
+  @ApiProperty({
+    description: 'The RoleId of the user',
+    example: 1,
+  })
+  @IsOptional()
+  @IsNotEmpty({ message: 'RoleId cannot be empty.' })
+  @IsInt({ message: 'RoleId must be a Integer' })
+  roleId: number;
 
   @ApiProperty({
     description: 'The mobile phone number of the user',
