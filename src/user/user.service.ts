@@ -89,13 +89,18 @@ export class UserService {
     if (!role) {
       throw new NotFoundException('Role not found')
     }
+    const errors: { email?: string; mobileNumber?: string } = {};
+
     if (userEmail) {
-      throw new ConflictException("Email is Already Exist ")
+      errors.email = "Email is Already Exist";
     }
     if (userMobileNumber) {
-      throw new ConflictException("Mobile is Already Exist ")
+      errors.mobileNumber = "MobileNumber is Already Exist";
     }
-
+    if(Object.keys(errors).length>0) {
+      throw new ConflictException(errors);
+    }
+    
     const data = await this.prisma.user.create({
       data: {
         name: createUserDto.name,
