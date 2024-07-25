@@ -79,8 +79,8 @@ export class CreateUserDto {
   acceptTerms: boolean;
 
   @IsOptional()
-  @IsNotEmpty({ message: 'RoleId cannot be empty.' })
-  @IsInt({ message: 'RoleId must be a Integer' })
+  @IsNotEmpty({ message: 'Role Id cannot be empty.' })
+  @IsInt({ message: 'Role Id must be a Integer' })
   roleId: number;
 
   @ApiProperty({
@@ -125,12 +125,12 @@ export class UpdateUserDto {
 
 
   @ApiProperty({
-    description: 'The RoleId of the user',
+    description: 'The Role Id of the user',
     example: 1,
   })
   @IsOptional()
-  @IsNotEmpty({ message: 'RoleId cannot be empty.' })
-  @IsInt({ message: 'RoleId must be a Integer' })
+  @IsNotEmpty({ message: 'Role Id cannot be empty.' })
+  @IsInt({ message: 'Role Id must be a Integer' })
   roleId: number;
 
   @ApiProperty({
