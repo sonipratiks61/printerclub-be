@@ -160,7 +160,7 @@ export class UserController {
         return this.responseService.sendNotFound(res, error.message);
       }
       else if (error instanceof ConflictException) {
-        this.responseService.sendConflict(res, error.message);
+        this.responseService.sendConflict(res, error.message,error.getResponse());
       }
      else{
       this.responseService.sendInternalError(
