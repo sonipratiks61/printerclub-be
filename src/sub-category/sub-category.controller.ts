@@ -21,11 +21,6 @@ export class SubCategoryController {
   async findSubCategories(@Query('parentId') parentId: string, @Res() res) {
     try {
       const searchParentId = parseInt(parentId, 10);
-      const parent = await this.categoryService.findOneSubCategory(searchParentId);
-      if (!parent) {
-        return this.responseService.sendNotFound(
-          res, "Invalid Parent Id")
-      }
       const subCategory =
         await this.categoryService.searchSubCategories(searchParentId);
       return this.responseService.sendSuccess(
@@ -34,7 +29,6 @@ export class SubCategoryController {
         subCategory,
       );
     } catch (error) {
-      console.log(error);
       return this.responseService.sendInternalError(
         res,
         error.message,

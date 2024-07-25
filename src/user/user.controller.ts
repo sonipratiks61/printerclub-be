@@ -155,7 +155,6 @@ export class UserController {
         this.responseService.sendBadRequest(res, 'Failed to Create User');
       }
     } catch (error) {
-      console.log(error);
        if(error instanceof NotFoundException){
         return this.responseService.sendNotFound(res, error.message);
       }
