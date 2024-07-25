@@ -74,8 +74,8 @@ import { CustomerOrderInvoiceService } from './order/orderInvoice/orderCustomerI
     CustomerDetailsController,
     OrderItemsController,
     OrderStatusController,
-    CapabilityController
-
+    CapabilityController,
+    RoleAndCapabilityController
   ],
   providers: [
     AppService,
@@ -103,7 +103,8 @@ import { CustomerOrderInvoiceService } from './order/orderInvoice/orderCustomerI
     OrderHistoryService,
     OrderStatusService,
     CustomerOrderInvoiceService,
-    CapabilityService
+    CapabilityService,
+    RoleAndCapabilityController,
   ],
 })
 export class AppModule {
