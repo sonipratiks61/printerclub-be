@@ -103,7 +103,8 @@ import { CustomerOrderInvoiceService } from './order/orderInvoice/orderCustomerI
     OrderHistoryService,
     OrderStatusService,
     CustomerOrderInvoiceService,
-    CapabilityService
+    CapabilityService,
+    RoleAndCapabilityController,
   ],
 })
 export class AppModule {
