@@ -74,8 +74,8 @@ import { CustomerOrderInvoiceService } from './order/orderInvoice/orderCustomerI
     CustomerDetailsController,
     OrderItemsController,
     OrderStatusController,
-    CapabilityController
-
+    CapabilityController,
+    RoleAndCapabilityController
   ],
   providers: [
     AppService,

@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateRoleDto } from './dto/create-role.dto';
+import { CreateRoleDto } from './dto/role.dto';
 import { Role } from '@prisma/client';
 
 @Injectable()
@@ -158,6 +158,14 @@ export class RoleService {
       }
     }
     );
+    return role;
+  }
+
+  async updateRoleName(roleId: number, name: string): Promise<Role | null> {
+    const role = await this.prisma.role.update({
+      where: { id: roleId },
+      data: { name },
+    });
     return role;
   }
 }

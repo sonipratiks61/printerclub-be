@@ -1,6 +1,8 @@
 import {
   IsString,
   IsNotEmpty,
+  IsInt,
+  IsArray,
   ArrayNotEmpty,
   ValidateNested,
 } from 'class-validator';
@@ -17,5 +19,14 @@ export class CreateRoleDto {
   @IsNotEmpty({ message: 'Name cannot be empty' })
   name: string;
 
+  capabilityIds: number[];
+}
+
+export class UpdateRoleDto {
+  @IsString()
+  name: string;
+
+  @IsArray()
+  @IsInt({ each: true })
   capabilityIds: number[];
 }
