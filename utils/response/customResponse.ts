@@ -18,13 +18,13 @@ export class ResponseService {
     resCode: number,
     message: string,
     data: any = {},
-    error: any = null,
+    errors: any = null,
   ) {
     res.status(resCode).json({
       success: resCode <= HttpStatus.CREATED,
       data,
       message,
-      error,
+      errors,
     });
   }
 
