@@ -1,6 +1,7 @@
 // CreateOrderItemsDto.ts
-import { IsNotEmpty, IsNumber, IsString, ValidateNested, IsArray, IsOptional, IsInt } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString, ValidateNested, IsArray, IsOptional, IsInt, IsDefined } from 'class-validator';
 import { Type } from 'class-transformer';
+import { CreateAddressDto } from 'src/user/dto/create-and-update-address.dto';
 
 export class CreateOrderItemsDto {
     @IsNumber()
@@ -29,19 +30,19 @@ export class CreateOrderItemsDto {
 
     @IsOptional()
     @IsString()
-    address:string
+    address: CreateAddressDto["address"];
 
     @IsOptional()
     @IsString()
-    pinCode:string
+    pinCode: CreateAddressDto["pinCode"];
 
     @IsOptional()
     @IsString()
-    state:string
+    state: CreateAddressDto["state"];
 
     @IsOptional()
     @IsString()
-    country:string
+    country: CreateAddressDto["country"];
 
     @IsOptional()
     @IsString()
@@ -65,6 +66,16 @@ export class CreateOrderItemsDto {
     @ValidateNested({ each: true })
     @Type(() => CreateOrderItemAttributeDto)
     attributes: CreateOrderItemAttributeDto[];
+
+    @ValidateNested()
+    @IsOptional()
+    @IsDefined()
+    @Type(() => CreateAddressDto)
+    isMeasurementAddress:CreateAddressDto
+
+    @IsInt()
+    @IsOptional()
+    isMeasurementAddressId:number
 }
 
 export class CreateOrderItemAttributeDto {
