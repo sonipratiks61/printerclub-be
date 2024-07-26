@@ -40,9 +40,9 @@ const capabilities = [
   { name: 'Add Attribute' },
   { name: "View Attribute" },
   { name: "Delete Attribute" },
-  { name: "Edit Order Item" },
-  { name: "View Order Item" },
-  { name: "Delete Order Item" },
+  { name: "Edit Role" },
+  { name: "View Role" },
+  { name: "Delete Role" },
   { name: "Add User" },
   { name: "Edit User" },
   { name: "View User" },
@@ -56,6 +56,11 @@ const capabilities = [
   { name: "Delete Order Status" },
   { name: "View Order Status" },
   { name: "Edit Attribute" },
+  { name:  "Add Role"},
+  { name: "Add Capability" },
+  { name: "Edit Capability" },
+  { name: "Delete Capability" },
+  { name: "View Capability" },
 
 ]
 async function main() {
@@ -229,6 +234,26 @@ async function main() {
     },
     {
       roleId: 1, capabilityId: 30, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 31, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 32, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 33, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 34, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 35, createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
     },
     {
