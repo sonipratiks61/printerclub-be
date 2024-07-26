@@ -32,7 +32,6 @@ export class CustomerOrderInvoiceService {
                                 city: true,
                                 pinCode: true,
                                 address: true,
-                                orderCustomerId: true,
                                 createdAt: true,
                                 updatedAt: true,
                             }
@@ -48,11 +47,8 @@ export class CustomerOrderInvoiceService {
                         description: true,
                         gst: true,
                         discount: true,
-                        address: true,
-                        city: true,
-                        country: true,
-                        state: true,
-                        pinCode: true,
+                        isMeasurementAddress:true
+
                     }
                 },
                 orderHistory: true,
@@ -90,15 +86,15 @@ export class CustomerOrderInvoiceService {
                     description: item.description,
                     gst: item.gst,
                     discount: item.discount,
-                    address: item.address,
-                    city: item.city,
-                    country: item.country,
-                    state: item.state,
-                    pinCode: item.pinCode,
+                    address: item.isMeasurementAddress.address,
+                    city: item.isMeasurementAddress.city,
+                    country: item.isMeasurementAddress.country,
+                    state: item.isMeasurementAddress.state,
+                    pinCode: item.isMeasurementAddress.pinCode,
                     totalPrice: parseFloat(totalPrice)
                 };
             }),
-            customerDetails: order.customerDetails[0]
+            customerDetails:order.customerDetails
                 
             }
 

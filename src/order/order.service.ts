@@ -8,6 +8,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCustomerDetailsDto } from 'src/customer-details/dto/customer-details.dto';
 import { ProductService } from 'src/product/product.service';
 import { generateInvoiceNumber } from 'utils/invoiceFunction/invoiceFunction';
+import { CreateAddressDto } from 'src/user/dto/create-and-update-address.dto';
 
 @Injectable()
 export class OrderService {
@@ -15,87 +16,102 @@ export class OrderService {
     private productService: ProductService) { }
 
 
-    async create(createOrderDto: CreateOrderDto, ownerName: string,userId:number) {
-      const { advancePayment, remainingPayment, totalPayment, paymentMode, orderItems, customerDetails } = createOrderDto;
-      const productIds = [...new Set(orderItems.map(item => item.productId))];
-    
-      for (const productId of productIds) {
-        const product = await this.productService.findOne(productId);
-        if (!product) {
-          throw new NotFoundException("One of the Product does not exist");
-        }
+
+  async create(createOrderDto: CreateOrderDto, ownerName: string) {
+    const { advancePayment, remainingPayment, totalPayment, paymentMode, orderItems, customerDetails } = createOrderDto;
+    const productIds = [...new Set(orderItems.map(item => item.productId))];
+  
+    for (const productId of productIds) {
+      const product = await this.productService.findOne(productId);
+      if (!product) {
+        throw new NotFoundException("One of the Products does not exist");
       }
-    
-      const invoiceNumber = await generateInvoiceNumber();
-      const createdOrder = await this.prisma.order.create({
-        data: {
-          advancePayment,
-          remainingPayment,
-          totalPayment,
-          paymentMode,
-          invoiceNumber,
-          ownerName,
-          customerDetails: {
-            create: {
-              name: customerDetails.name,
-              mobileNumber: customerDetails.mobileNumber,
-              email: customerDetails.email,
-              additionalDetails: customerDetails.additionalDetails,
-              address:{
-                create: {
-                  userId:userId,
-                  address: customerDetails.address.address,
-                  city:customerDetails.address.city,
-                  state:customerDetails.address.state,
-                  pinCode: customerDetails.address.pinCode,
-                  country: customerDetails.address.country,
-
-              }
-            }
-
-              }
-            },
-          orderItems: {
-            createMany: {
-              data: orderItems.map((item: CreateOrderItemsDto) => ({
-                quantity: item.quantity,
-                name: item.name,
-                price: item.price,
-                additionalDetails: item.additionalDetails,
-                productId: item.productId,
-                gst: item.gst,
-                address: item.address,
-                pinCode:item.pinCode,
-                city:item.city,
-                state:item.state,
-                country:item.country,
-                measurement: item.measurement,
-                discount: item.discount,
-                ownerName,
-                description: item.description,
-                attributes: item.attributes?.map(attr => ({
-                  name: attr.name,
-                  value: attr.value,
-                })),
-              })),
-            },
+    }
+  
+    const invoiceNumber = await generateInvoiceNumber();
+    const orderItemsWithAddressIds = await Promise.all(orderItems.map(async (item) => {
+      let isMeasurementAddressId = item.isMeasurementAddressId;
+  
+      if (!isMeasurementAddressId && item.address&&item.city&&item.country&&item.pinCode&&item.state) {
+        const createdAddress = await this.prisma.address.create({
+          data: {
+            address: item.address,
+            city: item.city,
+            state: item.state,
+            country: item.country,
+            pinCode: item.pinCode
           },
-          orderHistory: {
-            create: {
-              status: "Pending",
-              ownerName: ownerName
+        });
+        isMeasurementAddressId = createdAddress.id;
+      }
+  
+      return {
+        ...item,
+        isMeasurementAddressId,
+      };
+    }));
+    const createdOrder = await this.prisma.order.create({
+      data: {
+        advancePayment,
+        remainingPayment,
+        totalPayment,
+        paymentMode,
+        invoiceNumber,
+        ownerName,
+        customerDetails: {
+          create: {
+            name: customerDetails.name,
+            mobileNumber: customerDetails.mobileNumber,
+            email: customerDetails.email,
+            additionalDetails: customerDetails.additionalDetails,
+            address:{
+              create: {
+                address: customerDetails.address.address,
+                city:customerDetails.address.city,
+                state:customerDetails.address.state,
+                pinCode: customerDetails.address.pinCode,
+                country: customerDetails.address.country,
+              }
             }
           }
         },
-        include: {
-          orderItems: true,
-          customerDetails: true,
-          orderHistory: true
+        orderItems: {
+          createMany: {
+            data: orderItemsWithAddressIds.map((item: CreateOrderItemsDto) => ({
+              quantity: item.quantity,
+              name: item.name,
+              price: item.price,
+              additionalDetails: item.additionalDetails,
+              productId: item.productId,
+              gst: item.gst,
+              isMeasurementAddressId: item.isMeasurementAddressId,
+              measurement: item.measurement,
+              discount: item.discount,
+              ownerName,
+              description: item.description,
+              attributes: item.attributes?.map(attr => ({
+                name: attr.name,
+                value: attr.value,
+              })),
+            })),
+          },
         },
-      });
-      return createdOrder;
-    }
-    
+        orderHistory: {
+          create: {
+            status: "Pending",
+            ownerName: ownerName
+          }
+        }
+      },
+      include: {
+        orderItems: true,
+        customerDetails: true,
+        orderHistory: true
+      },
+    });
+    return createdOrder;
+  }
+  
 
   async findAll() {
     const orders = await this.prisma.order.findMany({
@@ -106,7 +122,7 @@ export class OrderService {
         totalPayment: true,
         advancePayment: true,
         ownerName: true,
-        invoiceNumber:true,
+        invoiceNumber: true,
         orderItems: {
           select: {
             id: true,
@@ -116,13 +132,14 @@ export class OrderService {
             additionalDetails: true,
             productId: true,
             gst: true,
-            address: true,
-            measurement: true,
             discount: true,
             description: true,
             attributes: true,
             ownerName: true,
-        }},
+            measurement: true,
+            isMeasurementAddress: true,
+          }
+        },
         customerDetails:
         {
           select: {
@@ -131,7 +148,7 @@ export class OrderService {
             email: true,
             mobileNumber: true,
             additionalDetails: true,
-            address:true
+            address: true
           }
 
         },
@@ -161,7 +178,7 @@ export class OrderService {
       customerDetails: order.customerDetails[0],
       orderHistory: order.orderHistory[0],
     }));
-  
+
     return formattedOrders;
 
   }
