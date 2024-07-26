@@ -35,18 +35,18 @@ model User {
 }
 
 model Address {
-  id              Int           @id @default(autoincrement())
-  userId          Int
-  country         String
-  state           String
-  city            String
-  pinCode         String
-  address         String?
-  user            User          @relation(fields: [userId], references: [id])
-  orderCustomerId Int?    @unique
-  orderCustomer   OrderCustomer? @relation(fields: [orderCustomerId], references: [id])
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  id                   Int            @id @default(autoincrement())
+  userId               Int?
+  country              String
+  state                String
+  city                 String
+  pinCode              String
+  address              String?
+  user                 User ?         @relation(fields: [userId], references: [id])
+  customerAddress      OrderCustomer?
+  isMeasureMentAddress OrderItem?
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
 }
 
 
@@ -187,36 +187,34 @@ model OrderCustomer {
   email             String?
   additionalDetails String?
   mobileNumber      String
-  address           Address?
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
-  orderId           Int
-  order             Order     @relation(fields: [orderId], references: [id])
+  address   Address  @relation(fields: [addressId], references: [id])
+  addressId         Int      @unique
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  orderId           Int @unique
+  order             Order    @relation(fields: [orderId], references: [id])
 }
 
 model OrderItem {
-  id                Int      @id @default(autoincrement())
-  name              String
-  price             String
-  quantity          Int
-  productId         Int
-  additionalDetails String?  @db.Text
-  description       String   @db.Text
-  product           Product  @relation(fields: [productId], references: [id])
-  attributes        Json?
-  ownerName         String
-  gst               Int
-  measurement       String?
-  address           String?
-  pinCode           String?
-  city              String?
-  state             String?
-  country           String?
-  discount          Int?
-  orderId           Int
-  order             Order    @relation(fields: [orderId], references: [id])
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id                     Int      @id @default(autoincrement())
+  name                   String
+  price                  String
+  quantity               Int
+  productId              Int
+  isMeasurementAddress            Address? @relation(fields: [isMeasurementAddressId], references: [id])
+  isMeasurementAddressId Int?   @unique
+  additionalDetails      String?  @db.Text
+  description            String   @db.Text
+  product                Product  @relation(fields: [productId], references: [id])
+  attributes             Json?
+  ownerName              String
+  gst                    Int
+  measurement            String?
+  discount               Int?
+  orderId                Int
+  order                  Order    @relation(fields: [orderId], references: [id])
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
 }
 
 model Order {
@@ -230,7 +228,7 @@ model Order {
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
   orderHistory     OrderHistory[]
-  customerDetails  OrderCustomer[]
+  customerDetails  OrderCustomer?
   orderItems       OrderItem[]
 }
 

@@ -30,7 +30,7 @@ export class CreateCustomerDetailsDto {
     @IsString({ message: 'Additional Details must be a String' })
     additionalDetails: string
   
-    @IsNotEmpty({ message: 'Customer Details must not be empty.' })
+    @IsNotEmpty({ message: 'Customer Address must not be empty.' })
     @ValidateNested()
     @IsDefined()
     @Type(() => CreateAddressDto)
@@ -52,11 +52,6 @@ export class UpdateCustomerDetailsDto {
     @IsString({ message: 'Mobile number must be a string' })
     @IsTenDigitNumber({ message: 'Mobile number must be a 10-digit number' })
     mobileNumber: string;
-
-    @IsOptional()
-    @IsNotEmpty({ message: 'Address must not be empty' })
-    @IsInt({ message: 'Address must be a Integer' })
-    addressId: number
 
     @IsOptional()
     @IsNotEmpty({ message: ' AdditionalDetails must not be empty' })
