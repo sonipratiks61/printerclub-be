@@ -4,11 +4,13 @@ import { AuthGuard } from '@nestjs/passport';
 import { IdValidationPipe } from 'utils/validation/paramsValidation';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
+import { CustomerOrderInvoiceService } from './orderInvoice/orderCustomerInvoice.service';
 
 @Controller('order')
 export class OrderController {
     constructor(private orderService: OrderService,
-        private responseService: ResponseService) { }
+        private responseService: ResponseService,
+        private customerOrderInvoiceService: CustomerOrderInvoiceService) { }
 
     @Post()
     @UseGuards(AuthGuard('jwt'))
@@ -19,8 +21,8 @@ export class OrderController {
     ) {
         try {
             const owner = req.user.name;
-            const userId=req.user.id;
-            const data = await this.orderService.create(createOrderDto, owner,userId);
+            const userId = req.user.id;
+            const data = await this.orderService.create(createOrderDto, owner, userId);
             if (data) {
                 this.responseService.sendSuccess(res, 'Created Order Successfully', data);
             } else {
@@ -32,14 +34,13 @@ export class OrderController {
                 this.responseService.sendBadRequest(res, error.message)
             }
             else {
-                this.responseService.sendInternalError(res, 'Error in Creating Customer Details');
+                this.responseService.sendInternalError(res,'Something went wrong');
             }
         }
     }
 
-
     @Get()
-    @UseGuards(AuthGuard('jwt')) // Ensures only authenticated users can access this route
+    @UseGuards(AuthGuard('jwt'))
     async fetchAll(@Res() res) {
         try {
             const data = await this.orderService.findAll();
@@ -51,7 +52,7 @@ export class OrderController {
         } catch (error) {
             this.responseService.sendInternalError(
                 res,
-                error.message || 'Something Went Wrong'
+                'Something Went Wrong'
             );
         }
     }
@@ -70,7 +71,6 @@ export class OrderController {
             }
             this.responseService.sendSuccess(res, 'Fetch Successfully', order);
         } catch (error) {
-            console.log(error);
             this.responseService.sendInternalError(
                 res,
                 'Something Went Wrong',
@@ -99,19 +99,16 @@ export class OrderController {
                 orderId,
                 createOrderDto,
             );
-            if(data)
-            
-         {   this.responseService.sendSuccess(
-                res,
-                'Order Updated Successfully',
-                data,
-            );
-        }    else{
-            this.responseService.sendBadRequest(res,'Failed to Updated Successfully')
-      
-        }
+            if (data) {
+                this.responseService.sendSuccess(
+                    res,
+                    'Order Updated Successfully',
+                    data,
+                );
+            } else {
+                this.responseService.sendBadRequest(res, 'Failed to Updated Successfully');
+            }
         } catch (error) {
-            console.log(error);
             this.responseService.sendInternalError(
                 res,
                 'Something Went Wrong',
@@ -121,25 +118,45 @@ export class OrderController {
         }
     }
 
+    @Get('invoice/:id')
+    @UseGuards(AuthGuard('jwt'))
+    async Invoice(@Param('id', IdValidationPipe) id: string, @Res() res) {
+        try {
+            const orderId = parseInt(id, 10);
+            const Invoice = await this.customerOrderInvoiceService.customerOrderInvoice(orderId);
+           if(Invoice){
+           this.responseService.sendSuccess(res, 'Fetch Successfully', Invoice);
+            }else{
+                this.responseService.sendBadRequest(res,'Failed to Fetch Invoice');
+            }
+        } catch (error) {
+            if(error instanceof(NotFoundException)){
+                this.responseService.sendNotFound(res, error.message);
+            }
+            this.responseService.sendInternalError(
+                res,
+                'Something Went Wrong',
+            );
+        }
+    }
+
     @Delete(':id')
     @UseGuards(AuthGuard('jwt'))
     async remove(@Param('id', IdValidationPipe) id: string, @Res() res) {
         try {
             const orderId = parseInt(id, 10);
             const order = await this.orderService.findOne(orderId);
-            if(!order)
-            {
-                this.responseService.sendNotFound(res,'Invalid Order Id');
+            if (!order) {
+                this.responseService.sendNotFound(res, 'Invalid Order Id');
             }
-           const data =await this.orderService.remove(orderId);
-           if(data)
-           {
-            this.responseService.sendSuccess(res, 'Order Deleted Successfully');
-        } 
-        else{
-            this.responseService.sendBadRequest(res,'Failed to Delete Successfully');
-        }
-    }catch (error) {
+            const data = await this.orderService.remove(orderId);
+            if (data) {
+                this.responseService.sendSuccess(res, 'Order Deleted Successfully');
+            }
+            else {
+                this.responseService.sendBadRequest(res, 'Failed to Delete Successfully');
+            }
+        } catch (error) {
             this.responseService.sendInternalError(
                 res,
                 'Something Went Wrong',

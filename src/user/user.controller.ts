@@ -11,22 +11,27 @@ import {
   ForbiddenException,
   Res,
   Req,
+  BadRequestException,
+  NotFoundException,
+  Put,
+  Post,
+  ConflictException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { UserService } from './user.service';
 import { ApiBearerAuth, ApiOkResponse, ApiResponse } from '@nestjs/swagger';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto, UpdateUserDto } from './dto/create-user.dto';
 import { ResponseService } from 'utils/response/customResponse';
 import { IdValidationPipe } from 'utils/validation/paramsValidation';
 
-@Controller('user')
+@Controller()
 export class UserController {
   constructor(
     private userService: UserService,
     private responseService: ResponseService,
-  ) {}
+  ) { }
 
-  @Get('me')
+  @Get('user/me')
   @UseGuards(AuthGuard('jwt'))
   @ApiBearerAuth()
   @ApiOkResponse({
@@ -50,7 +55,7 @@ export class UserController {
     }
   }
 
-  @Get()
+  @Get('/admin/allUser')
   @UseGuards(AuthGuard('jwt')) // Ensures only authenticated users can access this route
   @ApiOkResponse({
     description: 'List of all users with addresses',
@@ -78,7 +83,7 @@ export class UserController {
     }
   }
 
-  @Patch('active/:id')
+  @Patch('admin/user/active/:id')
   @UseGuards(AuthGuard('jwt')) // Assuming JWT is used for authentication
   @ApiBearerAuth()
   @ApiResponse({
@@ -122,4 +127,99 @@ export class UserController {
       }
     }
   }
+
+  @Post('/admin/user')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: 200,
+    description: 'Created Successfully',
+    type: CreateUserDto,
+  })
+  async createUserByAdmin(
+    @Body() createUserDto: CreateUserDto,
+    @Res() res,
+    @Req() req,
+  ) {
+    try {
+      const data = await this.userService.userCreateByAdmin(
+        createUserDto,
+      );
+      if (data) {
+        this.responseService.sendSuccess(
+          res,
+          'User Created Successfully',
+        );
+      }
+      else {
+        this.responseService.sendBadRequest(res, 'Failed to Create User');
+      }
+    } catch (error) {
+       if(error instanceof NotFoundException){
+        return this.responseService.sendNotFound(res, error.message);
+      }
+      else if (error instanceof ConflictException) {
+        this.responseService.sendConflict(res, error.message,error.getResponse());
+      }
+     else{
+      this.responseService.sendInternalError(
+        res,
+        'Something Went Wrong',
+
+      );}
+
+    }
+  }
+
+  @Patch('admin/user/:id')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: 200,
+    description: 'Updated Successfully',
+    type: CreateUserDto,
+  })
+  async update(
+    @Body() updateUserDto: UpdateUserDto,
+    @Res() res,
+    @Req() req,
+    @Param('id', IdValidationPipe) id: string,
+  ) {
+    try {
+      const user=this.userService.findOne(Number(id))
+      if(!user)
+      {
+        this.responseService.sendNotFound(res,"User not found")
+      }
+      const userId= parseInt(id,10)
+      
+      const data = await this.userService.updateUserByAdmin(
+        userId,
+        updateUserDto,
+      );
+      if(data){
+      this.responseService.sendSuccess(
+        res,
+        'User Updated Successfully',
+        data,
+      );
+      }else{
+        this.responseService.sendBadRequest(res, 'Failed to update Profile');
+      }
+    } catch (error) {
+      if(error instanceof NotFoundException){
+        return this.responseService.sendNotFound(res, error.message);
+      }
+      else if (error instanceof ConflictException) {
+        this.responseService.sendConflict(res, error.message);
+      }else{
+        this.responseService.sendInternalError(
+          res,
+          'Something Went Wrong',
+          error,
+        );
+      } 
+    }
+  }
+  
 }

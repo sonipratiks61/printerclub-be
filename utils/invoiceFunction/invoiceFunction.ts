@@ -10,7 +10,7 @@ async function getLastInvoiceNumber() {
         },
         select: {
             invoiceNumber: true,
-            createdAt: true, 
+            createdAt: true,
         },
     });
 
@@ -19,33 +19,37 @@ async function getLastInvoiceNumber() {
 
 export async function generateInvoiceNumber() {
     const lastOrder = await getLastInvoiceNumber();
-    const currentYear = new Date().getFullYear();
-    const prefix = `#AKC${currentYear}-`;
-
     let newInvoiceNumber;
 
     if (lastOrder) {
         const lastInvoiceNumber = lastOrder.invoiceNumber;
-        const lastYear = lastOrder.createdAt.getFullYear();
-
-        if (lastYear === currentYear) {
-            const match = lastInvoiceNumber.match(/(\d+)$/);
-            if (match) {
-                const lastNumber = parseInt(match[0], 10);
-                const newNumber = lastNumber + 1;
-                newInvoiceNumber = `${prefix}${newNumber.toString().padStart(2, '0')}`;
-            } else {
-               
-                throw new BadRequestException('Invalid invoice number format.');
-            }
-        } else {
-                   newInvoiceNumber = `${prefix}01`;
-        }
+        newInvoiceNumber = lastInvoiceNumber + 1;
     } else {
-        newInvoiceNumber = `${prefix}01`;
+        newInvoiceNumber = 1;
     }
-
-    return newInvoiceNumber;
+        return newInvoiceNumber;
+    
 }
 
+export async function FinancialYear() {
+    try {
 
+        const financialYear = await getLastInvoiceNumber();
+
+        if (financialYear) {
+            const lastInvoiceYear = financialYear.createdAt.getFullYear();
+            const financialYearStart = new Date(lastInvoiceYear, 3, 1); // April 1st of lastInvoiceYear
+            const financialYearEnd = new Date(lastInvoiceYear + 1, 2, 31); // March 31st of next year after lastInvoiceYear
+
+            const currentDate = new Date();
+            if (currentDate >= financialYearStart && currentDate <= financialYearEnd) {
+                const formattedFinancialYear = `${lastInvoiceYear}-${(lastInvoiceYear % 100) + 1}`;
+                return formattedFinancialYear;
+            }
+        } else {
+            return null;
+        }
+    } catch (error) {
+        throw error;
+    }
+}

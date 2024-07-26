@@ -2,7 +2,10 @@
 import { Controller, Post, UseGuards, Get, Body, Res } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RoleAndCapabilityService } from './role-and-capability.service';
-import { RoleAndCapabilityDto } from './dto/role-and-capability.dto';
+import {
+  RoleAndCapabilityDto,
+  UpdateRoleAndCapabilityDto,
+} from './dto/role-and-capability.dto';
 import { ResponseService } from 'utils/response/customResponse';
 
 @Controller('roleAndCapability')
@@ -36,6 +39,51 @@ export class RoleAndCapabilityController {
     try {
       await this.roleAndCapabilityService.create(roleAndCapabilityDto);
       this.responseService.sendSuccess(res, 'Created Successfully');
+    } catch (error) {
+      console.error('Error occurred while :', error);
+      this.responseService.sendInternalError(
+        res,
+        error.message || 'Something Went Wrong',
+        error,
+      );
+    }
+  }
+
+  @Post()
+  @UseGuards(AuthGuard('jwt'))
+  async udpateRoleAndCapabilities(
+    @Body() roleAndCapabilityDto: UpdateRoleAndCapabilityDto,
+    @Res() res,
+  ) {
+    const { roleId, capabilitiesToAdd, capabilitiesToDelete } =
+      roleAndCapabilityDto;
+    try {
+      let success = true;
+      if (capabilitiesToAdd.length) {
+        const created = await this.roleAndCapabilityService.create({
+          roleId,
+          capabilityIds: capabilitiesToAdd,
+        });
+
+        if (!created.length) {
+          success = false;
+          throw new Error('Error while creating new mapping')
+        }
+      }
+
+      if (capabilitiesToDelete.length) {
+        const deleted = await this.roleAndCapabilityService.delete({
+          roleId,
+          capabilityIds: capabilitiesToDelete,
+        });
+
+        if(!deleted.length) {
+          success = false;
+          throw new Error('Error while deleting old mapping')
+        }
+      }
+
+      return success;
     } catch (error) {
       console.error('Error occurred while :', error);
       this.responseService.sendInternalError(
