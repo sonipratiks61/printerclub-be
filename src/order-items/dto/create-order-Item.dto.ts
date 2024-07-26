@@ -46,8 +46,7 @@ export class CreateOrderItemsDto {
 
     @IsOptional()
     @IsString()
-    @IsNotEmpty()
-    city:string
+    city: CreateAddressDto["city"];
 
     @IsOptional()
     @IsString()
