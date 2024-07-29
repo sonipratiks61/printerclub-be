@@ -5,6 +5,7 @@ import { CreateCustomerDetailsDto } from 'src/customer-details/dto/customer-deta
 import { ProductService } from 'src/product/product.service';
 import { FinancialYear, generateInvoiceNumber } from 'utils/invoiceFunction/invoiceFunction';
 import { calculatePrice } from 'utils/calculatePriceFunction/calculatePriceFunction';
+import { addDays } from 'utils/dueDateFunction/dueDateFunction';
 
 @Injectable()
 
@@ -53,6 +54,7 @@ export class CustomerOrderInvoiceService {
                         country: true,
                         state: true,
                         pinCode: true,
+                        createdAt:true
                     }
                 },
                 orderHistory: true,
@@ -65,7 +67,6 @@ export class CustomerOrderInvoiceService {
         const financialYear = await FinancialYear()
 
         const formattedInvoiceNumber = `${process.env.INVOICE_NUMBER_PREFIX}${financialYear}-${order.invoiceNumber}`;
-
         const formattedOrder = {
             id: order.id,
             invoiceNumber: formattedInvoiceNumber,
@@ -75,6 +76,7 @@ export class CustomerOrderInvoiceService {
             paymentMode: order.paymentMode,
             ownerName: order.ownerName,
             orderItems: order.orderItems.map(item => {
+                const dueDate = addDays(item.createdAt,15)
                 const totalPrice = calculatePrice({
                     price: parseInt(item.price, 10),
                     quantity: item.quantity,
@@ -95,7 +97,8 @@ export class CustomerOrderInvoiceService {
                     country: item.country,
                     state: item.state,
                     pinCode: item.pinCode,
-                    totalPrice: parseFloat(totalPrice)
+                    totalPrice: parseFloat(totalPrice),
+                    dueDate:dueDate
                 };
             }),
             customerDetails: order.customerDetails[0]
