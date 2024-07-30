@@ -1,8 +1,8 @@
 import { ConflictException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateWorkFlowDto, UpdateWorkFlowDto } from './dto/work-flow.create-and-update.dto';
-import { Prisma, WorkFlow } from '@prisma/client';
 import { OrderStatusService } from 'src/order-status/order-status.service';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class WorkFlowService {
@@ -45,16 +45,35 @@ export class WorkFlowService {
   }
 
   async findAll() {
-    const data = await this.prisma.workFlow.findMany({
+    const workflows = await this.prisma.workFlow.findMany({
       select: {
         id: true,
         name: true,
+        sequence: true
       },
     });
-
-    return data;
+  
+    const processedWorkflows = await Promise.all(workflows.map(async workflow => {
+      const sequence = Array.isArray(workflow.sequence) ?
+        workflow.sequence.filter(item => typeof item === 'number') : [];
+  
+      const formateDataArray = await Promise.all(sequence.map(async (i: number) => {
+        const formate = await this.orderStatusService.findOne(i);
+        return {
+          id: formate?.id,
+          status: formate?.status,
+        };
+      }));
+  
+      return {
+        ...workflow,
+        sequence: formateDataArray
+      };
+    }));
+  
+    return processedWorkflows;
   }
-
+  
   async findOne(id: number) {
     const data = await this.prisma.workFlow.findUnique({
       where: {
