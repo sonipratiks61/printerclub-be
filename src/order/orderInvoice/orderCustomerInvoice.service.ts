@@ -5,6 +5,7 @@ import { CreateCustomerDetailsDto } from 'src/customer-details/dto/customer-deta
 import { ProductService } from 'src/product/product.service';
 import { FinancialYear, generateInvoiceNumber } from 'utils/invoiceFunction/invoiceFunction';
 import { calculatePrice } from 'utils/calculatePriceFunction/calculatePriceFunction';
+import { addDays } from 'utils/dueDateFunction/dueDateFunction';
 
 @Injectable()
 
@@ -47,7 +48,8 @@ export class CustomerOrderInvoiceService {
                         description: true,
                         gst: true,
                         discount: true,
-                        isMeasurementAddress:true
+                        isMeasurementAddress:true,
+                        createdAt:true
 
                     }
                 },
@@ -65,12 +67,13 @@ export class CustomerOrderInvoiceService {
         const formattedOrder = {
             id: order.id,
             invoiceNumber: formattedInvoiceNumber,
-            advancePayment: order.advancePayment,
-            remainingPayment: order.remainingPayment,
-            totalPayment: order.totalPayment,
+            advancePayment: order.advancePayment.toFixed(2),
+            remainingPayment: order.remainingPayment.toFixed(2),
+            totalPayment: order.totalPayment.toFixed(2),
             paymentMode: order.paymentMode,
             ownerName: order.ownerName,
             orderItems: order.orderItems.map(item => {
+                const dueDate = addDays(item.createdAt,15)
                 const totalPrice = calculatePrice({
                     price: parseInt(item.price, 10),
                     quantity: item.quantity,
@@ -86,12 +89,13 @@ export class CustomerOrderInvoiceService {
                     description: item.description,
                     gst: item.gst,
                     discount: item.discount,
-                    address: item.isMeasurementAddress.address,
-                    city: item.isMeasurementAddress.city,
-                    country: item.isMeasurementAddress.country,
-                    state: item.isMeasurementAddress.state,
-                    pinCode: item.isMeasurementAddress.pinCode,
-                    totalPrice: parseFloat(totalPrice)
+                    address: item.isMeasurementAddress?.address,
+                    city: item.isMeasurementAddress?.city,
+                    country: item.isMeasurementAddress?.country,
+                    state: item.isMeasurementAddress?.state,
+                    pinCode: item.isMeasurementAddress?.pinCode,
+                    totalPrice: parseFloat(totalPrice),
+                    dueDate:dueDate
                 };
             }),
             customerDetails:order.customerDetails
