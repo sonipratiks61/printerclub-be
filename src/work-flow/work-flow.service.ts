@@ -2,87 +2,126 @@ import { ConflictException, HttpException, HttpStatus, Injectable, NotFoundExcep
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateWorkFlowDto, UpdateWorkFlowDto } from './dto/work-flow.create-and-update.dto';
 import { Prisma, WorkFlow } from '@prisma/client';
+import { OrderStatusService } from 'src/order-status/order-status.service';
 
 @Injectable()
 export class WorkFlowService {
-    constructor(
-        private prisma: PrismaService,
+  constructor(
+    private prisma: PrismaService,
+    private orderStatusService: OrderStatusService
 
-    ) { }
+  ) { }
 
-    async findAll() {
-        const data = await this.prisma.workFlow.findMany({
-            select: {
-                id: true,
-                name: true,
-                sequence:true
-            },
-        });
+  async create(createWorkFlowDto: CreateWorkFlowDto) {
+    const sequenceArray = createWorkFlowDto.sequence as number[];
+    const duplicates = sequenceArray.filter((item, index) => sequenceArray.indexOf(item) !== index);
 
-        return data;
+    if (duplicates.length > 0) {
+      throw new ConflictException("Duplicate Id Found")
     }
+    const formateData: number[] = Array.isArray(createWorkFlowDto.sequence) ?
+      createWorkFlowDto.sequence.filter(item => typeof item === 'number') as number[] : [];
 
-    async findOne(id: number) {
-        const data = await this.prisma.workFlow.findUnique({
-            where: {
-                id: id
-            },
-        }
-        );
-
-      const formateData= data.sequence;
-      console.log(formateData)
-      return data;
-      // const formateDataArray = formateData.split(',');
-      // const formateDataObject = formateDataArray.map((item) => {
-      //   return {
-      //     id: item,
-      //     name: item,
-      //   }
-      // }
-    }
-    async create(createWorkFlowDto: CreateWorkFlowDto) {
-      
-      const sequenceArray = createWorkFlowDto.sequence as number[];
-      const duplicates = sequenceArray.filter((item, index) => sequenceArray.indexOf(item) !== index);
-    
-      if (duplicates.length > 0) {
-        throw new ConflictException("Duplicate Id Found")}
-        const data = await this.prisma.workFlow.create({
-          data: {
-            name: createWorkFlowDto.name,
-            sequence: createWorkFlowDto.sequence as unknown as Prisma.JsonArray
-          }
-        });
-        return data;
-      
-    }
-
-      async update(id:number,updateWorkFlowDto:UpdateWorkFlowDto)
-      {
-        const sequenceArray = updateWorkFlowDto.sequence as number[];
-        const duplicates = sequenceArray.filter((item, index) => sequenceArray.indexOf(item) !== index);
-      
-        if (duplicates.length > 0) {
-          throw new ConflictException("Duplicate Id Found")}
-        const data = await this.prisma.workFlow.update({
-            where:{id:id},
-            data: {
-              name: updateWorkFlowDto.name,
-              sequence: updateWorkFlowDto.sequence as unknown as Prisma.JsonArray
-            }
-          });
-          return data;
+    await Promise.all(formateData.map(async (i: number) => {
+      const formate = await this.orderStatusService.findOne(i);
+      if (!formate) {
+        throw new NotFoundException('Invalid Order Status');
       }
+      return {
+        id: formate?.id,
+        status: formate?.status,
+      };
+    }));
 
-      async delete(id:number)
-      {
-        const data=await this.prisma.workFlow.delete({
-            where:{
-                id:id
-            }
-        })
-        return data;
+    const data = await this.prisma.workFlow.create({
+      data: {
+        name: createWorkFlowDto.name,
+        sequence: createWorkFlowDto.sequence as unknown as Prisma.JsonArray
       }
-    
+    });
+
+    return data;
+
+  }
+
+  async findAll() {
+    const data = await this.prisma.workFlow.findMany({
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+
+    return data;
+  }
+
+  async findOne(id: number) {
+    const data = await this.prisma.workFlow.findUnique({
+      where: {
+        id: id
+      },
+      select: {
+        id: true, name: true, sequence: true
+      }
+    });
+    if (!data) {
+      throw new NotFoundException('Work Flow not found');
+    }
+
+    const formateData: number[] = Array.isArray(data.sequence) ?
+      data.sequence.filter(item => typeof item === 'number') as number[] : [];
+
+    const formateDataArray = await Promise.all(formateData.map(async (i: number) => {
+      const formate = await this.orderStatusService.findOne(i);
+      return {
+        id: formate?.id,
+        status: formate?.status,
+      };
+    }));
+    return {
+      id: data.id, name: data.name,
+      sequence: formateDataArray,
+    };
+  }
+
+  async update(id: number, updateWorkFlowDto: UpdateWorkFlowDto) {
+    const sequenceArray = updateWorkFlowDto.sequence as number[];
+    const duplicates = sequenceArray.filter((item, index) => sequenceArray.indexOf(item) !== index);
+
+    if (duplicates.length > 0) {
+      throw new ConflictException("Duplicate Id Found")
+    }
+    const formateData: number[] = Array.isArray(updateWorkFlowDto.sequence) ?
+      updateWorkFlowDto.sequence.filter(item => typeof item === 'number') as number[] : [];
+
+    await Promise.all(formateData.map(async (i: number) => {
+      const formate = await this.orderStatusService.findOne(i);
+      if (!formate) {
+        throw new NotFoundException('Invalid Order status');
+      }
+      return {
+        id: formate?.id,
+        status: formate?.status,
+      };
+    }));
+
+    const data = await this.prisma.workFlow.update({
+      where: { id: id },
+      data: {
+        name: updateWorkFlowDto.name,
+        sequence: updateWorkFlowDto.sequence as unknown as Prisma.JsonArray
+      }
+    });
+    return data;
+  }
+
+  async delete(id: number) {
+    const data = await this.prisma.workFlow.delete({
+      where: {
+        id: id
+      }
+    })
+    return data;
+  }
+
 }
