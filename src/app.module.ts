@@ -47,6 +47,8 @@ import { OrderStatusService } from './order-status/order-status.service';
 import { CapabilityController } from './capabilities/capability.controller';
 import { CapabilityService } from './capabilities/capability.service';
 import { CustomerOrderInvoiceService } from './order/orderInvoice/orderCustomerInvoice.service';
+import { WorkFlowController } from './work-flow/work-flow.controller';
+import { WorkFlowService } from './work-flow/work-flow.service';
 @Module({
   imports: [
     JwtModule.register({}),
@@ -75,7 +77,8 @@ import { CustomerOrderInvoiceService } from './order/orderInvoice/orderCustomerI
     OrderItemsController,
     OrderStatusController,
     CapabilityController,
-    RoleAndCapabilityController
+    RoleAndCapabilityController,
+    WorkFlowController
   ],
   providers: [
     AppService,
@@ -105,6 +108,7 @@ import { CustomerOrderInvoiceService } from './order/orderInvoice/orderCustomerI
     CustomerOrderInvoiceService,
     CapabilityService,
     RoleAndCapabilityController,
+    WorkFlowService,
   ],
 })
 export class AppModule {
