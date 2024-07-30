@@ -4,15 +4,21 @@ import { CreateProductDto } from './dto/product.dto';
 import { UpdateProductDto } from './dto/updateProduct.dto';
 import { CategoryService } from 'src/category/category.service';
 import { SubCategoryService } from 'src/sub-category/sub-category.service';
+import { WorkFlowService } from 'src/work-flow/work-flow.service';
 
 @Injectable()
 export class ProductService {
   constructor(private prisma: PrismaService,
-    private categoryService: CategoryService,) { }
+    private categoryService: CategoryService,
+    private workFlowService:WorkFlowService) { }
   async create(createProductDto: CreateProductDto, userId: number) {
     const categoryId = await this.categoryService.findOne(createProductDto.categoryId);
     if (!categoryId) {
       throw new NotFoundException('Invalid Category Id');
+    }
+    const workFlowId =await this.workFlowService.findOne(createProductDto.workFlowId);
+    if (!workFlowId) {
+      throw new NotFoundException('Invalid WorkFlow Id');
     }
     let productData: any = {
       name: createProductDto.name,
@@ -20,6 +26,7 @@ export class ProductService {
       price: createProductDto.price,
       userId: userId,
       categoryId: createProductDto.categoryId,
+      workFlowId: createProductDto.workFlowId,
       isFitmentRequired: createProductDto.isFitmentRequired,
       isMeasurementRequired: createProductDto.isMeasurementRequired
     };
@@ -74,7 +81,13 @@ export class ProductService {
             parentId: true,
           }
         },
-        attributes: true
+        attributes: true,
+        workFlow:{
+select:{
+  id:true,
+  name:true,
+}
+        }
       }
     });
 
@@ -109,7 +122,11 @@ export class ProductService {
           name: attribute.name,
           type: attribute.type,
           options: attribute.options
-        }))
+        })),
+        workFlow:{
+          id:product.workFlow.id,
+          name:product.workFlow.name
+        }
       };
     }));
   
@@ -127,6 +144,7 @@ export class ProductService {
         name: true,
         userId: true,
         categoryId: true,
+        workFlowId:true,
         description: true,
         quantity: true,
         attributes: true,
@@ -164,14 +182,26 @@ export class ProductService {
 
   async update(id: number, updateProductDto: UpdateProductDto) {
     if (updateProductDto.categoryId) {
-      const product = await this.prisma.category.findUnique({
+      const category = await this.prisma.category.findUnique({
         where: {
           id: updateProductDto.categoryId,
         },
       });
+      if (!category) {
+        throw new NotFoundException("Category not Found");
+      }
 
-      if (!product) {
-        throw new NotFoundException("Product not Found");
+    }
+     if(updateProductDto.workFlowId)
+    {
+      const workFlow=await this.prisma.workFlow.findUnique({
+        where:{
+          id: updateProductDto.workFlowId,
+        }
+      })
+      if(!workFlow)
+      {
+        throw new NotFoundException("WorkFlow not Found");
       }
     }
 
