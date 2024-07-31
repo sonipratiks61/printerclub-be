@@ -8,7 +8,6 @@ export class CreateOrderDto {
 
     @IsOptional()
     @IsNumber({ allowInfinity: false, allowNaN: false }, { message: 'AdvancePayment must be a number' })
-    @IsNotEmpty()
     advancePayment: number;
 
     @IsNumber({ allowInfinity: false, allowNaN: false }, { message: 'RemainingPayment must be a number' })

@@ -173,7 +173,7 @@ model AttachmentAssociation {
 model OrderStatus {
   id             Int           @id @default(autoincrement())
   status         String
-  description    String        @db.Text
+  description    String?        @db.Text
   dependOn       Int?
   orderStatus    OrderStatus?  @relation("orderStatusTosubOrderStatus", fields: [dependOn], references: [id])
   subOrderStatus OrderStatus[] @relation("orderStatusTosubOrderStatus")
