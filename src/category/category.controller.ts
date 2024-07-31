@@ -78,7 +78,7 @@ export class CategoryController {
       if (!category) {
         this.responseService.sendNotFound(
           res,
-          "Invalid CategoryId",
+          "Invalid Category Id",
         );
       }
       this.responseService.sendSuccess(res, ' Category Fetch Successfully', category);
@@ -105,7 +105,7 @@ export class CategoryController {
       if (!category) {
         this.responseService.sendNotFound(
           res,
-          "Invalid CategoryId",
+          "Invalid Category Id",
         );
       }
       const updatedCategory = await this.categoryService.update(
@@ -137,7 +137,7 @@ export class CategoryController {
       if (!category) {
         this.responseService.sendNotFound(
           res,
-          "Invalid CategoryId ",
+          "Invalid Category Id",
         );
       }
       await this.categoryService.remove(categoryId);
