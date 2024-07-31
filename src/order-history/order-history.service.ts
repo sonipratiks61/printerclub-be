@@ -1,39 +1,44 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateOrderHistoryDto } from './dto/order-history.dto';
+import { OrderStatusService } from 'src/order-status/order-status.service';
+import { OrderItemsService } from 'src/order-items/order-items.service';
 
 @Injectable()
 export class OrderHistoryService {
     constructor(
-        private prisma: PrismaService,) { }
+        private prisma: PrismaService,
+        private orderStatusService:OrderStatusService,
+        private orderItemsService:OrderItemsService) { }
 
-    async create(createOrderHistoryDto: CreateOrderHistoryDto, ownerName: string) {
-        const { status, orderId } = createOrderHistoryDto;
+    async create(createOrderHistoryDto: CreateOrderHistoryDto, updatedById:number) {
+        const {orderItemId,statusId } = createOrderHistoryDto;
 
         const existingOrderHistory = await this.prisma.orderHistory.findFirst({
             where: {
-                orderId: orderId,
-                status: status,
+                orderItemId: orderItemId,
+                statusId:statusId
             },
         });
 
         if (existingOrderHistory) {
-            throw new ConflictException("Status already exists for this orderId");
+            throw new ConflictException("Status already exists for this order item Id");
         }
-
-        const checkOrderStatus = await this.prisma.orderStatus.findFirst({
-            where: {
-                status: createOrderHistoryDto.status
-            }
-        })
-        if (!checkOrderStatus) {
-            throw new BadRequestException("Invalid Status");
+        const orderItem=await this.orderItemsService.findOne(orderItemId)
+        if(!orderItem){
+            throw new NotFoundException("Order status not found");
+        }
+        const status= await this.orderStatusService.findOne(statusId);
+        if(!status)
+        {
+            throw new NotFoundException("Status not found");
         }
         const data = await this.prisma.orderHistory.create({
             data: {
-                status: status,
-                ownerName: ownerName,
-                orderId: orderId,
+                updatedById: updatedById,
+                orderItemId: orderItemId,
+                statusId: statusId,
+                timestamp:new Date()
             },
         });
 
@@ -53,18 +58,18 @@ export class OrderHistoryService {
         })
     }
 
-    async findOrderById(orderId: number) {
+    async findOrderItemById(orderItemId: number) {
         const checkOrderIdExist = await this.prisma.orderHistory.findFirst({
             where: {
-                orderId: orderId
+                orderItemId: orderItemId
             }
         })
         if (!checkOrderIdExist) {
-            throw new NotFoundException("Invalid Order Id")
+            throw new NotFoundException("Invalid OrderItem Id")
         }
         const data = await this.prisma.orderHistory.findMany({
             where: {
-                orderId: orderId
+                orderItemId: orderItemId
             },
 
         })
@@ -86,7 +91,7 @@ export class OrderHistoryService {
                 id: id
             },
             data: {
-                status: createOrderHistoryDto.status,
+                statusId: createOrderHistoryDto.statusId,
 
             }
         })

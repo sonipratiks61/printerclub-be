@@ -17,7 +17,7 @@ export class OrderService {
 
 
 
-  async create(createOrderDto: CreateOrderDto, ownerName: string) {
+  async create(createOrderDto: CreateOrderDto, ownerName:string,updatedById:number) {
     const { advancePayment, remainingPayment, totalPayment, paymentMode, orderItems, customerDetails } = createOrderDto;
     const productIds = [...new Set(orderItems.map(item => item.productId))];
   
@@ -81,6 +81,7 @@ export class OrderService {
               quantity: item.quantity,
               name: item.name,
               price: item.price,
+              workFlowId:item.workFlowId,
               additionalDetails: item.additionalDetails,
               productId: item.productId,
               gst: item.gst,
@@ -94,19 +95,13 @@ export class OrderService {
                 value: attr.value,
               })),
             })),
+            
           },
         },
-        orderHistory: {
-          create: {
-            status: "Pending",
-            ownerName: ownerName
-          }
-        }
       },
       include: {
         orderItems: true,
-        customerDetails: true,
-        orderHistory: true
+        customerDetails: true
       },
     });
     return createdOrder;
@@ -151,19 +146,6 @@ export class OrderService {
             address: true
           }
 
-        },
-        orderHistory: {
-          orderBy: {
-            timestamp: 'desc'
-          },
-          take: 1,
-          select: {
-            id: true,
-            status: true,
-            ownerName: true,
-            timestamp: true,
-
-          }
         }
       }
     })
@@ -176,7 +158,6 @@ export class OrderService {
       ownerName: order.ownerName,
       orderItems: order.orderItems,
       customerDetails: order.customerDetails[0],
-      orderHistory: order.orderHistory[0],
     }));
 
     return formattedOrders;
@@ -190,8 +171,7 @@ export class OrderService {
       },
       include: {
         customerDetails: true,
-        orderItems: true,
-        orderHistory: true,
+        orderItems: true
       }
     })
   }

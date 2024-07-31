@@ -2,19 +2,17 @@
 
 
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { ProductService } from 'src/product/product.service';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateOrderItemsDto } from './dto/create-order-Item.dto';
-import { validate } from 'class-validator';
+import { OrderStatusService } from 'src/order-status/order-status.service';
+import { OrderHistoryService } from 'src/order-history/order-history.service';
 
 @Injectable()
 export class OrderItemsService {
-    constructor(private productService: ProductService,
+    constructor(private orderStatusService: OrderStatusService,
         private prisma: PrismaService) {
     }
-    
-    async orderItemsSearchByOrderId(orderId: number) {
 
+    async orderItemsSearchByOrderId(orderId: number) {
         const checkOrderIdExist = await this.prisma.orderItem.findFirst({
             where: {
                 orderId: orderId
@@ -41,13 +39,89 @@ export class OrderItemsService {
     }
 
     async findOne(id: number) {
-
-        return await this.prisma.orderItem.findUnique({
-            where: {
-                id: id
+        const data = await this.prisma.orderItem.findUnique({
+            where: { id: id },
+            select: {
+                id: true,
+                name: true,
+                price: true,
+                quantity: true,
+                attributes: true,
+                productId: true,
+                orderId: true,
+                isMeasurementAddressId: true,
+                isMeasurementAddress: true,
+                gst: true,
+                ownerName: true,
+                description: true,
+                discount: true,
+                measurement: true,
+                isConfirmed: true,
+                workFlow: {
+                    select: {
+                        id: true,
+                        name: true,
+                        sequence: true,
+                    }
+                }
             }
-        })
+        });
+
+        if (!data) {
+            throw new NotFoundException('Invalid Order Id');
+        }
+
+        const sequence = Array.isArray(data.workFlow?.sequence) ? data.workFlow.sequence : [];
+
+        const formattedSequence = await Promise.all(
+            sequence
+                .filter((item): item is number => typeof item === 'number')
+                .map(async (id: number) => {
+                    const formate = await this.orderStatusService.findOne(id);
+                    return {
+                        id: formate?.id,
+                        name: formate?.status,
+                    };
+                })
+        );
+
+
+        const history = await this.prisma.orderHistory.findMany({
+            where: { orderItemId: id },
+            orderBy: { timestamp: 'asc' }
+        });
+
+        const userIds = [...new Set(history.map(record => record.updatedById))];
+
+        const users = await this.prisma.user.findMany({
+            where: { id: { in: userIds } },
+            select: { id: true, name: true }
+        });
+
+        const userMap = new Map(users.map(user => [user.id, user.name]));
+
+        return {
+            ...data,
+            workFlow: {
+                ...data.workFlow,
+                sequence: formattedSequence.map((item) => { return { id: item.id, name: item.name } }),
+                completedStatus: history.map(record => {
+
+                    const istDate = new Date(record.timestamp).toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" });
+                    const istTime = new Date(record.timestamp).toLocaleTimeString("en-IN", { timeZone: "Asia/Kolkata" });
+                    return {
+                        updatedBy: userMap.get(record.updatedById),
+                        Date: istDate,
+                        Time: istTime,
+                        statusId: record.statusId
+                    };
+                })
+            }
+        };
     }
+
+
+
     async remove(id: number) {
         return await this.prisma.orderItem.delete({
             where: {

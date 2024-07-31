@@ -20,9 +20,9 @@ export class OrderHistoryController  {
         @Req() req
     ) {
         try {
-            const ownerName=req.user.name
+            const updatedById=req.user.id;
 
-            const data = await this.orderHistoryService.create(createOrderHistoryDto,ownerName);
+            const data = await this.orderHistoryService.create(createOrderHistoryDto,updatedById);
            if(data){
             this.responseService.sendSuccess(res, 'Created OrderHistory Successfully', data);
         }
@@ -31,7 +31,7 @@ export class OrderHistoryController  {
         }
     }
         catch (error) {
-            
+            console.log(error);
             if (error instanceof NotFoundException) {
                 this.responseService.sendNotFound(res, error.message)
             }
@@ -42,7 +42,7 @@ export class OrderHistoryController  {
                 this.responseService.sendConflict(res, error.message)
             }
             else {
-                this.responseService.sendInternalError(res, 'Error in Creating Customer Details');
+                this.responseService.sendInternalError(res, 'Something Went Wrong');
             }
         }
     }
@@ -54,7 +54,7 @@ export class OrderHistoryController  {
             const id= parseInt(orderId, 10);
             let data;
             if (orderId) {
-                data = await this.orderHistoryService.findOrderById(id);
+                data = await this.orderHistoryService.findOrderItemById(id);
             } else {
                 data = await this.orderHistoryService.findAll();
             }

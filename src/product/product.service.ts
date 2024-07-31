@@ -107,6 +107,7 @@ select:{
         createdAt: product.createdAt,
         updatedAt: product.updatedAt,
         userId: product.userId,
+        workFlowId:product.workFlowId,
         isFitmentRequired: product.isFitmentRequired,
         isMeasurementRequired: product.isMeasurementRequired,
         category: {

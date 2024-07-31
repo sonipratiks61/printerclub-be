@@ -318,6 +318,23 @@ async function main() {
     create: data,
   });
 
+  await prisma.workFlow.upsert({
+    where: { id: 1 },
+    update: {},
+    create: {name: "User-WorkFlow",
+    sequence:[1,2,3,4,5],
+    createdAt: new Date('2023-07-09'),
+    updatedAt: new Date('2023-07-09'),
+  },
+  });
+  await prisma.workFlow.create({
+    data: {
+      name: "User-WorkFlow",
+      sequence:[1,2,3,4,5],
+      createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    }
+  })
   await prisma.address.upsert({
     where: {
       id: 1
@@ -409,6 +426,7 @@ async function main() {
       isFitmentRequired:true,
       description: "This is product 1",
       categoryId:2,
+      workFlowId:1,
       userId: 1,
       quantity:{
         type:"text",
@@ -431,6 +449,7 @@ async function main() {
       isFitmentRequired:true,
       description: "This is product 2",
       categoryId:2,
+      workFlowId:1,
       userId: 1,
       quantity:{
         type:"dropDown",

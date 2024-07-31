@@ -32,6 +32,7 @@ model User {
   updatedAt             DateTime                @updatedAt
   categories            Category[]
   products              Product[]
+  orderHistory          OrderHistory[]
 }
 
 model Address {
@@ -119,7 +120,7 @@ model Product {
   id                    Int                     @id @default(autoincrement())
   categoryId            Int
   workFlowId            Int
-  workFlow              WorkFlow @relation(fields:[workFlowId],references:[id])  
+  workFlow              WorkFlow                @relation(fields: [workFlowId], references: [id])
   name                  String
   description           String                  @db.Text
   quantity              Json?
@@ -203,7 +204,8 @@ model OrderItem {
   price                  String
   quantity               Int
   productId              Int
-  isMeasurementAddress            Address? @relation(fields: [isMeasurementAddressId], references: [id])
+  workFlowId             Int
+  isMeasurementAddress   Address? @relation(fields: [isMeasurementAddressId], references: [id])
   isMeasurementAddressId Int?   @unique
   additionalDetails      String?  @db.Text
   description            String   @db.Text
@@ -217,39 +219,43 @@ model OrderItem {
   order                  Order    @relation(fields: [orderId], references: [id])
   createdAt              DateTime @default(now())
   updatedAt              DateTime @updatedAt
+  workFlow               WorkFlow @relation(fields: [workFlowId], references: [id])
+  isConfirmed            Boolean  @default(false)
+ 
 }
 
 model Order {
-  id               Int             @id @default(autoincrement())
+  id               Int            @id @default(autoincrement())
   advancePayment   Decimal?
   remainingPayment Decimal
   totalPayment     Decimal
   ownerName        String
   paymentMode      String
-  invoiceNumber    Int        
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
-  orderHistory     OrderHistory[]
+  invoiceNumber    Int
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
   customerDetails  OrderCustomer?
   orderItems       OrderItem[]
 }
 
 model OrderHistory {
-  id        Int      @id @default(autoincrement())
-  status    String
-  ownerName String
-  timestamp DateTime @default(now())
-  orderId   Int
-  order     Order    @relation(fields: [orderId], references: [id])
+  id          Int      @id @default(autoincrement())
+  updatedById Int
+  updatedBy    User     @relation(fields: [updatedById], references: [id])
+  timestamp   DateTime @default(now())
+  orderItemId Int
+  statusId    Int  
+
 }
 
 model WorkFlow {
-  id        Int                     @id @default(autoincrement())
+  id        Int         @id @default(autoincrement())
   name      String
   sequence  Json?
-  createdAt DateTime                @default(now())
-  updatedAt DateTime                @updatedAt
-  product  Product[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  product   Product[]
+  orderItem OrderItem[]
 }
 
 enum CategoryType {
