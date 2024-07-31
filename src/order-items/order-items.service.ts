@@ -57,7 +57,7 @@ export class OrderItemsService {
                 discount: true,
                 measurement: true,
                 isConfirmed: true,
-                workFlow: {
+                workflow: {
                     select: {
                         id: true,
                         name: true,
@@ -71,7 +71,7 @@ export class OrderItemsService {
             throw new NotFoundException('Invalid Order Id');
         }
 
-        const sequence = Array.isArray(data.workFlow?.sequence) ? data.workFlow.sequence : [];
+        const sequence = Array.isArray(data.workflow?.sequence) ? data.workflow.sequence : [];
 
         const formattedSequence = await Promise.all(
             sequence
@@ -102,8 +102,8 @@ export class OrderItemsService {
 
         return {
             ...data,
-            workFlow: {
-                ...data.workFlow,
+            workflow: {
+                ...data.workflow,
                 sequence: formattedSequence.map((item) => { return { id: item.id, name: item.name } }),
                 completedStatus: history.map(record => {
 
@@ -119,8 +119,6 @@ export class OrderItemsService {
             }
         };
     }
-
-
 
     async remove(id: number) {
         return await this.prisma.orderItem.delete({

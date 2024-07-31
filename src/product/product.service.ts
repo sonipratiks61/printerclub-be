@@ -16,7 +16,7 @@ export class ProductService {
     if (!categoryId) {
       throw new NotFoundException('Invalid Category Id');
     }
-    const workFlowId =await this.workFlowService.findOne(createProductDto.workFlowId);
+    const workFlowId =await this.workFlowService.findOne(createProductDto.workflowId);
     if (!workFlowId) {
       throw new NotFoundException('Invalid WorkFlow Id');
     }
@@ -26,7 +26,7 @@ export class ProductService {
       price: createProductDto.price,
       userId: userId,
       categoryId: createProductDto.categoryId,
-      workFlowId: createProductDto.workFlowId,
+      workflowId: createProductDto.workflowId,
       isFitmentRequired: createProductDto.isFitmentRequired,
       isMeasurementRequired: createProductDto.isMeasurementRequired
     };
@@ -82,7 +82,7 @@ export class ProductService {
           }
         },
         attributes: true,
-        workFlow:{
+        workflow:{
 select:{
   id:true,
   name:true,
@@ -107,7 +107,7 @@ select:{
         createdAt: product.createdAt,
         updatedAt: product.updatedAt,
         userId: product.userId,
-        workFlowId:product.workFlowId,
+        workflowId:product.workflowId,
         isFitmentRequired: product.isFitmentRequired,
         isMeasurementRequired: product.isMeasurementRequired,
         category: {
@@ -125,8 +125,8 @@ select:{
           options: attribute.options
         })),
         workFlow:{
-          id:product.workFlow.id,
-          name:product.workFlow.name
+          id:product.workflow.id,
+          name:product.workflow.name
         }
       };
     }));
@@ -145,7 +145,7 @@ select:{
         name: true,
         userId: true,
         categoryId: true,
-        workFlowId:true,
+        workflowId:true,
         description: true,
         quantity: true,
         attributes: true,

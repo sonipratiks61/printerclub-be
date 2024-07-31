@@ -26,7 +26,7 @@ export class CreateOrderItemsDto {
 
     @IsInt()
     @IsNotEmpty()
-    workFlowId: number;
+    workflowId: number;
 
     @IsInt()
     @IsNotEmpty()

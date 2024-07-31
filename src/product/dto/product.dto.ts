@@ -103,7 +103,7 @@ export class CreateProductDto {
   })
   @IsNotEmpty({ message: 'WorkFlow Id cannot be empty.' })
   @IsInt({ message: 'WorkFlow Id must be a integer' })
-  workFlowId?: number;
+  workflowId?: number;
   
   @ApiProperty({
     description: 'Indicates if a fitment is required',

@@ -119,8 +119,8 @@ model Category {
 model Product {
   id                    Int                     @id @default(autoincrement())
   categoryId            Int
-  workFlowId            Int
-  workFlow              WorkFlow                @relation(fields: [workFlowId], references: [id])
+  workflowId            Int
+  workflow              WorkFlow                @relation(fields: [workflowId], references: [id])
   name                  String
   description           String                  @db.Text
   quantity              Json?
@@ -204,7 +204,7 @@ model OrderItem {
   price                  String
   quantity               Int
   productId              Int
-  workFlowId             Int
+  workflowId             Int
   isMeasurementAddress   Address? @relation(fields: [isMeasurementAddressId], references: [id])
   isMeasurementAddressId Int?   @unique
   additionalDetails      String?  @db.Text
@@ -219,7 +219,7 @@ model OrderItem {
   order                  Order    @relation(fields: [orderId], references: [id])
   createdAt              DateTime @default(now())
   updatedAt              DateTime @updatedAt
-  workFlow               WorkFlow @relation(fields: [workFlowId], references: [id])
+  workflow               WorkFlow @relation(fields: [workflowId], references: [id])
   isConfirmed            Boolean  @default(false)
  
 }

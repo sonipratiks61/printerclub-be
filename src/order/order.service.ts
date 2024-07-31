@@ -28,6 +28,7 @@ export class OrderService {
       }
     }
   
+    
     const invoiceNumber = await generateInvoiceNumber();
     const orderItemsWithAddressIds = await Promise.all(orderItems.map(async (item) => {
       let isMeasurementAddressId = item.isMeasurementAddressId;
@@ -81,7 +82,7 @@ export class OrderService {
               quantity: item.quantity,
               name: item.name,
               price: item.price,
-              workFlowId:item.workFlowId,
+              workflowId:item.workflowId,
               additionalDetails: item.additionalDetails,
               productId: item.productId,
               gst: item.gst,
@@ -151,7 +152,7 @@ export class OrderService {
     })
     const formattedOrders = orders.map(order => ({
       id: order.id,
-      advancePayment: Number(order.advancePayment)?.toFixed(2),
+      advancePayment: Number(order.advancePayment).toFixed(2),
       totalPayment: Number(order.totalPayment).toFixed(2),
       remainingPayment: Number(order.remainingPayment).toFixed(2),
       paymentMode: order.paymentMode,

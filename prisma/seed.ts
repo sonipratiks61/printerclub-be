@@ -433,7 +433,7 @@ async function main() {
       isFitmentRequired:true,
       description: "This is product 1",
       categoryId:2,
-      workFlowId:1,
+      workflowId:1,
       userId: 1,
       quantity:{
         type:"text",
@@ -456,7 +456,7 @@ async function main() {
       isFitmentRequired:true,
       description: "This is product 2",
       categoryId:2,
-      workFlowId:1,
+      workflowId:1,
       userId: 1,
       quantity:{
         type:"dropDown",
