@@ -8,8 +8,8 @@ export class CreateOrderStatusDto {
     @IsNotEmpty()
     status:string;
 
+    @IsOptional()
     @IsString()
-    @IsNotEmpty()
     description: string;
 
     @IsOptional()

@@ -67,9 +67,9 @@ export class CustomerOrderInvoiceService {
         const formattedOrder = {
             id: order.id,
             invoiceNumber: formattedInvoiceNumber,
-            advancePayment: order.advancePayment.toFixed(2),
-            remainingPayment: order.remainingPayment.toFixed(2),
-            totalPayment: order.totalPayment.toFixed(2),
+            advancePayment: Number(order.advancePayment?.toFixed(2)),
+            remainingPayment: Number(order.remainingPayment.toFixed(2)),
+            totalPayment:Number(order.totalPayment.toFixed(2)),
             paymentMode: order.paymentMode,
             ownerName: order.ownerName,
             orderItems: order.orderItems.map(item => {
