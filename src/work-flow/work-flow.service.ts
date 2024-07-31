@@ -61,7 +61,7 @@ export class WorkFlowService {
         const formate = await this.orderStatusService.findOne(i);
         return {
           id: formate?.id,
-          status: formate?.status,
+          name: formate?.status,
         };
       }));
   
@@ -94,7 +94,7 @@ export class WorkFlowService {
       const formate = await this.orderStatusService.findOne(i);
       return {
         id: formate?.id,
-        status: formate?.status,
+        name: formate?.status,
       };
     }));
     return {
