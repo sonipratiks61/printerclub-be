@@ -169,9 +169,9 @@ export class OrderService {
     })
     const formattedOrders = orders.map(order => ({
       id: order.id,
-      advancePayment: Number(order.advancePayment?.toFixed(2)),
-      totalPayment: Number(order.totalPayment.toFixed(2)),
-      remainingPayment: Number(order.remainingPayment.toFixed(2)),
+      advancePayment: Number(order.advancePayment)?.toFixed(2),
+      totalPayment: Number(order.totalPayment).toFixed(2),
+      remainingPayment: Number(order.remainingPayment).toFixed(2),
       paymentMode: order.paymentMode,
       ownerName: order.ownerName,
       orderItems: order.orderItems,
