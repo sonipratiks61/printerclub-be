@@ -52,8 +52,7 @@ export class CustomerOrderInvoiceService {
                         createdAt:true
 
                     }
-                },
-                orderHistory: true,
+                }
             }
         });
 

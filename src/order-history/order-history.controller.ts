@@ -20,9 +20,7 @@ export class OrderHistoryController  {
         @Req() req
     ) {
         try {
-            const ownerName=req.user.name
-
-            const data = await this.orderHistoryService.create(createOrderHistoryDto,ownerName);
+            const data = await this.orderHistoryService.create(createOrderHistoryDto);
            if(data){
             this.responseService.sendSuccess(res, 'Created OrderHistory Successfully', data);
         }
@@ -31,18 +29,14 @@ export class OrderHistoryController  {
         }
     }
         catch (error) {
-            
             if (error instanceof NotFoundException) {
                 this.responseService.sendNotFound(res, error.message)
             }
-            else if (error instanceof BadRequestException) {
-                this.responseService.sendBadRequest(res, error.message)
-            }
-            else   if (error instanceof ConflictException) {
+            else if (error instanceof ConflictException) {
                 this.responseService.sendConflict(res, error.message)
             }
             else {
-                this.responseService.sendInternalError(res, 'Error in Creating Customer Details');
+                this.responseService.sendInternalError(res, 'Something Went Wrong');
             }
         }
     }
@@ -54,7 +48,7 @@ export class OrderHistoryController  {
             const id= parseInt(orderId, 10);
             let data;
             if (orderId) {
-                data = await this.orderHistoryService.findOrderById(id);
+                data = await this.orderHistoryService.findOrderItemById(id);
             } else {
                 data = await this.orderHistoryService.findAll();
             }
@@ -85,7 +79,6 @@ export class OrderHistoryController  {
             }
             this.responseService.sendSuccess(res, 'Fetch Successfully', orderHistory);
         } catch (error) {
-            console.log(error);
             this.responseService.sendInternalError(
                 res,
                 error.message || 'Something Went Wrong',
@@ -144,8 +137,6 @@ export class OrderHistoryController  {
             await this.orderHistoryService.remove(orderId);
             this.responseService.sendSuccess(res, 'OrderHistory Deleted Successfully');
         } catch (error) {
-            console.error(error);
-
             this.responseService.sendInternalError(
                 res,
                 'Something Went Wrong',

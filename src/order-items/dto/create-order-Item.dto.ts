@@ -26,6 +26,10 @@ export class CreateOrderItemsDto {
 
     @IsInt()
     @IsNotEmpty()
+    workflowId: number;
+
+    @IsInt()
+    @IsNotEmpty()
     gst:number;
 
     @IsOptional()

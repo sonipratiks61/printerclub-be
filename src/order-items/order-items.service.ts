@@ -2,19 +2,17 @@
 
 
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { ProductService } from 'src/product/product.service';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateOrderItemsDto } from './dto/create-order-Item.dto';
-import { validate } from 'class-validator';
+import { OrderStatusService } from 'src/order-status/order-status.service';
+import { OrderHistoryService } from 'src/order-history/order-history.service';
 
 @Injectable()
 export class OrderItemsService {
-    constructor(private productService: ProductService,
+    constructor(private orderStatusService: OrderStatusService,
         private prisma: PrismaService) {
     }
-    
-    async orderItemsSearchByOrderId(orderId: number) {
 
+    async orderItemsSearchByOrderId(orderId: number) {
         const checkOrderIdExist = await this.prisma.orderItem.findFirst({
             where: {
                 orderId: orderId
@@ -41,13 +39,70 @@ export class OrderItemsService {
     }
 
     async findOne(id: number) {
-
-        return await this.prisma.orderItem.findUnique({
-            where: {
-                id: id
+        const data = await this.prisma.orderItem.findUnique({
+            where: { id: id },
+            select: {
+                workflow: {
+                    select: {
+                        id: true,
+                        name: true,
+                        sequence: true,
+                    }
+                }
             }
-        })
+        });
+
+        if (!data) {
+            throw new NotFoundException('Invalid Order Id');
+        }
+
+        const sequence = Array.isArray(data.workflow.sequence) ? data.workflow.sequence : [];
+
+        const formattedSequence = await Promise.all(
+            sequence
+                .filter((item): item is number => typeof item === 'number')
+                .map(async (id: number) => {
+                    const formate = await this.orderStatusService.findOne(id);
+                    return {
+                        id: formate?.id,
+                        name: formate?.status,
+                    };
+                })
+        );
+
+
+        const history = await this.prisma.orderHistory.findMany({
+            where: { orderItemId: id },
+            orderBy: { timestamp: 'asc' },
+            select:{
+            id:true,
+            updatedById:true,
+            statusId:true,
+            timestamp:true,
+            updatedBy:{
+                select:{
+                    name:true
+                }
+            }
+          
+        }
+        });
+        return {
+            ...data,
+            workflow: {
+                ...data.workflow,
+                sequence: formattedSequence.map((item) => { return { id: item.id, name: item.name } }),
+                completedStatus: history.map(record => {
+                    return {
+                        updatedBy: record.updatedBy.name,
+                        timestamp: record.timestamp,
+                        statusId: record.statusId
+                    };
+                })
+            }
+        };
     }
+
     async remove(id: number) {
         return await this.prisma.orderItem.delete({
             where: {

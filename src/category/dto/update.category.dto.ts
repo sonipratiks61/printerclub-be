@@ -16,7 +16,6 @@ export class UpdateCategoryDto {
   name: string;
 
   @IsOptional()
-  @IsNotEmpty({ message: 'Description cannot be empty' })
   @IsString({ message: 'Description must be a string' })
   description: string;
 

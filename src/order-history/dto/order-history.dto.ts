@@ -3,11 +3,17 @@ import { IsNotEmpty, IsNumber, IsString, ValidateNested, IsArray, IsDecimal, IsI
 import { Type } from 'class-transformer';
 
 export class CreateOrderHistoryDto {
-   @IsString()
-    status:string
-    
     @IsInt()
-    orderId:number
+    @IsNotEmpty()
+    orderItemId:number
+
+    @IsInt()
+    @IsNotEmpty()
+    statusId:number
+
+    @IsInt()
+    @IsNotEmpty()
+    updatedById:number
 
 }
 
