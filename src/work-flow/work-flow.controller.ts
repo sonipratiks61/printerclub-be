@@ -18,7 +18,7 @@ import { IdValidationPipe } from 'utils/validation/paramsValidation';
 import { WorkFlowService } from './work-flow.service';
 import { CreateWorkFlowDto, UpdateWorkFlowDto } from './dto/work-flow.create-and-update.dto';
 
-@Controller('workFlow')
+@Controller('workflow')
 export class WorkFlowController {
   constructor(
     private readonly workFlowService: WorkFlowService,
