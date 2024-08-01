@@ -106,13 +106,9 @@ export class OrderItemsService {
                 ...data.workflow,
                 sequence: formattedSequence.map((item) => { return { id: item.id, name: item.name } }),
                 completedStatus: history.map(record => {
-
-                    const istDate = new Date(record.timestamp).toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" });
-                    const istTime = new Date(record.timestamp).toLocaleTimeString("en-IN", { timeZone: "Asia/Kolkata" });
                     return {
                         updatedBy: userMap.get(record.updatedById),
-                        Date: istDate,
-                        Time: istTime,
+                        timestamp: record.timestamp,
                         statusId: record.statusId
                     };
                 })
