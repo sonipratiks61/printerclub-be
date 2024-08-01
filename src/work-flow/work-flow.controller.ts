@@ -117,7 +117,7 @@ export class WorkFlowController {
 
   @Patch(':id')
   @UseGuards(AuthGuard('jwt'))
-  async updateRole(
+  async updateWorkFlow(
     @Param('id', IdValidationPipe) id: string,
     @Body() updateWorkFlowDto: UpdateWorkFlowDto,
     @Res() res,

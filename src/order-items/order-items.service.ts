@@ -56,7 +56,7 @@ export class OrderItemsService {
             throw new NotFoundException('Invalid Order Id');
         }
 
-        const sequence = Array.isArray(data.workflow?.sequence) ? data.workflow.sequence : [];
+        const sequence = Array.isArray(data.workflow.sequence) ? data.workflow.sequence : [];
 
         const formattedSequence = await Promise.all(
             sequence

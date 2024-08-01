@@ -82,11 +82,11 @@ export class ProductService {
           }
         },
         attributes: true,
-        workflow:{
-select:{
-  id:true,
-  name:true,
-}
+        workflow: {
+          select: {
+            id: true,
+            name: true,
+          }
         }
       }
     });
@@ -145,7 +145,7 @@ select:{
         name: true,
         userId: true,
         categoryId: true,
-        workflowId:true,
+        workflowId: true,
         description: true,
         quantity: true,
         attributes: true,
@@ -193,15 +193,13 @@ select:{
       }
 
     }
-     if(updateProductDto.workFlowId)
-    {
-      const workFlow=await this.prisma.workFlow.findUnique({
-        where:{
+    if (updateProductDto.workFlowId) {
+      const workFlow = await this.prisma.workFlow.findUnique({
+        where: {
           id: updateProductDto.workFlowId,
         }
       })
-      if(!workFlow)
-      {
+      if (!workFlow) {
         throw new NotFoundException("WorkFlow not Found");
       }
     }

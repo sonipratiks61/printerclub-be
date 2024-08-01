@@ -27,13 +27,12 @@ export class OrderService {
         throw new NotFoundException("One of the Products does not exist");
       }
     }
-  
-    
+
     const invoiceNumber = await generateInvoiceNumber();
     const orderItemsWithAddressIds = await Promise.all(orderItems.map(async (item) => {
       let isMeasurementAddressId = item.isMeasurementAddressId;
-  
-      if (!isMeasurementAddressId && item.address&&item.city&&item.country&&item.pinCode&&item.state) {
+
+      if (!isMeasurementAddressId && item.address && item.city && item.country && item.pinCode && item.state) {
         const createdAddress = await this.prisma.address.create({
           data: {
             address: item.address,
@@ -45,7 +44,7 @@ export class OrderService {
         });
         isMeasurementAddressId = createdAddress.id;
       }
-  
+
       return {
         ...item,
         isMeasurementAddressId,
@@ -65,11 +64,11 @@ export class OrderService {
             mobileNumber: customerDetails.mobileNumber,
             email: customerDetails.email,
             additionalDetails: customerDetails.additionalDetails,
-            address:{
+            address: {
               create: {
                 address: customerDetails.address.address,
-                city:customerDetails.address.city,
-                state:customerDetails.address.state,
+                city: customerDetails.address.city,
+                state: customerDetails.address.state,
                 pinCode: customerDetails.address.pinCode,
                 country: customerDetails.address.country,
               }
@@ -82,7 +81,7 @@ export class OrderService {
               quantity: item.quantity,
               name: item.name,
               price: item.price,
-              workflowId:item.workflowId,
+              workflowId: item.workflowId,
               additionalDetails: item.additionalDetails,
               productId: item.productId,
               gst: item.gst,
@@ -96,7 +95,7 @@ export class OrderService {
                 value: attr.value,
               })),
             })),
-            
+
           },
         },
       },
@@ -107,7 +106,7 @@ export class OrderService {
     });
     return createdOrder;
   }
-  
+
 
   async findAll() {
     const orders = await this.prisma.order.findMany({
