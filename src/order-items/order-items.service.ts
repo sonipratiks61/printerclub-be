@@ -42,21 +42,6 @@ export class OrderItemsService {
         const data = await this.prisma.orderItem.findUnique({
             where: { id: id },
             select: {
-                id: true,
-                name: true,
-                price: true,
-                quantity: true,
-                attributes: true,
-                productId: true,
-                orderId: true,
-                isMeasurementAddressId: true,
-                isMeasurementAddress: true,
-                gst: true,
-                ownerName: true,
-                description: true,
-                discount: true,
-                measurement: true,
-                isConfirmed: true,
                 workflow: {
                     select: {
                         id: true,

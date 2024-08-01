@@ -10,13 +10,13 @@ import { WorkFlowService } from 'src/work-flow/work-flow.service';
 export class ProductService {
   constructor(private prisma: PrismaService,
     private categoryService: CategoryService,
-    private workFlowService:WorkFlowService) { }
+    private workFlowService: WorkFlowService) { }
   async create(createProductDto: CreateProductDto, userId: number) {
     const categoryId = await this.categoryService.findOne(createProductDto.categoryId);
     if (!categoryId) {
       throw new NotFoundException('Invalid Category Id');
     }
-    const workFlowId =await this.workFlowService.findOne(createProductDto.workflowId);
+    const workFlowId = await this.workFlowService.findOne(createProductDto.workflowId);
     if (!workFlowId) {
       throw new NotFoundException('Invalid WorkFlow Id');
     }
@@ -124,7 +124,7 @@ select:{
           type: attribute.type,
           options: attribute.options
         })),
-        workFlow:{
+        workflow:{
           id:product.workflow.id,
           name:product.workflow.name
         }

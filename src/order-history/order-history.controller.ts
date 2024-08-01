@@ -29,7 +29,6 @@ export class OrderHistoryController  {
         }
     }
         catch (error) {
-            console.log(error);
             if (error instanceof NotFoundException) {
                 this.responseService.sendNotFound(res, error.message)
             }
@@ -80,7 +79,6 @@ export class OrderHistoryController  {
             }
             this.responseService.sendSuccess(res, 'Fetch Successfully', orderHistory);
         } catch (error) {
-            console.log(error);
             this.responseService.sendInternalError(
                 res,
                 error.message || 'Something Went Wrong',
@@ -139,8 +137,6 @@ export class OrderHistoryController  {
             await this.orderHistoryService.remove(orderId);
             this.responseService.sendSuccess(res, 'OrderHistory Deleted Successfully');
         } catch (error) {
-            console.error(error);
-
             this.responseService.sendInternalError(
                 res,
                 'Something Went Wrong',

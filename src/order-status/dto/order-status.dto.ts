@@ -27,7 +27,6 @@ export class UpdateOrderStatusDto {
 
     @IsOptional()
     @IsString()
-    @IsNotEmpty()
     description: string;
 
     @IsOptional()
