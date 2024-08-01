@@ -20,9 +20,7 @@ export class OrderHistoryController  {
         @Req() req
     ) {
         try {
-            const updatedById=req.user.id;
-
-            const data = await this.orderHistoryService.create(createOrderHistoryDto,updatedById);
+            const data = await this.orderHistoryService.create(createOrderHistoryDto);
            if(data){
             this.responseService.sendSuccess(res, 'Created OrderHistory Successfully', data);
         }
@@ -35,10 +33,7 @@ export class OrderHistoryController  {
             if (error instanceof NotFoundException) {
                 this.responseService.sendNotFound(res, error.message)
             }
-            else if (error instanceof BadRequestException) {
-                this.responseService.sendBadRequest(res, error.message)
-            }
-            else   if (error instanceof ConflictException) {
+            else if (error instanceof ConflictException) {
                 this.responseService.sendConflict(res, error.message)
             }
             else {

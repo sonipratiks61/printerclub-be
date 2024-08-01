@@ -3,16 +3,19 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateOrderHistoryDto } from './dto/order-history.dto';
 import { OrderStatusService } from 'src/order-status/order-status.service';
 import { OrderItemsService } from 'src/order-items/order-items.service';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class OrderHistoryService {
     constructor(
         private prisma: PrismaService,
         private orderStatusService:OrderStatusService,
-        private orderItemsService:OrderItemsService) { }
+        private orderItemsService:OrderItemsService,
+        private userService:UserService) { }
 
-    async create(createOrderHistoryDto: CreateOrderHistoryDto, updatedById:number) {
-        const {orderItemId,statusId } = createOrderHistoryDto;
+    async create(createOrderHistoryDto: CreateOrderHistoryDto) {
+      
+        const {orderItemId,statusId,updatedById } = createOrderHistoryDto;
 
         const existingOrderHistory = await this.prisma.orderHistory.findFirst({
             where: {
@@ -26,12 +29,17 @@ export class OrderHistoryService {
         }
         const orderItem=await this.orderItemsService.findOne(orderItemId)
         if(!orderItem){
-            throw new NotFoundException("Order status not found");
+            throw new NotFoundException("Order Item not found");
         }
         const status= await this.orderStatusService.findOne(statusId);
         if(!status)
         {
             throw new NotFoundException("Status not found");
+        }
+        const updatedBy=await this.userService.findOne(updatedById)
+        if(!updatedBy)
+        {
+            throw new NotFoundException("User not found");
         }
         const data = await this.prisma.orderHistory.create({
             data: {
@@ -65,7 +73,7 @@ export class OrderHistoryService {
             }
         })
         if (!checkOrderIdExist) {
-            throw new NotFoundException("Invalid OrderItem Id")
+            throw new NotFoundException("Invalid Order Item Id")
         }
         const data = await this.prisma.orderHistory.findMany({
             where: {

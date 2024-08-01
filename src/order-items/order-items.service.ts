@@ -88,18 +88,20 @@ export class OrderItemsService {
 
         const history = await this.prisma.orderHistory.findMany({
             where: { orderItemId: id },
-            orderBy: { timestamp: 'asc' }
+            orderBy: { timestamp: 'asc' },
+            select:{
+            id:true,
+            updatedById:true,
+            statusId:true,
+            timestamp:true,
+            updatedBy:{
+                select:{
+                    name:true
+                }
+            }
+          
+        }
         });
-
-        const userIds = [...new Set(history.map(record => record.updatedById))];
-
-        const users = await this.prisma.user.findMany({
-            where: { id: { in: userIds } },
-            select: { id: true, name: true }
-        });
-
-        const userMap = new Map(users.map(user => [user.id, user.name]));
-
         return {
             ...data,
             workflow: {
@@ -107,7 +109,7 @@ export class OrderItemsService {
                 sequence: formattedSequence.map((item) => { return { id: item.id, name: item.name } }),
                 completedStatus: history.map(record => {
                     return {
-                        updatedBy: userMap.get(record.updatedById),
+                        updatedBy: record.updatedBy.name,
                         timestamp: record.timestamp,
                         statusId: record.statusId
                     };

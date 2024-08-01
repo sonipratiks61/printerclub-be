@@ -4,10 +4,16 @@ import { Type } from 'class-transformer';
 
 export class CreateOrderHistoryDto {
     @IsInt()
+    @IsNotEmpty()
     orderItemId:number
 
     @IsInt()
+    @IsNotEmpty()
     statusId:number
+
+    @IsInt()
+    @IsNotEmpty()
+    updatedById:number
 
 }
 
