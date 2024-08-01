@@ -17,7 +17,7 @@ export class OrderService {
 
 
 
-  async create(createOrderDto: CreateOrderDto, ownerName:string,updatedById:number) {
+  async create(createOrderDto: CreateOrderDto, ownerName: string) {
     const { advancePayment, remainingPayment, totalPayment, paymentMode, orderItems, customerDetails } = createOrderDto;
     const productIds = [...new Set(orderItems.map(item => item.productId))];
   
@@ -152,7 +152,7 @@ export class OrderService {
     })
     const formattedOrders = orders.map(order => ({
       id: order.id,
-      advancePayment: Number(order.advancePayment).toFixed(2),
+      advancePayment: Number(order.advancePayment)?.toFixed(2),
       totalPayment: Number(order.totalPayment).toFixed(2),
       remainingPayment: Number(order.remainingPayment).toFixed(2),
       paymentMode: order.paymentMode,
