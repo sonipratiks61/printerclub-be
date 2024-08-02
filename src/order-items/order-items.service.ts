@@ -5,6 +5,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { PrismaService } from 'src/prisma/prisma.service';
 import { OrderStatusService } from 'src/order-status/order-status.service';
 import { OrderHistoryService } from 'src/order-history/order-history.service';
+import { CreateOrderItemsDto, UpdateOrderItemDto } from './dto/order-Item.dto';
 
 @Injectable()
 export class OrderItemsService {
@@ -74,18 +75,18 @@ export class OrderItemsService {
         const history = await this.prisma.orderHistory.findMany({
             where: { orderItemId: id },
             orderBy: { timestamp: 'asc' },
-            select:{
-            id:true,
-            updatedById:true,
-            statusId:true,
-            timestamp:true,
-            updatedBy:{
-                select:{
-                    name:true
+            select: {
+                id: true,
+                updatedById: true,
+                statusId: true,
+                timestamp: true,
+                updatedBy: {
+                    select: {
+                        name: true
+                    }
                 }
+
             }
-          
-        }
         });
         return {
             ...data,
@@ -109,6 +110,28 @@ export class OrderItemsService {
                 id: id
             }
         })
+    }
+    async updateOrderItemStatus(id: number, updateOrderItemDto: UpdateOrderItemDto) {
+
+        const isCheckCancelled = await this.prisma.orderItem.findFirst({
+            where: {
+                id: id,
+                orderItemStatus: 'cancelled'
+            }
+        })
+        if (isCheckCancelled) {
+            throw new BadRequestException('Order item is cancelled');
+        }
+        const data = await this.prisma.orderItem.update({
+            where: {
+                id: id
+            },
+            data: {
+                orderItemStatus: updateOrderItemDto.orderItemStatus
+            }
+
+        });
+        return data;
     }
     // async update(id: number, createOrderItemDto: CreateOrderItemsDto) {
     //     const attributes = createOrderItemDto.attributes.map(attr => ({
