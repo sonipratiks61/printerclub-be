@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto, UpdateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
@@ -50,7 +50,7 @@ export class UserService {
       gstNumber: user.gstNumber,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
-      roleId:user.role.id,
+      roleId: user.role.id,
       role: user.role.name,
       addresses: user.addresses,
     }));
@@ -97,7 +97,7 @@ export class UserService {
     if (userMobileNumber) {
       errors.mobileNumber = "MobileNumber is Already Exist";
     }
-    if(Object.keys(errors).length>0) {
+    if (Object.keys(errors).length > 0) {
       throw new ConflictException(errors);
     }
     
@@ -147,10 +147,29 @@ export class UserService {
   }
 
   async updateUserByAdmin(id: number, updateUserDto: UpdateUserDto) {
+    const userData = await this.findOne(id);
+    if (!userData) {
+      throw new NotFoundException("User not found")
+    }
     const role = await this.roleService.findOne(updateUserDto.roleId);
     if (!role) {
-      throw new NotFoundException("Role not Found")
+      throw new NotFoundException("Role not found")
     }
+    const errors: { mobileNumber?: string } = {};
+
+    const userMobileNumber = await this.prisma.user.findFirst({
+      where: {
+        mobileNumber: updateUserDto.mobileNumber,
+        id: { not: id }
+      }
+    })
+    if (userMobileNumber) {
+      errors.mobileNumber = "Mobile number already exists";
+    }
+    if (Object.keys(errors).length > 0) {
+      throw new ConflictException(errors);
+    }
+
     const address = await this.prisma.address.findFirst({
       where: {
         userId: id,
@@ -187,8 +206,9 @@ export class UserService {
 
       },
       select: {
-        id: true, name: true, businessName: true,
-
+        id: true,
+        name: true,
+        businessName: true,
         addresses: {
           select: {
             id: true,
@@ -198,7 +218,8 @@ export class UserService {
             pinCode: true,
             country: true,
           }
-        }, role: {
+        },
+        role: {
           select: {
             id: true,
             name: true,
