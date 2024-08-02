@@ -72,12 +72,8 @@ export class CategoryService {
           parentId: null
         },
 
-        include: {
-          product: {
-            where: {
-              exclude: false,
-            },
-          },
+        
+        include:{
           subCategories: {
             select: {
               id: true,
@@ -121,13 +117,7 @@ export class CategoryService {
             name: true,
             parentId: true,
             type: true,
-            description: true,
-            product: {
-                where: {
-                  exclude: false,
-                },
-              
-            }
+            description: true
           }
         });
     }
