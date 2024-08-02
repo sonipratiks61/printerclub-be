@@ -1,7 +1,8 @@
 // CreateOrderItemsDto.ts
-import { IsNotEmpty, IsNumber, IsString, ValidateNested, IsArray, IsOptional, IsInt, IsDefined } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString, ValidateNested, IsArray, IsOptional, IsInt, IsDefined, IsIn } from 'class-validator';
 import { Type } from 'class-transformer';
 import { CreateAddressDto } from 'src/user/dto/create-and-update-address.dto';
+import { OrderItemStatusType } from '@prisma/client';
 
 export class CreateOrderItemsDto {
     @IsNumber()
@@ -81,6 +82,7 @@ export class CreateOrderItemsDto {
     @IsInt()
     @IsOptional()
     isMeasurementAddressId:number
+    
 }
 
 export class CreateOrderItemAttributeDto {
@@ -94,4 +96,8 @@ export class CreateOrderItemAttributeDto {
     value: string; 
 }
 
+export class UpdateOrderItemDto{
+    @IsIn(['cancelled', 'confirmed','pending'], { message: 'Order item status must be either cancel or confirm' })
+    orderItemStatus:  OrderItemStatusType;
+}
 
