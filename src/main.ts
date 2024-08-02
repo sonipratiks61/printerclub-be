@@ -4,9 +4,15 @@ import { AppModule } from './app.module';
 import { getCustomValidationError } from 'utils/validation/validationFunction';
 import { ValidationPipe, HttpException, HttpStatus } from '@nestjs/common';
 import { ValidationError } from 'class-validator';
+import * as fs from 'fs';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { cors: true });
+  const httpsOptions = {
+    key: fs.readFileSync('key.pem'),
+    cert: fs.readFileSync('cert.pem'),
+  };
+
+  const app = await NestFactory.create(AppModule, { httpsOptions, cors: true });
 
   app.enableCors({
     origin: '*', // Allows all origins
