@@ -62,7 +62,7 @@ export class CustomerOrderInvoiceService {
         const financialYear = await FinancialYear()
 
         const formattedInvoiceNumber = `${process.env.INVOICE_NUMBER_PREFIX}${financialYear}-${order.invoiceNumber}`;
-
+        const dueDate = addDays(order.createdAt,15)
         const formattedOrder = {
             id: order.id,
             invoiceNumber: formattedInvoiceNumber,
@@ -71,8 +71,8 @@ export class CustomerOrderInvoiceService {
             totalPayment:Number(order.totalPayment).toFixed(2),
             paymentMode: order.paymentMode,
             ownerName: order.ownerName,
+            dueDate:dueDate,
             orderItems: order.orderItems.map(item => {
-                const dueDate = addDays(item.createdAt,15)
                 const totalPrice = calculatePrice({
                     price: parseInt(item.price, 10),
                     quantity: item.quantity,
@@ -94,7 +94,7 @@ export class CustomerOrderInvoiceService {
                     state: item.isMeasurementAddress?.state,
                     pinCode: item.isMeasurementAddress?.pinCode,
                     totalPrice: parseFloat(totalPrice),
-                    dueDate:dueDate
+                    
                 };
             }),
             customerDetails:order.customerDetails

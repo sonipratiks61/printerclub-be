@@ -73,6 +73,11 @@ export class CategoryService {
         },
 
         include: {
+          product: {
+            where: {
+              exclude: false,
+            },
+          },
           subCategories: {
             select: {
               id: true,
@@ -116,7 +121,13 @@ export class CategoryService {
             name: true,
             parentId: true,
             type: true,
-            description: true
+            description: true,
+            product: {
+                where: {
+                  exclude: false,
+                },
+              
+            }
           }
         });
     }
