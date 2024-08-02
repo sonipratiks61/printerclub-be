@@ -172,6 +172,7 @@ export class ProductService {
     const data = await this.prisma.product.findMany({
       where: {
         categoryId: categoryId,
+        exclude:false
       },
       include: {
         attributes: true
