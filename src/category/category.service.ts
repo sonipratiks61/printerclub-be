@@ -72,7 +72,8 @@ export class CategoryService {
           parentId: null
         },
 
-        include: {
+        
+        include:{
           subCategories: {
             select: {
               id: true,
