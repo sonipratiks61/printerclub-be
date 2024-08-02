@@ -136,7 +136,7 @@ export class UpdateUserDto {
     description: 'The mobile phone number of the user',
     example: '123-456-7890',
   })
-  @IsNotEmpty({ message: 'Mobile number must not be empty' })
+
   @IsString({ message: 'Mobile number must be a string' })
   @IsTenDigitNumber({ message: 'Mobile number must be a 10-digit number' })
   @IsOptional()

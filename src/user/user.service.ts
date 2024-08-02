@@ -153,19 +153,18 @@ export class UserService {
     }
     const role = await this.roleService.findOne(updateUserDto.roleId);
     if (!role) {
-      throw new NotFoundException("Role not Found")
+      throw new NotFoundException("Role not found")
     }
     const errors: { mobileNumber?: string } = {};
 
     const userMobileNumber = await this.prisma.user.findFirst({
       where: {
-        id: id,
-        mobileNumber: updateUserDto.mobileNumber
-
+        mobileNumber: updateUserDto.mobileNumber,
+        id: { not: id }
       }
     })
     if (userMobileNumber) {
-      errors.mobileNumber = "MobileNumber is Already Exist";
+      errors.mobileNumber = "Mobile number already exists";
     }
     if (Object.keys(errors).length > 0) {
       throw new ConflictException(errors);
@@ -207,8 +206,9 @@ export class UserService {
 
       },
       select: {
-        id: true, name: true, businessName: true,
-
+        id: true,
+        name: true,
+        businessName: true,
         addresses: {
           select: {
             id: true,
@@ -218,7 +218,8 @@ export class UserService {
             pinCode: true,
             country: true,
           }
-        }, role: {
+        },
+        role: {
           select: {
             id: true,
             name: true,
