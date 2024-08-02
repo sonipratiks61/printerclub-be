@@ -117,7 +117,13 @@ export class CategoryService {
             name: true,
             parentId: true,
             type: true,
-            description: true
+            description: true,
+            product: {
+                where: {
+                  exclude: false,
+                },
+              
+            }
           }
         });
     }
