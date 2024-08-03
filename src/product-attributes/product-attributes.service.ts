@@ -48,7 +48,7 @@ export class ProductAttributesService {
       return data;
     });
 
-    return this.prisma.productAttribute.createMany({
+    return await this.prisma.productAttribute.createMany({
       data: createData,
     });
   }
@@ -90,11 +90,15 @@ export class ProductAttributesService {
       if (!updateProductAttributeDto.options || updateProductAttributeDto.options.length === 0) {
         throw new BadRequestException('Options must be provided for dropDown type');
       }
-
-      updateProductAttributeData.options = updateProductAttributeDto.options;
+       updateProductAttributeData.options = updateProductAttributeDto.options;
+      
+      
+    }
+    else if (updateProductAttributeDto.type === 'text') {
+      updateProductAttributeData.options = null;
     }
     
-    return this.prisma.productAttribute.update({
+    return await this.prisma.productAttribute.update({
       where: {
         id: id,
       },
@@ -108,6 +112,6 @@ export class ProductAttributesService {
 
   }
   async remove(id: number) {
-    return this.prisma.productAttribute.delete({ where: { id } });
+    return await this.prisma.productAttribute.delete({ where: { id } });
   }
 }
