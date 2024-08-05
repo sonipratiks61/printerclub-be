@@ -7,7 +7,8 @@ import { ProductService } from 'src/product/product.service';
 
 @Injectable()
 export class ProductAttributesService {
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService,
+    private productService: ProductService) { }
 
   async createMany(createProductAttributesDto: CreateProductAttributesDto[]) {
     const productIds = createProductAttributesDto.map(dto => dto.productId);
@@ -43,12 +44,12 @@ export class ProductAttributesService {
           throw new BadRequestException('Options must be provided for dropDown type');
         }
         data.options = dto.options;
-      } 
+      }
 
       return data;
     });
 
-    return await this.prisma.productAttribute.createMany({
+    return this.prisma.productAttribute.createMany({
       data: createData,
     });
   }
@@ -90,15 +91,11 @@ export class ProductAttributesService {
       if (!updateProductAttributeDto.options || updateProductAttributeDto.options.length === 0) {
         throw new BadRequestException('Options must be provided for dropDown type');
       }
-       updateProductAttributeData.options = updateProductAttributeDto.options;
-      
-      
+
+      updateProductAttributeData.options = updateProductAttributeDto.options;
+
     }
-    else if (updateProductAttributeDto.type === 'text') {
-      updateProductAttributeData.options = null;
-    }
-    
-    return await this.prisma.productAttribute.update({
+    const data = await this.prisma.productAttribute.update({
       where: {
         id: id,
       },
@@ -108,10 +105,22 @@ export class ProductAttributesService {
 
       },
     });
-
+    if (data.type === 'dropDown') {
+      return data;
+    }
+    else {
+      return {
+        id: id,
+        name: data.name,
+        type: data.type,
+        productId: data.productId,
+      };
+    }
 
   }
+
+
   async remove(id: number) {
-    return await this.prisma.productAttribute.delete({ where: { id } });
+    return this.prisma.productAttribute.delete({ where: { id } });
   }
 }
