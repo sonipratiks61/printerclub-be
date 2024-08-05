@@ -69,16 +69,11 @@ export class ProductAttributesService {
   }
 
   async update(id: number, updateProductAttributeDto: UpdateProductAttributesDto) {
-    if (updateProductAttributeDto.productId) {
-      const product = await this.prisma.product.findUnique({
-        where: {
-          id: updateProductAttributeDto.productId,
-        },
-      });
+    const productId = updateProductAttributeDto.productId
+    const product = await this.productService.findOne(productId);
 
-      if (!product) {
-        throw new BadRequestException("Product Invalid");
-      }
+    if (!product) {
+      throw new BadRequestException("Product Invalid");
     }
 
     let updateProductAttributeData: any = {
