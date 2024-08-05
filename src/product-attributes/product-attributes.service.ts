@@ -7,7 +7,8 @@ import { ProductService } from 'src/product/product.service';
 
 @Injectable()
 export class ProductAttributesService {
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService,
+    private productService: ProductService) { }
 
   async createMany(createProductAttributesDto: CreateProductAttributesDto[]) {
     const productIds = createProductAttributesDto.map(dto => dto.productId);
@@ -43,7 +44,7 @@ export class ProductAttributesService {
           throw new BadRequestException('Options must be provided for dropDown type');
         }
         data.options = dto.options;
-      } 
+      }
 
       return data;
     });
@@ -68,16 +69,11 @@ export class ProductAttributesService {
   }
 
   async update(id: number, updateProductAttributeDto: UpdateProductAttributesDto) {
-    if (updateProductAttributeDto.productId) {
-      const product = await this.prisma.product.findUnique({
-        where: {
-          id: updateProductAttributeDto.productId,
-        },
-      });
+    const productId = updateProductAttributeDto.productId
+    const product = await this.productService.findOne(productId);
 
-      if (!product) {
-        throw new BadRequestException("Product Invalid");
-      }
+    if (!product) {
+      throw new BadRequestException("Product Invalid");
     }
 
     let updateProductAttributeData: any = {
@@ -92,9 +88,12 @@ export class ProductAttributesService {
       }
 
       updateProductAttributeData.options = updateProductAttributeDto.options;
+
     }
-    
-    return this.prisma.productAttribute.update({
+    else {
+      updateProductAttributeData.options = null;
+    }
+    const data = await this.prisma.productAttribute.update({
       where: {
         id: id,
       },
@@ -104,9 +103,21 @@ export class ProductAttributesService {
 
       },
     });
-
+    if (data.type === 'dropDown') {
+      return data;
+    }
+    else {
+      return {
+        id: id,
+        name: data.name,
+        type: data.type,
+        productId: data.productId,
+      };
+    }
 
   }
+
+
   async remove(id: number) {
     return this.prisma.productAttribute.delete({ where: { id } });
   }
