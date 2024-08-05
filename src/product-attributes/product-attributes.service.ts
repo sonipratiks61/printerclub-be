@@ -49,7 +49,7 @@ export class ProductAttributesService {
       return data;
     });
 
-    return await this.prisma.productAttribute.createMany({
+    return this.prisma.productAttribute.createMany({
       data: createData,
     });
   }
@@ -119,6 +119,6 @@ export class ProductAttributesService {
 
 
   async remove(id: number) {
-    return await this.prisma.productAttribute.delete({ where: { id } });
+    return this.prisma.productAttribute.delete({ where: { id } });
   }
 }
