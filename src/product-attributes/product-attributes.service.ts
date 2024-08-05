@@ -90,7 +90,7 @@ export class ProductAttributesService {
       updateProductAttributeData.options = updateProductAttributeDto.options;
 
     }
-    else if (updateProductAttributeDto.type === 'text') {
+    else {
       updateProductAttributeData.options = null;
     }
     const data = await this.prisma.productAttribute.update({
