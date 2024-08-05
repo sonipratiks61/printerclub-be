@@ -95,6 +95,9 @@ export class ProductAttributesService {
       updateProductAttributeData.options = updateProductAttributeDto.options;
 
     }
+    else if (updateProductAttributeDto.type === 'text') {
+      updateProductAttributeData.options = null;
+    }
     const data = await this.prisma.productAttribute.update({
       where: {
         id: id,
