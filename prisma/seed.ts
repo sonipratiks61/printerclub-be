@@ -117,162 +117,162 @@ async function main() {
   });
 
 
-  // await prisma.roleAndCapabilityMapping.createMany({
-  //   data: [{
-  //     roleId: 1, capabilityId: 1, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   },
-  //   {
-  //     roleId: 1, capabilityId: 2, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   },
-  //   {
-  //     roleId: 1, capabilityId: 3, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   },
-  //   {
-  //     roleId: 1, capabilityId: 4, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   },
-  //   {
-  //     roleId: 1, capabilityId: 5, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   },
-  //   {
-  //     roleId: 1, capabilityId: 6, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   },
-  //   {
-  //     roleId: 1, capabilityId: 7, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   },
-  //   {
-  //     roleId: 1, capabilityId: 8, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   },
-  //   {
-  //     roleId: 1, capabilityId: 9, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   },
-  //   {
-  //     roleId: 1, capabilityId: 10, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   },
-  //   {
-  //     roleId: 1, capabilityId: 11, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   },
-  //   {
-  //     roleId: 1, capabilityId: 12, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   },
-  //   {
-  //     roleId: 1, capabilityId: 13, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   },
-  //   {
-  //     roleId: 1, capabilityId: 14, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   },
-  //   {
-  //     roleId: 1, capabilityId: 15, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   },
-  //   {
-  //     roleId: 1, capabilityId: 16, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   },
-  //   {
-  //     roleId: 1, capabilityId: 17, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   },
-  //   {
-  //     roleId: 1, capabilityId: 18, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   },
-  //   {
-  //     roleId: 1, capabilityId: 19, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   },
-  //   {
-  //     roleId: 1, capabilityId: 20, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   },
-  //   {
-  //     roleId: 1, capabilityId: 21, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   },
-  //   {
-  //     roleId: 1, capabilityId: 22, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   },
-  //   {
-  //     roleId: 1, capabilityId: 23, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   },
-  //   {
-  //     roleId: 1, capabilityId: 24, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   },
-  //   {
-  //     roleId: 1, capabilityId: 25, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   },
-  //   {
-  //     roleId: 1, capabilityId: 26, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   }, {
-  //     roleId: 1, capabilityId: 27, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   }, {
-  //     roleId: 1, capabilityId: 28, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   },
-  //   {
-  //     roleId: 1, capabilityId: 29, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   },
-  //   {
-  //     roleId: 1, capabilityId: 30, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   },
-  //   {
-  //     roleId: 1, capabilityId: 31, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   },
-  //   {
-  //     roleId: 1, capabilityId: 32, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   },
-  //   {
-  //     roleId: 1, capabilityId: 33, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   },
-  //   {
-  //     roleId: 1, capabilityId: 34, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   },
-  //   {
-  //     roleId: 1, capabilityId: 35, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   },
-  //    {
-  //     roleId: 1, capabilityId: 36, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   },
-  //    {
-  //     roleId: 1, capabilityId: 37, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   },
-  //   {
-  //     roleId: 2, capabilityId: 17, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   },
-  // {
-  //    roleId: 2, capabilityId: 14, createdAt: new Date('2023-07-09'),
-  //     updatedAt: new Date('2023-07-09'),
-  //   },]
-  // })
+  await prisma.roleAndCapabilityMapping.createMany({
+    data: [{
+      roleId: 1, capabilityId: 1, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 2, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 3, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 4, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 5, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 6, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 7, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 8, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 9, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 10, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 11, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 12, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 13, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 14, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 15, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 16, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 17, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 18, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 19, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 20, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 21, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 22, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 23, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 24, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 25, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 26, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    }, {
+      roleId: 1, capabilityId: 27, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    }, {
+      roleId: 1, capabilityId: 28, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 29, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 30, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 31, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 32, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 33, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 34, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 1, capabilityId: 35, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+     {
+      roleId: 1, capabilityId: 36, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+     {
+      roleId: 1, capabilityId: 37, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+    {
+      roleId: 2, capabilityId: 17, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },
+  {
+     roleId: 2, capabilityId: 14, createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+    },]
+  })
 
   const userData = {
     businessName: " Admin-Company",
