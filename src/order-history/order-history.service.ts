@@ -13,6 +13,85 @@ export class OrderHistoryService {
         private orderItemsService: OrderItemsService,
         private userService: UserService) { }
 
+    // async create(createOrderHistoryDto: CreateOrderHistoryDto) {
+
+    //     const { orderItemId, statusId, updatedById } = createOrderHistoryDto;
+
+    //     const existingOrderHistory = await this.prisma.orderHistory.findFirst({
+    //         where: {
+    //             orderItemId: orderItemId,
+    //             statusId: statusId
+    //         },
+    //     });
+
+    //     if (existingOrderHistory) {
+    //         throw new ConflictException("Status already exists for this order item Id");
+    //     }
+    //     const orderItem = await this.orderItemsService.findOne(orderItemId)
+    //     if (!orderItem) {
+    //         throw new NotFoundException("Order Item not found");
+    //     }
+    //     const status = await this.orderStatusService.findOne(statusId);
+    //     if (!status) {
+    //         throw new NotFoundException("Status not found");
+    //     }
+    //     const updatedBy = await this.userService.findOne(updatedById)
+    //     if (!updatedBy) {
+    //         throw new NotFoundException("User not found");
+    //     }
+    //    const isSequenceLength = orderItem.workflow.sequence.length;
+       
+    //     const isCancel=await this.prisma.orderHistory.findFirst({
+
+    //         where: {
+    //             statusId:1,
+    //             orderItemId:orderItemId,
+    //         }
+    //     })
+    //     if(isCancel)
+    //     {
+    //         throw new BadRequestException('OrderItem is Already cancel');
+    //     }
+    //     else{
+    //     const data = await this.prisma.orderHistory.create({
+    //         data: {
+    //             updatedById: updatedById,
+    //             orderItemId: orderItemId,
+    //             statusId: statusId,
+    //             timestamp: new Date()
+    //         },
+    //     });
+    //     const orderHistoryCount = await this.prisma.orderHistory.count({
+    //         where:{
+    //             orderItemId:orderItemId,
+    //         }
+    //        });
+    //        if (orderHistoryCount === isSequenceLength) {
+    //         await this.prisma.orderItem.update({
+    //             where: {
+    //                 id: orderItemId
+    //             },
+    //             data: {
+    //                 orderItemStatus: 'Completed'
+    //             }
+    //         });
+    //     }
+    //     const isOrderStatus=await this.orderStatusService.findOne(data.statusId);
+    //     const isStatusName=isOrderStatus.status;
+    //     await this.prisma.orderItem.update({
+    //         where:{
+    //             id:orderItemId
+    //         },
+    //         data:{
+    //             orderItemStatus:isStatusName
+    //         }
+    //     })
+    //     return data;
+    // }
+
+        
+    // }
+
     async create(createOrderHistoryDto: CreateOrderHistoryDto) {
 
         const { orderItemId, statusId, updatedById } = createOrderHistoryDto;
@@ -51,7 +130,6 @@ export class OrderHistoryService {
         {
             throw new BadRequestException('OrderItem is Already cancel');
         }
-        else{
         const data = await this.prisma.orderHistory.create({
             data: {
                 updatedById: updatedById,
@@ -60,23 +138,48 @@ export class OrderHistoryService {
                 timestamp: new Date()
             },
         });
-        const isOrderStatus=await this.orderStatusService.findOne(data.statusId);
-        const isStatusName=isOrderStatus.status;
-        await this.prisma.orderItem.update({
-            where:{
-                id:orderItemId
-            },
-            data:{
-                orderItemStatus:isStatusName
+
+        const orderHistoryCount = await this.prisma.orderHistory.count({
+            where: {
+                orderItemId: orderItemId
             }
-        })
+        });
+    
+     const sequenceLength = orderItem.workflow.sequence.length;
+    
+        if (orderHistoryCount === sequenceLength) {
+          
+            const currentOrderItem = await this.prisma.orderItem.findUnique({
+                where: { id: orderItemId },
+                select: { orderItemStatus: true }
+            });
+    
+            if (currentOrderItem.orderItemStatus !== 'Completed') {
+                await this.prisma.orderItem.update({
+                    where: {
+                        id: orderItemId
+                    },
+                    data: {
+                        orderItemStatus: 'Completed'
+                    }
+                });
+            }
+        } else {
+            const isOrderStatus = await this.orderStatusService.findOne(data.statusId);
+            const isStatusName = isOrderStatus.status;
+            await this.prisma.orderItem.update({
+                where: {
+                    id: orderItemId
+                },
+                data: {
+                    orderItemStatus: isStatusName
+                }
+            });
+        }
+    
         return data;
     }
-
-        
-    }
-
-
+    
     async findAll() {
         return await this.prisma.orderHistory.findMany()
     }

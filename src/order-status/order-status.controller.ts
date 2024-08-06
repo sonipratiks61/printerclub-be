@@ -15,7 +15,7 @@ export class OrderStatusController {
   async create(@Body() createOrderStatusDto: CreateOrderStatusDto, @Res() res) {
     try {
       await this.orderStatusService.create(createOrderStatusDto);
-      this.responseService.sendSuccess(res, 'Status Updated Successfully');
+      this.responseService.sendSuccess(res, 'Created OrderStatus Successfully');
     }
     catch (error) {
       this.responseService.sendInternalError(res, 'Something Went Wrong');

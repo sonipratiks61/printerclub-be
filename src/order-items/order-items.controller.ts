@@ -59,7 +59,6 @@ export class OrderItemsController {
             }
             this.responseService.sendSuccess(res, 'Fetch Successfully', orderItem);
         } catch (error) {
-            console.log(error);
             this.responseService.sendInternalError(
                 res,
                 error.message || 'Something Went Wrong',
@@ -78,22 +77,21 @@ export class OrderItemsController {
             }
             const updatedOrderItem = await this.orderItemsService.updateOrderItemStatus(orderItemId, updateOrderItemDto);
             if (updatedOrderItem) {
-                this.responseService.sendSuccess(res, 'Updated Successfully', updatedOrderItem)
+                this.responseService.sendSuccess(res, 'Cancelled Successfully', updatedOrderItem)
             }
             else {
                 this.responseService.sendBadRequest(res, 'OrderItem Id Invalid');
 
             }
-            this.responseService.sendSuccess(res, 'Cancelled Successfully', updatedOrderItem)
         } catch (error) {
             if (error instanceof ConflictException) {
-                this.responseService.sendBadRequest(res, error.message)
+                this.responseService.sendConflict(res, error.message)
             }
 
-           else if (error instanceof NotFoundException) {
-                this.responseService.sendBadRequest(res, error.message)
+            else if (error instanceof NotFoundException) {
+                this.responseService.sendNotFound(res, error.message)
             }
-           else if (error instanceof BadRequestException) {
+            else if (error instanceof BadRequestException) {
                 this.responseService.sendBadRequest(res, error.message)
             }
             else {

@@ -22,7 +22,7 @@ export class OrderHistoryController  {
         try {
             const data = await this.orderHistoryService.create(createOrderHistoryDto);
            if(data){
-            this.responseService.sendSuccess(res, 'Created OrderHistory Successfully', data);
+            this.responseService.sendSuccess(res, 'Status Updated Successfully', data);
         }
         else{
             this.responseService.sendBadRequest(res, 'Failed to Create OrderHistory');

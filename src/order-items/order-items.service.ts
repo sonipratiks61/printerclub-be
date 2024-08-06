@@ -93,7 +93,7 @@ export class OrderItemsService {
 
             }
         });
-        const completedStatus=  history.map(record => {
+        const completedStatus = history.map(record => {
             return {
                 updatedBy: record.updatedBy.name,
                 timestamp: record.timestamp,
@@ -108,14 +108,15 @@ export class OrderItemsService {
                 name: status?.status 
             };
         }));
+        
         const result = {
             ...data,
             workflow: {
                 ...data.workflow,
-                 sequence: data.orderItemStatus === 'Order Cancelled'
-                ? completedStatusFilter
-                : formattedSequence.map(item => ({ id: item.id, name: item.name })),
-                       completedStatus:completedStatus
+                sequence: data.orderItemStatus === 'Cancelled'
+                    ? completedStatusFilter
+                    : formattedSequence.map(item => ({ id: item.id, name: item.name })),
+                completedStatus: completedStatus
             }
         };
         return result;
@@ -144,8 +145,7 @@ export class OrderItemsService {
         if (!orderItem) {
             throw new NotFoundException('Order Item not found');
         }
-        if(orderItem.orderItemStatus ==='completed')
-        {
+        if (orderItem.orderItemStatus === 'Completed') {
             throw new BadRequestException('Cannot cancel an order item with a completed')
         }
         await this.prisma.orderItem.update({
@@ -153,13 +153,13 @@ export class OrderItemsService {
                 id: id
             },
             data: {
-                orderItemStatus: 'cancelled'
+                orderItemStatus: 'Cancelled'
             }
 
         });
         
-       
-      
+    
+        
         const isCheck = await this.prisma.orderHistory.findFirst({
             where: {
                 statusId: 1,

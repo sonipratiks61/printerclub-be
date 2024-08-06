@@ -89,7 +89,7 @@ export class OrderService {
               measurement: item.measurement,
               discount: item.discount,
               ownerName,
-              orderItemStatus:'pending',
+              orderItemStatus:'Pending',
               description: item.description,
               attributes: item.attributes?.map(attr => ({
                 name: attr.name,
