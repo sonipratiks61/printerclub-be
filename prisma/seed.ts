@@ -117,162 +117,162 @@ async function main() {
   });
 
 
-  await prisma.roleAndCapabilityMapping.createMany({
-    data: [{
-      roleId: 1, capabilityId: 1, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-    {
-      roleId: 1, capabilityId: 2, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-    {
-      roleId: 1, capabilityId: 3, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-    {
-      roleId: 1, capabilityId: 4, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-    {
-      roleId: 1, capabilityId: 5, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-    {
-      roleId: 1, capabilityId: 6, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-    {
-      roleId: 1, capabilityId: 7, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-    {
-      roleId: 1, capabilityId: 8, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-    {
-      roleId: 1, capabilityId: 9, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-    {
-      roleId: 1, capabilityId: 10, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-    {
-      roleId: 1, capabilityId: 11, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-    {
-      roleId: 1, capabilityId: 12, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-    {
-      roleId: 1, capabilityId: 13, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-    {
-      roleId: 1, capabilityId: 14, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-    {
-      roleId: 1, capabilityId: 15, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-    {
-      roleId: 1, capabilityId: 16, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-    {
-      roleId: 1, capabilityId: 17, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-    {
-      roleId: 1, capabilityId: 18, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-    {
-      roleId: 1, capabilityId: 19, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-    {
-      roleId: 1, capabilityId: 20, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-    {
-      roleId: 1, capabilityId: 21, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-    {
-      roleId: 1, capabilityId: 22, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-    {
-      roleId: 1, capabilityId: 23, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-    {
-      roleId: 1, capabilityId: 24, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-    {
-      roleId: 1, capabilityId: 25, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-    {
-      roleId: 1, capabilityId: 26, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    }, {
-      roleId: 1, capabilityId: 27, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    }, {
-      roleId: 1, capabilityId: 28, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-    {
-      roleId: 1, capabilityId: 29, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-    {
-      roleId: 1, capabilityId: 30, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-    {
-      roleId: 1, capabilityId: 31, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-    {
-      roleId: 1, capabilityId: 32, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-    {
-      roleId: 1, capabilityId: 33, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-    {
-      roleId: 1, capabilityId: 34, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-    {
-      roleId: 1, capabilityId: 35, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-     {
-      roleId: 1, capabilityId: 36, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-     {
-      roleId: 1, capabilityId: 37, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-    {
-      roleId: 2, capabilityId: 17, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-  {
-     roleId: 2, capabilityId: 14, createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },]
-  })
+  // await prisma.roleAndCapabilityMapping.createMany({
+  //   data: [{
+  //     roleId: 1, capabilityId: 1, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   },
+  //   {
+  //     roleId: 1, capabilityId: 2, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   },
+  //   {
+  //     roleId: 1, capabilityId: 3, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   },
+  //   {
+  //     roleId: 1, capabilityId: 4, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   },
+  //   {
+  //     roleId: 1, capabilityId: 5, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   },
+  //   {
+  //     roleId: 1, capabilityId: 6, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   },
+  //   {
+  //     roleId: 1, capabilityId: 7, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   },
+  //   {
+  //     roleId: 1, capabilityId: 8, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   },
+  //   {
+  //     roleId: 1, capabilityId: 9, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   },
+  //   {
+  //     roleId: 1, capabilityId: 10, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   },
+  //   {
+  //     roleId: 1, capabilityId: 11, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   },
+  //   {
+  //     roleId: 1, capabilityId: 12, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   },
+  //   {
+  //     roleId: 1, capabilityId: 13, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   },
+  //   {
+  //     roleId: 1, capabilityId: 14, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   },
+  //   {
+  //     roleId: 1, capabilityId: 15, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   },
+  //   {
+  //     roleId: 1, capabilityId: 16, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   },
+  //   {
+  //     roleId: 1, capabilityId: 17, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   },
+  //   {
+  //     roleId: 1, capabilityId: 18, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   },
+  //   {
+  //     roleId: 1, capabilityId: 19, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   },
+  //   {
+  //     roleId: 1, capabilityId: 20, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   },
+  //   {
+  //     roleId: 1, capabilityId: 21, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   },
+  //   {
+  //     roleId: 1, capabilityId: 22, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   },
+  //   {
+  //     roleId: 1, capabilityId: 23, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   },
+  //   {
+  //     roleId: 1, capabilityId: 24, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   },
+  //   {
+  //     roleId: 1, capabilityId: 25, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   },
+  //   {
+  //     roleId: 1, capabilityId: 26, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   }, {
+  //     roleId: 1, capabilityId: 27, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   }, {
+  //     roleId: 1, capabilityId: 28, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   },
+  //   {
+  //     roleId: 1, capabilityId: 29, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   },
+  //   {
+  //     roleId: 1, capabilityId: 30, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   },
+  //   {
+  //     roleId: 1, capabilityId: 31, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   },
+  //   {
+  //     roleId: 1, capabilityId: 32, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   },
+  //   {
+  //     roleId: 1, capabilityId: 33, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   },
+  //   {
+  //     roleId: 1, capabilityId: 34, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   },
+  //   {
+  //     roleId: 1, capabilityId: 35, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   },
+  //    {
+  //     roleId: 1, capabilityId: 36, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   },
+  //    {
+  //     roleId: 1, capabilityId: 37, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   },
+  //   {
+  //     roleId: 2, capabilityId: 17, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   },
+  // {
+  //    roleId: 2, capabilityId: 14, createdAt: new Date('2023-07-09'),
+  //     updatedAt: new Date('2023-07-09'),
+  //   },]
+  // })
 
   const userData = {
     businessName: " Admin-Company",
@@ -330,7 +330,7 @@ async function main() {
     where: { id: 1 },
     update: {},
     create: {name: "User-WorkFlow",
-    sequence:[2,3,4,5],
+    sequence:[2,3,4,5,12],
     createdAt: new Date('2023-07-09'),
     updatedAt: new Date('2023-07-09'),
   },
@@ -338,7 +338,7 @@ async function main() {
   await prisma.workFlow.create({
     data: {
       name: "User-WorkFlow",
-      sequence:[2,4,6,8],
+      sequence:[2,4,6,8,12],
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
     }
@@ -499,63 +499,65 @@ async function main() {
       id: 1
     },
     create: {
-      status: "Cancel",
-      description:"Cancel",  
+      status: "cancelled",
+      description:" Order Cancelled",  
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
 
       
     },
-    update: {}
+    update: { status: "cancelled",}
   })
   await prisma.orderStatus.upsert({
     where: {
       id: 2
     },
     create: {
-      status: "Order Confirmed",
-      description:"Order Confirmed",  
+      status: "confirmed",
+      description:"confirmed",  
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
 
       
     },
-    update: {}
+    update: {
+      status: "confirmed",
+    }
   })
   await prisma.orderStatus.upsert({
     where: {
       id: 3
     },
     create: {
-      status: "Filed Uploaded",
+      status: "filedUploaded",
       description:"Filed Uploaded",  
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
 
       
     },
-    update: {}
+    update: { status: "filedUploaded",updatedAt: new Date('2023-07-09'),}
   })
   await prisma.orderStatus.upsert({
     where: {
       id: 4
     },
     create: {
-      status: "Process Started",
+      status: "processStarted",
       description:"Process Started",  
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
 
       
     },
-    update: {}
+    update: { status: "processStarted", updatedAt: new Date('2023-07-09'),}
   })
   await prisma.orderStatus.upsert({
     where: {
       id: 5
     },
     create: {
-      status: "Job Verification",
+      status: "jobVerification",
       description:"Job Verification", 
       dependOn:4, 
       createdAt: new Date('2023-07-09'),
@@ -563,14 +565,14 @@ async function main() {
 
       
     },
-    update: {}
+    update: {status: "jobVerification", updatedAt: new Date('2023-07-09'),}
   })
   await prisma.orderStatus.upsert({
     where: {
       id: 6
     },
     create: {
-      status: "CTP Department",
+      status: "ctpDepartment",
       description:"CTP Department",
       dependOn:4,  
       createdAt: new Date('2023-07-09'),
@@ -578,14 +580,14 @@ async function main() {
 
       
     },
-    update: {}
+    update: {status: "ctpDepartment",updatedAt: new Date('2023-07-09'),}
   })
   await prisma.orderStatus.upsert({
     where: {
       id: 7
     },
     create: {
-      status: "Print Department",
+      status: "printDepartment",
       description:"Print Department",  
       dependOn:4,
       createdAt: new Date('2023-07-09'),
@@ -593,14 +595,14 @@ async function main() {
 
       
     },
-    update: {}
+    update: { status: "printDepartment", updatedAt: new Date('2023-07-09'),}
   })
   await prisma.orderStatus.upsert({
     where: {
       id: 8
     },
     create: {
-      status: "Cutting Department",
+      status: "cuttingDepartment",
       description:"Cutting Department",  
       dependOn:4,
       createdAt: new Date('2023-07-09'),
@@ -608,14 +610,14 @@ async function main() {
 
       
     },
-    update: {}
+    update: { status: "cuttingDepartment",  updatedAt: new Date('2023-07-09'),}
   })
   await prisma.orderStatus.upsert({
     where: {
       id: 9
     },
     create: {
-      status: "Blinding Department",
+      status: "blindingDepartment",
       description:"Blinding Department", 
       dependOn:4, 
       createdAt: new Date('2023-07-09'),
@@ -623,15 +625,29 @@ async function main() {
 
       
     },
-    update: {}
+    update: { status: "blindingDepartment", updatedAt: new Date('2023-07-09'),}
   })
    await prisma.orderStatus.upsert({
     where: {
       id: 10
     },
     create: {
-      status: "Received for Packing",
+      status: "receivedForPacking",
       description:"Received for Packing",  
+      createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+
+      
+    },
+    update: { status: "receivedForPacking", updatedAt: new Date('2023-07-09'),}
+  }) 
+  await prisma.orderStatus.upsert({
+    where: {
+      id: 11
+    },
+    create: {
+      status: "dispatched",
+      description:"dispatched",  
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
 
@@ -641,17 +657,17 @@ async function main() {
   }) 
   await prisma.orderStatus.upsert({
     where: {
-      id: 11
+      id: 12
     },
     create: {
-      status: "Dispatched",
-      description:"dispatched",  
+      status: "completed",
+      description:"Completed",  
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
 
       
     },
-    update: {}
+    update: {status: "completed",updatedAt: new Date('2023-07-09'),}
   }) 
  
   console.log('insert Successfully');

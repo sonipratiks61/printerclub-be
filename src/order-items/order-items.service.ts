@@ -1,7 +1,7 @@
 // import { Injectable, NotFoundException } from '@nestjs/common';
 
 
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { OrderStatusService } from 'src/order-status/order-status.service';
 import { OrderHistoryService } from 'src/order-history/order-history.service';
@@ -112,7 +112,7 @@ export class OrderItemsService {
             ...data,
             workflow: {
                 ...data.workflow,
-                 sequence: data.orderItemStatus === 'cancel'
+                 sequence: data.orderItemStatus === 'Order Cancelled'
                 ? completedStatusFilter
                 : formattedSequence.map(item => ({ id: item.id, name: item.name })),
                        completedStatus:completedStatus
@@ -128,21 +128,38 @@ export class OrderItemsService {
             }
         })
     }
+
     async updateOrderItemStatus(id: number, updateOrderItemDto: UpdateOrderItemDto) {
         const isExistStatusId = await this.orderStatusService.findOne(updateOrderItemDto.statusId)
         if (!isExistStatusId) {
             throw new NotFoundException('Order Status Id not found');
         }
 
+        const orderItem = await this.prisma.orderItem.findUnique({
+            where: {
+                id: id
+            }
+        });
+    
+        if (!orderItem) {
+            throw new NotFoundException('Order Item not found');
+        }
+        if(orderItem.orderItemStatus ==='completed')
+        {
+            throw new BadRequestException('Cannot cancel an order item with a completed')
+        }
         await this.prisma.orderItem.update({
             where: {
                 id: id
             },
             data: {
-                orderItemStatus: 'cancel'
+                orderItemStatus: 'cancelled'
             }
 
         });
+        
+       
+      
         const isCheck = await this.prisma.orderHistory.findFirst({
             where: {
                 statusId: 1,

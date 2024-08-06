@@ -84,7 +84,7 @@ export class OrderItemsController {
                 this.responseService.sendBadRequest(res, 'OrderItem Id Invalid');
 
             }
-            this.responseService.sendSuccess(res, 'Updated Successfully', updatedOrderItem)
+            this.responseService.sendSuccess(res, 'Cancelled Successfully', updatedOrderItem)
         } catch (error) {
             if (error instanceof ConflictException) {
                 this.responseService.sendBadRequest(res, error.message)
