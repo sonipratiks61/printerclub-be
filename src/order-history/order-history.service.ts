@@ -43,7 +43,7 @@ export class OrderHistoryService {
         const isCancel=await this.prisma.orderHistory.findFirst({
 
             where: {
-                statusId:statusId,
+                statusId:1,
                 orderItemId:orderItemId,
             }
         })
