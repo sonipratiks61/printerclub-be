@@ -40,11 +40,11 @@ export class OrderHistoryService {
             throw new NotFoundException("User not found");
         }
        
-        const isCancel=await this.prisma.orderItem.findFirst({
+        const isCancel=await this.prisma.orderHistory.findFirst({
 
             where: {
-                id: orderItemId,
-                orderItemStatus:'cancelled'
+                statusId:statusId,
+                orderItemId:orderItemId,
             }
         })
         if(isCancel)
