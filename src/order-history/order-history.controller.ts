@@ -35,6 +35,9 @@ export class OrderHistoryController  {
             else if (error instanceof ConflictException) {
                 this.responseService.sendConflict(res, error.message)
             }
+            else if(error instanceof BadRequestException) {
+                this.responseService.sendConflict(res, error.message)
+            }
             else {
                 this.responseService.sendInternalError(res, 'Something Went Wrong');
             }

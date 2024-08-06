@@ -220,7 +220,7 @@ model OrderItem {
   createdAt              DateTime @default(now())
   updatedAt              DateTime @updatedAt
   workflow               WorkFlow @relation(fields: [workflowId], references: [id])
-  orderItemStatus        OrderItemStatusType  @default(pending)
+  orderItemStatus        String 
  
 }
 
@@ -262,8 +262,4 @@ enum CategoryType {
   physical
 }
 
-enum OrderItemStatusType {
-  confirmed
-  cancelled
-  pending
-}
+

@@ -39,6 +39,19 @@ export class OrderHistoryService {
         if (!updatedBy) {
             throw new NotFoundException("User not found");
         }
+       
+        const isCancel=await this.prisma.orderItem.findFirst({
+
+            where: {
+                id: orderItemId,
+                orderItemStatus:'cancelled'
+            }
+        })
+        if(isCancel)
+        {
+            throw new BadRequestException('OrderItem is Already cancel');
+        }
+        else{
         const data = await this.prisma.orderHistory.create({
             data: {
                 updatedById: updatedById,
@@ -47,8 +60,20 @@ export class OrderHistoryService {
                 timestamp: new Date()
             },
         });
-
+        const isOrderStatus=await this.orderStatusService.findOne(data.statusId);
+        const isStatusName=isOrderStatus.status;
+        await this.prisma.orderItem.update({
+            where:{
+                id:orderItemId
+            },
+            data:{
+                orderItemStatus:isStatusName
+            }
+        })
         return data;
+    }
+
+        
     }
 
 

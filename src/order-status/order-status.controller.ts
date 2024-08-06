@@ -15,7 +15,7 @@ export class OrderStatusController {
   async create(@Body() createOrderStatusDto: CreateOrderStatusDto, @Res() res) {
     try {
       await this.orderStatusService.create(createOrderStatusDto);
-      this.responseService.sendSuccess(res, 'Created Order Status Successfully');
+      this.responseService.sendSuccess(res, 'Status Updated Successfully');
     }
     catch (error) {
       this.responseService.sendInternalError(res, 'Something Went Wrong');
@@ -63,8 +63,6 @@ export class OrderStatusController {
       this.responseService.sendSuccess(res, 'OrderStatus Updated Successfully');
     }
     catch (error) {
-      console.error(error);
-
       this.responseService.sendInternalError(
         res,
         'Something Went Wrong',
@@ -88,7 +86,6 @@ export class OrderStatusController {
       this.responseService.sendSuccess(res, 'OrderStatus Deleted Successfully',data);
     }
     catch (error) {
-      console.error(error);
       this.responseService.sendInternalError(
         res,
         'Something Went Wrong',

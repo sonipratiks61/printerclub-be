@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, ConflictException, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { IdValidationPipe } from 'utils/validation/paramsValidation';
 import { CreateOrderItemsDto, UpdateOrderItemDto } from './dto/order-Item.dto';
@@ -69,10 +69,10 @@ export class OrderItemsController {
     }
     @Patch(':id')
     @UseGuards(AuthGuard('jwt'))
-    async updateOrderItemStatus(@Param('id', IdValidationPipe) id: string, @Body() updateOrderItemDto: UpdateOrderItemDto, @Res() res) {
+    async updateOrderItemStatus(@Param('id', IdValidationPipe) id: string, @Body() updateOrderItemDto: UpdateOrderItemDto, @Res() res, @Req() req) {
         try {
             const orderItemId = parseInt(id, 10);
-            const orderItemStatus = this.orderItemsService.findOne(orderItemId);
+            const orderItemStatus = await this.orderItemsService.findOne(orderItemId);
             if (!orderItemStatus) {
                 this.responseService.sendNotFound(res, 'OrderItem Id Invalid');
             }
@@ -86,8 +86,14 @@ export class OrderItemsController {
             }
             this.responseService.sendSuccess(res, 'Updated Successfully', updatedOrderItem)
         } catch (error) {
+            if (error instanceof ConflictException) {
+                this.responseService.sendBadRequest(res, error.message)
+            }
 
-            if (error instanceof BadRequestException) {
+           else if (error instanceof NotFoundException) {
+                this.responseService.sendBadRequest(res, error.message)
+            }
+           else if (error instanceof BadRequestException) {
                 this.responseService.sendBadRequest(res, error.message)
             }
             else {

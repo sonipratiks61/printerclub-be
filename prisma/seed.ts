@@ -80,7 +80,8 @@ async function main() {
   for (const capability of capabilities) {
     await prisma.capability.upsert({
       where: { name: capability.name },
-      update: {}, 
+      update: { 
+        updatedAt: new Date()}, 
       create: {
         ...capability,
         createdAt: new Date(), 
@@ -329,7 +330,7 @@ async function main() {
     where: { id: 1 },
     update: {},
     create: {name: "User-WorkFlow",
-    sequence:[1,2,3,4,5],
+    sequence:[2,3,4,5],
     createdAt: new Date('2023-07-09'),
     updatedAt: new Date('2023-07-09'),
   },
@@ -337,7 +338,7 @@ async function main() {
   await prisma.workFlow.create({
     data: {
       name: "User-WorkFlow",
-      sequence:[1,2,3,4,5],
+      sequence:[2,4,6,8],
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
     }
@@ -498,8 +499,8 @@ async function main() {
       id: 1
     },
     create: {
-      status: "Order Confirmed",
-      description:"order confirmed",  
+      status: "Cancel",
+      description:"Cancel",  
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
 
@@ -510,6 +511,20 @@ async function main() {
   await prisma.orderStatus.upsert({
     where: {
       id: 2
+    },
+    create: {
+      status: "Order Confirmed",
+      description:"Order Confirmed",  
+      createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+
+      
+    },
+    update: {}
+  })
+  await prisma.orderStatus.upsert({
+    where: {
+      id: 3
     },
     create: {
       status: "Filed Uploaded",
@@ -523,26 +538,11 @@ async function main() {
   })
   await prisma.orderStatus.upsert({
     where: {
-      id: 3
-    },
-    create: {
-      status: "Process Started",
-      description:"order confirmed",  
-      createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-
-      
-    },
-    update: {}
-  })
-  await prisma.orderStatus.upsert({
-    where: {
       id: 4
     },
     create: {
-      status: "Job Verification",
-      description:"Job Verification",
-      dependOn:3,   
+      status: "Process Started",
+      description:"Process Started",  
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
 
@@ -555,9 +555,9 @@ async function main() {
       id: 5
     },
     create: {
-      status: "CTP Department",
-      description:"CTP Department", 
-      dependOn:3, 
+      status: "Job Verification",
+      description:"Job Verification", 
+      dependOn:4, 
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
 
@@ -570,9 +570,9 @@ async function main() {
       id: 6
     },
     create: {
-      status: "Print Department",
-      description:"Print Department",
-      dependOn:3,  
+      status: "CTP Department",
+      description:"CTP Department",
+      dependOn:4,  
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
 
@@ -585,9 +585,9 @@ async function main() {
       id: 7
     },
     create: {
-      status: "Cutting Department",
-      description:"Cutting Department",  
-      dependOn:3,
+      status: "Print Department",
+      description:"Print Department",  
+      dependOn:4,
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
 
@@ -600,9 +600,9 @@ async function main() {
       id: 8
     },
     create: {
-      status: "Blinding Department",
-      description:"Blinding Department",  
-      dependOn:3,
+      status: "Cutting Department",
+      description:"Cutting Department",  
+      dependOn:4,
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
 
@@ -615,8 +615,9 @@ async function main() {
       id: 9
     },
     create: {
-      status: "Received for Packing",
-      description:"Received for Packing",  
+      status: "Blinding Department",
+      description:"Blinding Department", 
+      dependOn:4, 
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
 
@@ -627,6 +628,20 @@ async function main() {
    await prisma.orderStatus.upsert({
     where: {
       id: 10
+    },
+    create: {
+      status: "Received for Packing",
+      description:"Received for Packing",  
+      createdAt: new Date('2023-07-09'),
+      updatedAt: new Date('2023-07-09'),
+
+      
+    },
+    update: {}
+  }) 
+  await prisma.orderStatus.upsert({
+    where: {
+      id: 11
     },
     create: {
       status: "Dispatched",
