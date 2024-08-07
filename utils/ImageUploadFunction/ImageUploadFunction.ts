@@ -12,12 +12,14 @@ export class FileUploadMiddleware implements NestMiddleware {
     storage: multer.diskStorage({
       destination: process.env.DESTINATION || './files',
       filename: (req, file, callback) => {
-        const randomName = Array(32)
-          .fill(null)
-          .map(() => Math.round(Math.random() * 16).toString(16))
-          .join('');
-        callback(null, `${randomName}${extname(file.originalname)}`);
+
+        // const randomName = Array(32)
+        //   .fill(null)
+        //   // .map(() => Math.round(Math.random() * 16).toString(16))
+        //   .join('');
+        callback(null, file.originalname);  
       },
+    
     }),
     limits: {
       fileSize: 5 * 1024 * 1024 || parseInt(process.env.FILE_SIZE, 10),
@@ -26,7 +28,7 @@ export class FileUploadMiddleware implements NestMiddleware {
     fileFilter: (req, file, cb) => {
       try {
         const fileExt = extname(file.originalname).toLowerCase(); //  for a mimeType
-        const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif'];
+        const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif','.pdf','.zip',];
         if (!allowedExtensions.includes(fileExt)) {
           throw new Error('Unsupported file type');
         }
@@ -57,7 +59,7 @@ export class FileUploadMiddleware implements NestMiddleware {
             HttpStatus.BAD_REQUEST,
           ),
         );
-      }
+          }
       next();
     });
   }

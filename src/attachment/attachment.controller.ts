@@ -10,6 +10,7 @@ import {
   NotFoundException,
   Delete,
   Res,
+  BadRequestException,
 } from '@nestjs/common';
 
 import { AttachmentService } from './attachment.service';
@@ -38,12 +39,18 @@ export class AttachmentController {
       await this.attachmentService.create(files, userId);
       this.responseService.sendSuccess(res, 'Upload Successfully');
     } catch (error) {
+      if(error instanceof BadRequestException)
+      {
+        this.responseService.sendBadRequest(res,error.message)
+      }
+      else{
       this.responseService.sendInternalError(
         res,
         error.message || 'Something Went Wrong',
         error,
       );
     }
+  }
   }
 
   @Get(':id')
@@ -61,7 +68,6 @@ export class AttachmentController {
       }
       this.responseService.sendSuccess(res, 'Fetch Successfully', attachment);
     } catch (error) {
-      console.log(error);
       if (error instanceof NotFoundException) {
         this.responseService.sendNotFound(res, error.message);
         return;
