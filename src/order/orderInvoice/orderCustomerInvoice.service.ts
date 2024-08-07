@@ -39,7 +39,7 @@ export class CustomerOrderInvoiceService {
                         }
                     }
                 },
-                orderItems: {
+                orderItems: { 
                     select: {
                         id: true,
                         name: true,
@@ -48,10 +48,14 @@ export class CustomerOrderInvoiceService {
                         description: true,
                         gst: true,
                         discount: true,
+                        orderItemStatus:true,
                         isMeasurementAddress:true,
                         createdAt:true
 
-                    }
+                    },
+                    where:{
+                        orderItemStatus: {not: 'Cancelled'}
+                    },
                 }
             }
         });
@@ -94,6 +98,7 @@ export class CustomerOrderInvoiceService {
                     state: item.isMeasurementAddress?.state,
                     pinCode: item.isMeasurementAddress?.pinCode,
                     totalPrice: parseFloat(totalPrice),
+                    orderItemStatus:item.orderItemStatus
                     
                 };
             }),
