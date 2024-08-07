@@ -1,24 +1,30 @@
 // attachments.service.ts
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class AttachmentService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async create(files: Express.Multer.File[], userId: number) {
     try {
       if (files.length === 0) {
-        throw new Error('Please upload at least 1 file.');
+        throw new BadRequestException('Please upload at least 1 file.');
       }
       for (const file of files) {
+        const timestamp = new Date();
+        const fileExtension = file.originalname.split('.').pop();
+        const path = file.path.split('.')[0];
+        const filePath = `${path}_${timestamp}.${fileExtension}`;
         await this.prisma.attachment.create({
           data: {
-            path: file.path,
+            fileName: file.originalname,
+            filePath: filePath,
             attachmentType: file.mimetype,
             userId: userId,
           },
         });
+
       }
     } catch (error) {
       console.error('Error creating attachments:', error);
@@ -50,7 +56,8 @@ export class AttachmentService {
     return this.prisma.attachment.findMany({
       select: {
         id: true,
-        path: true,
+        filePath: true,
+        fileName: true,
         attachmentType: true,
         userId: true,
       },
