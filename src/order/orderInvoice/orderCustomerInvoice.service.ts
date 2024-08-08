@@ -39,7 +39,7 @@ export class CustomerOrderInvoiceService {
                         }
                     }
                 },
-                orderItems: {
+                orderItems: { 
                     select: {
                         id: true,
                         name: true,
@@ -48,10 +48,14 @@ export class CustomerOrderInvoiceService {
                         description: true,
                         gst: true,
                         discount: true,
+                        orderItemStatus:true,
                         isMeasurementAddress:true,
                         createdAt:true
 
-                    }
+                    },
+                    where:{
+                        orderItemStatus: {not: 'Cancelled'}
+                    },
                 }
             }
         });
@@ -63,12 +67,25 @@ export class CustomerOrderInvoiceService {
 
         const formattedInvoiceNumber = `${process.env.INVOICE_NUMBER_PREFIX}${financialYear}-${order.invoiceNumber}`;
         const dueDate = addDays(order.createdAt,15)
+        const totalPayment = order.orderItems.reduce((total, item) => {
+            const itemTotalPrice = calculatePrice({
+                price: parseInt(item.price, 10),
+                quantity: item.quantity,
+                gst: item.gst,
+                discount: item.discount
+            });
+            return total + parseFloat(itemTotalPrice);
+        }, 0);
+
+        const advancePayment = Number(order.advancePayment)?.toFixed(2);
+        const remainingPayment = (totalPayment - parseFloat(advancePayment)).toFixed(2);
+
         const formattedOrder = {
             id: order.id,
             invoiceNumber: formattedInvoiceNumber,
-            advancePayment: Number(order.advancePayment)?.toFixed(2),
-            remainingPayment: Number(order.remainingPayment).toFixed(2),
-            totalPayment:Number(order.totalPayment).toFixed(2),
+            advancePayment:advancePayment,
+            remainingPayment: remainingPayment ,
+            totalPayment:Number(totalPayment).toFixed(2),
             paymentMode: order.paymentMode,
             ownerName: order.ownerName,
             dueDate:dueDate,
@@ -94,6 +111,7 @@ export class CustomerOrderInvoiceService {
                     state: item.isMeasurementAddress?.state,
                     pinCode: item.isMeasurementAddress?.pinCode,
                     totalPrice: parseFloat(totalPrice),
+                    orderItemStatus:item.orderItemStatus
                     
                 };
             }),

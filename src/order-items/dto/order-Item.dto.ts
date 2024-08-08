@@ -1,5 +1,5 @@
 // CreateOrderItemsDto.ts
-import { IsNotEmpty, IsNumber, IsString, ValidateNested, IsArray, IsOptional, IsInt, IsDefined } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString, ValidateNested, IsArray, IsOptional, IsInt, IsDefined, IsIn } from 'class-validator';
 import { Type } from 'class-transformer';
 import { CreateAddressDto } from 'src/user/dto/create-and-update-address.dto';
 
@@ -30,7 +30,7 @@ export class CreateOrderItemsDto {
 
     @IsInt()
     @IsNotEmpty()
-    gst:number;
+    gst: number;
 
     @IsOptional()
     @IsString()
@@ -55,7 +55,7 @@ export class CreateOrderItemsDto {
     @IsOptional()
     @IsString()
     @IsNotEmpty()
-    measurement:string
+    measurement: string
 
     @IsString()
     @IsNotEmpty()
@@ -64,8 +64,8 @@ export class CreateOrderItemsDto {
     @IsOptional()
     @IsInt()
     @IsNotEmpty()
-    discount:number
-    
+    discount: number
+
     @IsOptional()
     @IsArray()
     @ValidateNested({ each: true })
@@ -76,22 +76,30 @@ export class CreateOrderItemsDto {
     @IsOptional()
     @IsDefined()
     @Type(() => CreateAddressDto)
-    isMeasurementAddress:CreateAddressDto
+    isMeasurementAddress: CreateAddressDto
 
     @IsInt()
     @IsOptional()
-    isMeasurementAddressId:number
+    isMeasurementAddressId: number
+
 }
 
 export class CreateOrderItemAttributeDto {
-    
+
     @IsString()
     @IsNotEmpty()
     name: string;
 
     @IsString()
     @IsNotEmpty()
-    value: string; 
+    value: string;
 }
 
+export class UpdateOrderItemDto {
+    @IsInt()
+    statusId: number;
+
+    @IsInt()
+    updatedBy:number;
+}
 

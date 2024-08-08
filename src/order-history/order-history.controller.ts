@@ -22,7 +22,7 @@ export class OrderHistoryController  {
         try {
             const data = await this.orderHistoryService.create(createOrderHistoryDto);
            if(data){
-            this.responseService.sendSuccess(res, 'Created OrderHistory Successfully', data);
+            this.responseService.sendSuccess(res, 'Status Updated Successfully', data);
         }
         else{
             this.responseService.sendBadRequest(res, 'Failed to Create OrderHistory');
@@ -34,6 +34,9 @@ export class OrderHistoryController  {
             }
             else if (error instanceof ConflictException) {
                 this.responseService.sendConflict(res, error.message)
+            }
+            else if(error instanceof BadRequestException) {
+                this.responseService.sendBadRequest(res, error.message)
             }
             else {
                 this.responseService.sendInternalError(res, 'Something Went Wrong');

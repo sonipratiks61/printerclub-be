@@ -63,8 +63,6 @@ export class OrderStatusController {
       this.responseService.sendSuccess(res, 'OrderStatus Updated Successfully');
     }
     catch (error) {
-      console.error(error);
-
       this.responseService.sendInternalError(
         res,
         'Something Went Wrong',
@@ -88,7 +86,6 @@ export class OrderStatusController {
       this.responseService.sendSuccess(res, 'OrderStatus Deleted Successfully',data);
     }
     catch (error) {
-      console.error(error);
       this.responseService.sendInternalError(
         res,
         'Something Went Wrong',

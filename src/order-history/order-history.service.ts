@@ -39,6 +39,18 @@ export class OrderHistoryService {
         if (!updatedBy) {
             throw new NotFoundException("User not found");
         }
+       
+        const isCancel=await this.prisma.orderHistory.findFirst({
+
+            where: {
+                statusId:1,
+                orderItemId:orderItemId,
+            }
+        })
+        if(isCancel)
+        {
+            throw new BadRequestException('OrderItem is Already cancel');
+        }
         const data = await this.prisma.orderHistory.create({
             data: {
                 updatedById: updatedById,
@@ -48,10 +60,47 @@ export class OrderHistoryService {
             },
         });
 
+        const orderHistoryCount = await this.prisma.orderHistory.count({
+            where: {
+                orderItemId: orderItemId
+            }
+        });
+    
+     const sequenceLength = orderItem.workflow.sequence.length;
+    
+        if (orderHistoryCount === sequenceLength) {
+          
+            const currentOrderItem = await this.prisma.orderItem.findUnique({
+                where: { id: orderItemId },
+                select: { orderItemStatus: true }
+            });
+    
+            if (currentOrderItem.orderItemStatus !== 'Completed') {
+                await this.prisma.orderItem.update({
+                    where: {
+                        id: orderItemId
+                    },
+                    data: {
+                        orderItemStatus: 'Completed'
+                    }
+                });
+            }
+        } else {
+            const isOrderStatus = await this.orderStatusService.findOne(data.statusId);
+            const isStatusName = isOrderStatus.status;
+            await this.prisma.orderItem.update({
+                where: {
+                    id: orderItemId
+                },
+                data: {
+                    orderItemStatus: isStatusName
+                }
+            });
+        }
+    
         return data;
     }
-
-
+    
     async findAll() {
         return await this.prisma.orderHistory.findMany()
     }
