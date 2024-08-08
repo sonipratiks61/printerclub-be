@@ -102,7 +102,7 @@ export class OrderHistoryController  {
             const orderHistory = await this.orderHistoryService.findOne(orderHistoryId);
             if (!orderHistory) {
                 this.responseService.sendNotFound(
-                    res,onflict
+                    res,
                     "Invalid OrderHistory Id",
                 );
             }
