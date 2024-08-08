@@ -36,7 +36,7 @@ export class OrderHistoryController  {
                 this.responseService.sendConflict(res, error.message)
             }
             else if(error instanceof BadRequestException) {
-                this.responseService.sendConflict(res, error.message)
+                this.responseService.sendBadRequest(res, error.message)
             }
             else {
                 this.responseService.sendInternalError(res, 'Something Went Wrong');
@@ -102,7 +102,7 @@ export class OrderHistoryController  {
             const orderHistory = await this.orderHistoryService.findOne(orderHistoryId);
             if (!orderHistory) {
                 this.responseService.sendNotFound(
-                    res,
+                    res,onflict
                     "Invalid OrderHistory Id",
                 );
             }
