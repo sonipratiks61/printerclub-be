@@ -4,7 +4,6 @@ import { CreateCategoryDto } from './dto/category.dto';
 import { CategoryType } from '@prisma/client';
 import { UpdateCategoryDto } from './dto/update.category.dto';
 import { AttachmentService } from 'src/attachment/attachment.service';
-
 @Injectable()
 export class CategoryService {
   constructor(private prisma: PrismaService,
@@ -24,13 +23,7 @@ export class CategoryService {
       message = 'Subcategory created successfully';
     }
 
-    const isCheckAttachment = await this.attachmentService.findOne(createCategoryDto.attachmentId);
-
-      if (!isCheckAttachment) {
-        throw new NotFoundException("Attachment not found");
-      }
     const parentId = createCategoryDto.parentId || null;
-
     const newCategory = await this.prisma.category.create({
       data: {
         name: createCategoryDto.name,
@@ -42,20 +35,20 @@ export class CategoryService {
     });
 
     let file = null;
+
     if (createCategoryDto.attachmentId) {
-      const isCheckAttachment = await this.attachmentService.findOne(createCategoryDto.attachmentId);
-
-      if (!isCheckAttachment) {
-        throw new NotFoundException('Attachment not found');
-      }
-
-
       const isUploadFile = await this.prisma.attachmentAssociation.create({
         data: {
           relationId: newCategory.id,
           relationType: 'category',
         },
       });
+
+      const isCheckAttachment = await this.attachmentService.findOne(createCategoryDto.attachmentId);
+
+      if (!isCheckAttachment) {
+        throw new NotFoundException("Attachment not found");
+      }
 
       await this.prisma.attachmentToAssociation.create({
         data: {
@@ -183,6 +176,7 @@ export class CategoryService {
           description: category.description,
           attachment: attachmentMap[category.id] || [],
           isDeletable: category.subCategories.length !== 0,
+          attachment: attachmentMap[category.id] || [],
         },
         ...category.subCategories.map(subCategory => ({
           id: subCategory.id,
@@ -193,6 +187,7 @@ export class CategoryService {
           description: subCategory.description,
           attachment: attachmentMap[subCategory.id] || [],
           isDeletable: productCategoryIds.includes(subCategory.id),
+          attachment: attachmentMap[subCategory.id] || [],
         }))
       ])
 
