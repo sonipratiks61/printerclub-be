@@ -49,6 +49,12 @@ export class CategoryService {
         },
       });
 
+      const isCheckAttachment = await this.attachmentService.findOne(createCategoryDto.attachmentId);
+
+      if (!isCheckAttachment) {
+        throw new NotFoundException("Attachment not found");
+      }
+
       await this.prisma.attachmentToAssociation.create({
         data: {
           attachmentId: createCategoryDto.attachmentId,

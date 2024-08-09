@@ -62,7 +62,7 @@ import { RoleAndOrderStatusController } from './role-and-order-status/role-and-o
       rootPath: join(process.env.FILE_PATH ),
     }),
     MulterModule.register({
-      dest: './uploads',
+      dest: './files',
     }),
   ],
   controllers: [
