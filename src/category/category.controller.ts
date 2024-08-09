@@ -34,11 +34,10 @@ export class CategoryController {
     @Res() res,
   ) {
     try {
-      const userId = req.user.id; // Access req.user.id from the request object
+      const userId = req.user.id;
       const { data, message } = await this.categoryService.create(createCategoryDto, userId);
       this.responseService.sendSuccess(res, message, data);
     } catch (error) {
-      console.error(error);
       if (error instanceof NotFoundException) {
         this.responseService.sendNotFound(res, error.message);
       } else {
@@ -52,7 +51,7 @@ export class CategoryController {
 
 
   @Get()
-  @UseGuards(AuthGuard('jwt')) // Ensures only authenticated users can access this route
+  @UseGuards(AuthGuard('jwt')) 
   async fetchAll(@Res() res, @Query('includeSubCategory') includeSubCategory: boolean) {
     try {
       const categories = await this.categoryService.findAll(includeSubCategory);
@@ -64,7 +63,7 @@ export class CategoryController {
     } catch (error) {
       this.responseService.sendInternalError(
         res,
-        error.message || 'Something Went Wrong'
+        'Something Went Wrong'
       );
     }
   }
@@ -83,10 +82,9 @@ export class CategoryController {
       }
       this.responseService.sendSuccess(res, ' Category Fetch Successfully', category);
     } catch (error) {
-      console.log(error);
       this.responseService.sendInternalError(
         res,
-        error.message || 'Something Went Wrong',
+        'Something Went Wrong',
       );
       return;
     }
@@ -121,7 +119,7 @@ export class CategoryController {
       console.log(error);
       this.responseService.sendInternalError(
         res,
-        error.message || 'Something Went Wrong',
+        'Something Went Wrong',
 
       );
 

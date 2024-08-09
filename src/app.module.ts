@@ -53,7 +53,7 @@ import { WorkFlowService } from './work-flow/work-flow.service';
   imports: [
     JwtModule.register({}),
     MulterModule.register({
-      dest: './uploads',
+      dest: './files',
     }),
     ConfigModule.forRoot()
   ],
