@@ -23,11 +23,6 @@ export class CategoryService {
       message = 'Subcategory created successfully';
     }
 
-    const isCheckAttachment = await this.attachmentService.findOne(createCategoryDto.attachmentId);
-
-      if (!isCheckAttachment) {
-        throw new NotFoundException("Attachment not found");
-      }
     const parentId = createCategoryDto.parentId || null;
     const newCategory = await this.prisma.category.create({
       data: {
@@ -48,6 +43,12 @@ export class CategoryService {
           relationType: 'category',
         },
       });
+
+      const isCheckAttachment = await this.attachmentService.findOne(createCategoryDto.attachmentId);
+
+      if (!isCheckAttachment) {
+        throw new NotFoundException("Attachment not found");
+      }
 
       await this.prisma.attachmentToAssociation.create({
         data: {
@@ -176,6 +177,7 @@ export class CategoryService {
           isDeletable: category.subCategories.length !== 0,
           attachment: attachmentMap[category.id] || [],
           isDeletable: category.subCategories.length !== 0,
+          attachment: attachmentMap[category.id] || [],
         },
         ...category.subCategories.map(subCategory => ({
           id: subCategory.id,
@@ -188,6 +190,7 @@ export class CategoryService {
           isDeletable: productCategoryIds.includes(subCategory.id),
           attachment: attachmentMap[subCategory.id] || [],
           isDeletable: productCategoryIds.includes(subCategory.id),
+          attachment: attachmentMap[subCategory.id] || [],
         }))
       ])
 
