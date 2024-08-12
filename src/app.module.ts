@@ -51,18 +51,18 @@ import { WorkFlowController } from './work-flow/work-flow.controller';
 import { WorkFlowService } from './work-flow/work-flow.service';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
-
 import { RoleAndOrderStatusService } from './role-and-order-status/role-and-order-status.service';
 import { RoleAndOrderStatusController } from './role-and-order-status/role-and-order-status.controller';
+
 @Module({
   imports: [
     JwtModule.register({}),
     ConfigModule.forRoot(),
     ServeStaticModule.forRoot({
-      rootPath: join(process.env.FILE_PATH || '/home/rordev/Downloads/nest-prisma-demo/','public'),
+      rootPath: join(process.env.FILE_PATH),
     }),
     MulterModule.register({
-      dest: './files',
+      dest: './uploads',
     }),
   ],
   controllers: [
