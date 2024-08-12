@@ -60,7 +60,7 @@ import { join } from 'path';
       rootPath: join(process.env.FILE_PATH),
     }),
     MulterModule.register({
-      dest: './uploads',
+      dest: './files',
     }),
   ],
   controllers: [
