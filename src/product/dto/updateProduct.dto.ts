@@ -101,6 +101,12 @@ export class UpdateProductDto {
   @IsInt({ message: 'Category Id must be a integer' })
   categoryId?: number;
 
+  @IsOptional()
+  @IsArray({ message: 'AttachmentIds must be an array' })
+  @ArrayNotEmpty({ message: 'AttachmentIds array should not be empty' })
+  @IsInt({ each: true, message: 'Each AttachmentId must be an integer' })
+  attachmentId?: number[];
+
   @ApiProperty({
     description: 'ID of the workFlow the product belongs to',
     example: 1,

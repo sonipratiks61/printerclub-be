@@ -9,73 +9,7 @@ import { AttachmentService } from 'src/attachment/attachment.service';
 export class CategoryService {
   constructor(private prisma: PrismaService,
     private attachmentService: AttachmentService) { }
-
-  // async create(createCategoryDto: CreateCategoryDto, userId: number) {
-  //   try {
-  //     let message = 'Category created successfully';
-
-  //     if (createCategoryDto.parentId) {
-  //       const parentCategory = await this.prisma.category.findUnique({
-  //         where: {
-  //           id: createCategoryDto.parentId,
-  //         },
-  //       });
-
-  //       if (!parentCategory) {
-  //         throw new NotFoundException(
-  //           "Invalid CategoryId"
-  //         );
-  //       }
-
-  //       message = 'Subcategory created successfully';
-  //     }
-
-  //     const parentId = createCategoryDto.parentId
-  //       ? createCategoryDto.parentId
-  //       : null;
-  //     const newCategory = await this.prisma.category.create({
-  //       data: {
-  //         name: createCategoryDto.name,
-  //         description: createCategoryDto.description,
-  //         type: createCategoryDto.type as CategoryType,
-  //         parentId: parentId,
-  //         userId: userId,
-  //       },
-  //     });
-  //     const isUploadFile = await this.prisma.attachmentAssociation.create({
-  //       data: {
-  //         relationId: newCategory.id,
-  //         relationType: 'category'
-  //       }
-  //     });
-  //     const isCheckAttachment = await this.attachmentService.findOne(createCategoryDto.attachmentId)
-  //     if (!isCheckAttachment) {
-  //       throw new NotFoundException("Attachment not found")
-  //     }
-  //     await this.prisma.attachmentToAssociation.create({
-  //       data: {
-  //         attachmentId: createCategoryDto.attachmentId,
-  //         attachmentAssociationId: isUploadFile.id
-  //       }
-  //     })
-  //     const data = {
-  //       id: newCategory.id,
-  //       name: newCategory.name,
-  //       description: newCategory.description,
-  //       type: newCategory.type,
-  //       parentId: newCategory.parentId,
-  //       userId: newCategory.userId,
-  //       createdAt: newCategory.createdAt,
-  //       updatedAt: newCategory.updatedAt,
-  //       file: isCheckAttachment.filePath
-
-  //     }
-  //     return { data, message };
-  //   } catch (error) {
-  //     console.error('Error creating category:', error);
-  //     throw error;
-  //   }
-  // }
+    
   async create(createCategoryDto: CreateCategoryDto, userId: number) {
 
     let message = 'Category created successfully';
@@ -92,6 +26,11 @@ export class CategoryService {
       message = 'Subcategory created successfully';
     }
 
+    const isCheckAttachment = await this.attachmentService.findOne(createCategoryDto.attachmentId);
+
+      if (!isCheckAttachment) {
+        throw new NotFoundException("Attachment not found");
+      }
     const parentId = createCategoryDto.parentId || null;
     const newCategory = await this.prisma.category.create({
       data: {
@@ -112,12 +51,6 @@ export class CategoryService {
           relationType: 'category',
         },
       });
-
-      const isCheckAttachment = await this.attachmentService.findOne(createCategoryDto.attachmentId);
-
-      if (!isCheckAttachment) {
-        throw new NotFoundException("Attachment not found");
-      }
 
       await this.prisma.attachmentToAssociation.create({
         data: {
@@ -153,9 +86,8 @@ export class CategoryService {
     });
 
     if (!category) {
-      throw new NotFoundException(`Category not found`);
+      throw new NotFoundException('Category not found');
     }
-
 
     const attachmentAssociation = await this.prisma.attachmentAssociation.findFirst({
       where: {

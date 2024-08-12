@@ -37,11 +37,11 @@ export class ProductController {
     try {
       const userId = req.user.id;
       const data = await this.productService.create(createProductDto, userId);
-      if(data){
-      this.responseService.sendSuccess(res, 'Product Created Successfully', data
-      );
+      if (data) {
+        this.responseService.sendSuccess(res, 'Product Created Successfully', data
+        );
       }
-      else{
+      else {
         this.responseService.sendBadRequest(res, 'Product Not Created')
       }
     } catch (error) {
@@ -66,7 +66,7 @@ export class ProductController {
   async findProductByCategoryId(@Res() res, @Query('categoryId') categoryId?: string) {
     try {
       let data;
-      const category= parseInt(categoryId,10)
+      const category = parseInt(categoryId, 10)
       if (category) {
         data = await this.productService.findProductByCategoryId(category);
         this.responseService.sendSuccess(res, 'Products fetched successfully by subCategory', data);
@@ -74,13 +74,12 @@ export class ProductController {
         data = await this.productService.findAll();
         this.responseService.sendSuccess(res, 'Products fetched successfully', data);
       }
-      
+
     } catch (error) {
-      if(error instanceof BadRequestException)
-      {
+      if (error instanceof BadRequestException) {
         this.responseService.sendBadRequest(res, error.message);
       }
-     else if (error instanceof NotFoundException) {
+      else if (error instanceof NotFoundException) {
         this.responseService.sendNotFound(res, error.message);
       } else {
         this.responseService.sendInternalError(
@@ -98,20 +97,22 @@ export class ProductController {
     try {
       const productId = parseInt(id, 10);
       const product = await this.productService.findOne(productId);
-      if (!product) {
+      this.responseService.sendSuccess(res, ' Product Fetch Successfully', product);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
         this.responseService.sendNotFound(
           res,
           'Product not Found',
         );
       }
-      this.responseService.sendSuccess(res, ' Product Fetch Successfully', product);
-    } catch (error) {
-      this.responseService.sendInternalError(
-        res,
-        error.message || 'Something Went Wrong',
-        error,
-      );
+      else {
+        this.responseService.sendInternalError(
+          res,
+          'Something Went Wrong',
+          error,
+        );
 
+      }
     }
   }
 
@@ -128,20 +129,21 @@ export class ProductController {
       if (!product) {
         this.responseService.sendNotFound(
           res,
-         "Product not Found",
+          "Product not Found",
         );
       }
       const data = await this.productService.update(
         productId,
         updateProductDto,
       );
-      if(data)
-     { this.responseService.sendSuccess(
-        res,
-        'Product Updated Successfully',
-        data,
-      );}
-      else{
+      if (data) {
+        this.responseService.sendSuccess(
+          res,
+          'Product Updated Successfully',
+          data,
+        );
+      }
+      else {
         this.responseService.sendBadRequest(res, ' Failed to Product Updated')
 
       }
@@ -174,20 +176,20 @@ export class ProductController {
           'Product not Found'
         );
       }
-    const data=await this.productService.remove(productId);
-    if(data){
-      this.responseService.sendSuccess(res, 'Product Deleted Successfully');
-    }
-    else{
-      this.responseService.sendBadRequest(res, 'Failed to Product Deleted');
-    }
+      const data = await this.productService.remove(productId);
+      if (data) {
+        this.responseService.sendSuccess(res, 'Product Deleted Successfully');
+      }
+      else {
+        this.responseService.sendBadRequest(res, 'Failed to Product Deleted');
+      }
     } catch (error) {
       if (error instanceof NotFoundException) {
         this.responseService.sendNotFound(res, error.message);
       } else {
         this.responseService.sendInternalError(
           res,
-         'Something Went Wrong',
+          'Something Went Wrong',
           error,
         );
       }

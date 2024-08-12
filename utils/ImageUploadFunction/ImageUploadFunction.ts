@@ -11,18 +11,18 @@ export class FileUploadMiddleware implements NestMiddleware {
     // },
     storage: multer.diskStorage({
       destination: (req, file, cb) => {
-        cb(null, process.env.DESTINATION||'files/');
+        cb(null, process.env.DESTINATION || 'files/');
       },
       filename: (req, file, cb) => {
 
         return cb(null, `${file.fieldname}_${new Date().toISOString().replace(/[:-]/g, '').replace('T', '_').replace('Z', '_')}${file.originalname}`);
 
       },
-    
+
     }),
     limits: {
       fileSize: 5 * 1024 * 1024 || parseInt(process.env.FILE_SIZE, 10),
-      files: 5, 
+      files: 5,
     },
   }).array('files', 5);
   use(req: Request, res: Response, next: NextFunction) {
@@ -46,7 +46,7 @@ export class FileUploadMiddleware implements NestMiddleware {
             HttpStatus.BAD_REQUEST,
           ),
         );
-          }
+      }
       next();
     });
   }
