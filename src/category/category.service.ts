@@ -23,6 +23,11 @@ export class CategoryService {
       message = 'Subcategory created successfully';
     }
 
+    const isCheckAttachment = await this.attachmentService.findOne(createCategoryDto.attachmentId);
+
+      if (!isCheckAttachment) {
+        throw new NotFoundException("Attachment not found");
+      }
     const parentId = createCategoryDto.parentId || null;
     const newCategory = await this.prisma.category.create({
       data: {
@@ -43,12 +48,6 @@ export class CategoryService {
           relationType: 'category',
         },
       });
-
-      const isCheckAttachment = await this.attachmentService.findOne(createCategoryDto.attachmentId);
-
-      if (!isCheckAttachment) {
-        throw new NotFoundException("Attachment not found");
-      }
 
       await this.prisma.attachmentToAssociation.create({
         data: {

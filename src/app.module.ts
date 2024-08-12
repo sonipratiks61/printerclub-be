@@ -59,7 +59,7 @@ import { RoleAndOrderStatusController } from './role-and-order-status/role-and-o
     JwtModule.register({}),
     ConfigModule.forRoot(),
     ServeStaticModule.forRoot({
-      rootPath: join(process.env.FILE_PATH),
+      rootPath: join(process.env.FILE_PATH || '/home/rordev/Downloads/nest-prisma-demo/','public'),
     }),
     MulterModule.register({
       dest: './uploads',
