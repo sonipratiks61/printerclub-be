@@ -4,7 +4,7 @@ import { CreateCategoryDto } from './dto/category.dto';
 import { CategoryType } from '@prisma/client';
 import { UpdateCategoryDto } from './dto/update.category.dto';
 import { AttachmentService } from 'src/attachment/attachment.service';
-import { RelationId } from 'typeorm';
+
 @Injectable()
 export class CategoryService {
   constructor(private prisma: PrismaService,
