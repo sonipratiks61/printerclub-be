@@ -9,7 +9,7 @@ import { AttachmentService } from 'src/attachment/attachment.service';
 export class CategoryService {
   constructor(private prisma: PrismaService,
     private attachmentService: AttachmentService) { }
-
+    
   async create(createCategoryDto: CreateCategoryDto, userId: number) {
     let message = 'Category created successfully';
     if (createCategoryDto.parentId) {
@@ -24,6 +24,11 @@ export class CategoryService {
       message = 'Subcategory created successfully';
     }
 
+    const isCheckAttachment = await this.attachmentService.findOne(createCategoryDto.attachmentId);
+
+      if (!isCheckAttachment) {
+        throw new NotFoundException("Attachment not found");
+      }
     const parentId = createCategoryDto.parentId || null;
 
     const newCategory = await this.prisma.category.create({
