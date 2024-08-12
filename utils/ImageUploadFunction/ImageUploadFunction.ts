@@ -11,7 +11,7 @@ export class FileUploadMiddleware implements NestMiddleware {
     // },
     storage: multer.diskStorage({
       destination: (req, file, cb) => {
-        cb(null, process.env.DESTINATION);
+        cb(null, process.env.DESTINATION||'files/');
       },
       filename: (req, file, cb) => {
 
