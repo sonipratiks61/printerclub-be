@@ -49,13 +49,19 @@ import { CapabilityService } from './capabilities/capability.service';
 import { CustomerOrderInvoiceService } from './order/orderInvoice/orderCustomerInvoice.service';
 import { WorkFlowController } from './work-flow/work-flow.controller';
 import { WorkFlowService } from './work-flow/work-flow.service';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+
 @Module({
   imports: [
     JwtModule.register({}),
-    MulterModule.register({
-      dest: './files',
+    ConfigModule.forRoot(),
+    ServeStaticModule.forRoot({
+      rootPath: join(process.env.FILE_PATH),
     }),
-    ConfigModule.forRoot()
+    MulterModule.register({
+      dest: './uploads',
+    }),
   ],
   controllers: [
     AppController,

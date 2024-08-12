@@ -10,14 +10,13 @@ export class FileUploadMiddleware implements NestMiddleware {
     //   fileSize: 5 * 1024 * 1024,
     // },
     storage: multer.diskStorage({
-      destination: process.env.DESTINATION || './files',
-      filename: (req, file, callback) => {
+      destination: (req, file, cb) => {
+        cb(null, process.env.DESTINATION);
+      },
+      filename: (req, file, cb) => {
 
-        // const randomName = Array(32)
-        //   .fill(null)
-        //   // .map(() => Math.round(Math.random() * 16).toString(16))
-        //   .join('');
-        callback(null, file.originalname);  
+        return cb(null, `${file.fieldname}_${new Date().toISOString().replace(/[:-]/g, '').replace('T', '_').replace('Z', '_')}${file.originalname}`);
+
       },
     
     }),

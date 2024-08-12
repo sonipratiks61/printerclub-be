@@ -12,14 +12,11 @@ export class AttachmentService {
         throw new BadRequestException('Please upload at least 1 file.');
       }
       for (const file of files) {
-        const timestamp = new Date();
-        const fileExtension = file.originalname.split('.').pop();
-        const path = file.path.split('.')[0];
-        const filePath = `${path}_${timestamp}.${fileExtension}`;
+        
         await this.prisma.attachment.create({
           data: {
             fileName: file.originalname,
-            filePath: filePath,
+            filePath: file.path,
             attachmentType: file.mimetype,
             userId: userId,
           },
