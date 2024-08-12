@@ -78,7 +78,6 @@ export class CreateUserDto {
   acceptTerms: boolean;
 
   @IsOptional()
-  @IsNotEmpty({ message: 'Role Id cannot be empty.' })
   @IsInt({ message: 'Role Id must be a Integer' })
   roleId: number;
 
