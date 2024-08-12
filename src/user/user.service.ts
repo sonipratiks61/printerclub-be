@@ -231,4 +231,74 @@ export class UserService {
     return data;
 
   }
+
+  async editUser(id: number, updateUserDto: UpdateUserDto) {
+    const errors: { mobileNumber?: string } = {};
+
+    const userMobileNumber = await this.prisma.user.findFirst({
+      where: {
+        mobileNumber: updateUserDto.mobileNumber,
+        id: { not: id }
+      }
+    })
+    if (userMobileNumber) {
+      errors.mobileNumber = "Mobile number already exists";
+    }
+    if (Object.keys(errors).length > 0) {
+      throw new ConflictException(errors);
+    }
+
+    const address = await this.prisma.address.findFirst({
+      where: {
+        userId: id,
+      },
+      select: {
+        id: true,
+
+      }
+    });
+    const data = await this.prisma.user.update({
+      where: {
+        id: id
+      },
+      data: {
+        name: updateUserDto.name,
+        businessName: updateUserDto.businessName,
+        mobileNumber: updateUserDto.mobileNumber,
+        gstNumber: updateUserDto.gstNumber,
+        addresses: {
+          update: {
+            where: {
+              id: address.id
+            },
+            data: {
+              address: updateUserDto.addresses.address,
+              city: updateUserDto.addresses.city,
+              state: updateUserDto.addresses.state,
+              pinCode: updateUserDto.addresses.pinCode,
+              country: updateUserDto.addresses.country,
+            }
+          }
+        },
+
+      },
+      select: {
+        id: true,
+        name: true,
+        businessName: true,
+        addresses: {
+          select: {
+            id: true,
+            address: true,
+            city: true,
+            state: true,
+            pinCode: true,
+            country: true,
+          }
+        },
+      }
+    })
+    return data;
+
+  }
 }
