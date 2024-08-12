@@ -54,8 +54,6 @@ import { join } from 'path';
 import { RoleAndOrderStatusService } from './role-and-order-status/role-and-order-status.service';
 import { RoleAndOrderStatusController } from './role-and-order-status/role-and-order-status.controller';
 
-import { RoleAndOrderStatusService } from './role-and-order-status/role-and-order-status.service';
-import { RoleAndOrderStatusController } from './role-and-order-status/role-and-order-status.controller';
 @Module({
   imports: [
     JwtModule.register({}),
@@ -64,7 +62,7 @@ import { RoleAndOrderStatusController } from './role-and-order-status/role-and-o
       rootPath: join(process.env.FILE_PATH ),
     }),
     MulterModule.register({
-      dest: './files',
+      dest: './uploads',
     }),
   ],
   controllers: [
