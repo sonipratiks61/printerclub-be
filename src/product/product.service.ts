@@ -174,7 +174,7 @@ export class ProductService {
           attributes: product.attributes.map((attribute) => ({
             id: attribute.id,
             productId: attribute.productId,
-            name: attribute.name,
+            name: attribute.attributeId,
             type: attribute.type,
             options: attribute.options,
           })),
