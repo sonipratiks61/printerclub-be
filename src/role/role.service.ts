@@ -67,16 +67,15 @@ export class RoleService {
               }
             }
           },
-          orderStatusIds: {
-            select: {
-              orderStatus: {
-                select: {
-                  id: true,
-                  status: true
+          orderStatusIds:{
+            select:{
+              orderStatus:{
+                select:{
+                  id:true,
+                  status:true
                 }
-              }
-
             }
+
           }
         }
       });
@@ -155,15 +154,12 @@ export class RoleService {
             }
           }
         },
-        orderStatusIds: {
-          select: {
-            orderStatus: {
-              select: {
-                id: true,
-                status: true
-              }
-            }
-          }
+        orderStatusIds:{
+          select:{
+            orderStatus:{
+              select:{
+          id:true,
+          status:true
         }
       }
       })
