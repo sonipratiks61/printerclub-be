@@ -79,8 +79,9 @@ export class RoleService {
             }
           }
         }
-      }
-    );
+      });
+      
+    
     const formattedRoles = role.map((role) => {
       return {
         id: role.id,
@@ -165,8 +166,9 @@ export class RoleService {
           }
         }
       }
-    }
-    );
+      })
+     
+   
 
     return role;
   }
