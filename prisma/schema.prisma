@@ -53,6 +53,7 @@ model Role {
   id            Int                        @id @default(autoincrement())
   name          String                     @unique
   capabilityIds RoleAndCapabilityMapping[]
+  orderStatusIds  RoleAndOrderStatusMapping[]
   users         User[]
   createdAt     DateTime                   @default(now())
   updatedAt     DateTime                   @updatedAt
@@ -74,9 +75,18 @@ model RoleAndCapabilityMapping {
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 
-  @@id([capabilityId, roleId])
+  @@id([capabilityId, roleId])   
 }
 
+model RoleAndOrderStatusMapping {
+  orderStatusId Int
+  roleId       Int
+  orderStatus  OrderStatus @relation(fields: [orderStatusId], references: [id])
+  role         Role       @relation(fields: [roleId], references: [id])
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  @@id([orderStatusId, roleId])
+}
 model GeoLocation {
   id      Int    @id @default(autoincrement())
   state   String
@@ -213,6 +223,7 @@ model OrderStatus {
   dependOn       Int?
   orderStatus    OrderStatus?  @relation("orderStatusTosubOrderStatus", fields: [dependOn], references: [id])
   subOrderStatus OrderStatus[] @relation("orderStatusTosubOrderStatus")
+  roleAndOrderStatusMapping RoleAndOrderStatusMapping[]
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 }

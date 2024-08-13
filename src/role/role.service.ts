@@ -37,6 +37,13 @@ export class RoleService {
             },
           })),
         },
+        orderStatusIds:{
+          create: createRoleDto.orderStatusIds.map((orderStatusId) => ({
+            orderStatus: {
+              connect: { id: orderStatusId },
+            },
+          })),
+        }
       },
 
     });
@@ -46,7 +53,9 @@ export class RoleService {
   async findAll() {
     const role = await this.prisma.role.findMany(
       {
-        include: {
+select:{id:true,
+  name:true,
+
           capabilityIds: {
             select: {
               capability: {
@@ -56,8 +65,19 @@ export class RoleService {
                 }
               }
             }
+          },
+          orderStatusIds:{
+            select:{
+              orderStatus:{
+                select:{
+                  id:true,
+                  status:true
+                }
+            }
+
           }
         }
+      }
       }
     );
     const formattedRoles = role.map((role) => {
@@ -68,6 +88,12 @@ export class RoleService {
           return {
             id: capability.capability.id,
             name: capability.capability.name,
+          };
+        }),
+        orderStatuses: role.orderStatusIds.map((orderStatus) => {
+          return {
+            id: orderStatus.orderStatus.id,
+            name: orderStatus.orderStatus.status
           };
         }),
       };
@@ -116,7 +142,7 @@ export class RoleService {
       where: {
         id: id
       },
-      include: {
+      select: {
         capabilityIds: {
           select: {
             capability: {
@@ -126,7 +152,17 @@ export class RoleService {
               }
             }
           }
+        },
+        orderStatusIds:{
+          select:{
+            orderStatus:{
+              select:{
+          id:true,
+          status:true
         }
+      }
+      }
+      }
       }
     }
     );
