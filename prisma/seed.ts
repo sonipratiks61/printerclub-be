@@ -1092,10 +1092,12 @@ async function main() {
       id: 2
     },
     create: {
+
       attributeId: 2,
       productId:1,
       type:"text",
       
+
     },
     update: {}
   })

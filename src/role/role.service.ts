@@ -92,7 +92,7 @@ export class RoleService {
             name: capability.capability.name,
           };
         }),
-        sequence: role.orderStatusIds.map((orderStatus) => {
+        orderStatuses: role.orderStatusIds.map((orderStatus) => {
           return {
             id: orderStatus.orderStatus.id,
             name: orderStatus.orderStatus.status
