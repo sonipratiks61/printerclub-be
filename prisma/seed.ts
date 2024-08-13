@@ -436,8 +436,8 @@ async function main() {
       categoryId:2,
       workflowId:1,
       userId: 1,
-      gst:5,
-      discount: 10,
+      gst:8,
+      discount: 20,
       quantity:{
         type:"text",
         min:234,
