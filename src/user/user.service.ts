@@ -286,6 +286,13 @@ export class UserService {
         id: true,
         name: true,
         businessName: true,
+        email:true,
+        mobileNumber:true,
+        gstNumber:true,
+        isActive:true,
+        acceptTerms:true,
+        createdAt:true,
+        updatedAt:true,
         addresses: {
           select: {
             id: true,
@@ -296,6 +303,7 @@ export class UserService {
             country: true,
           }
         },
+        role:true
       }
     })
     return data;
