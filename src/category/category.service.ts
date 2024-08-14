@@ -179,6 +179,7 @@ export class CategoryService {
           description: category.description,
           isDeletable: category.subCategories.length !== 0,
           attachment: attachmentMap[category.id] || [],
+          isDeletable: category.subCategories.length !== 0,
         },
         ...category.subCategories.map(subCategory => ({
           id: subCategory.id,
@@ -189,6 +190,7 @@ export class CategoryService {
           description: subCategory.description,
           isDeletable: productCategoryIds.includes(subCategory.id),
           attachment: attachmentMap[subCategory.id] || [],
+          isDeletable: productCategoryIds.includes(subCategory.id),
         }))
       ])
 
