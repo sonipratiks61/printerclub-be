@@ -4,20 +4,89 @@ import { CreateCategoryDto } from './dto/category.dto';
 import { CategoryType } from '@prisma/client';
 import { UpdateCategoryDto } from './dto/update.category.dto';
 import { AttachmentService } from 'src/attachment/attachment.service';
+import { RelationId } from 'typeorm';
 @Injectable()
 export class CategoryService {
   constructor(private prisma: PrismaService,
     private attachmentService: AttachmentService) { }
-    
+
+  // async create(createCategoryDto: CreateCategoryDto, userId: number) {
+  //   try {
+  //     let message = 'Category created successfully';
+
+  //     if (createCategoryDto.parentId) {
+  //       const parentCategory = await this.prisma.category.findUnique({
+  //         where: {
+  //           id: createCategoryDto.parentId,
+  //         },
+  //       });
+
+  //       if (!parentCategory) {
+  //         throw new NotFoundException(
+  //           "Invalid CategoryId"
+  //         );
+  //       }
+
+  //       message = 'Subcategory created successfully';
+  //     }
+
+  //     const parentId = createCategoryDto.parentId
+  //       ? createCategoryDto.parentId
+  //       : null;
+  //     const newCategory = await this.prisma.category.create({
+  //       data: {
+  //         name: createCategoryDto.name,
+  //         description: createCategoryDto.description,
+  //         type: createCategoryDto.type as CategoryType,
+  //         parentId: parentId,
+  //         userId: userId,
+  //       },
+  //     });
+  //     const isUploadFile = await this.prisma.attachmentAssociation.create({
+  //       data: {
+  //         relationId: newCategory.id,
+  //         relationType: 'category'
+  //       }
+  //     });
+  //     const isCheckAttachment = await this.attachmentService.findOne(createCategoryDto.attachmentId)
+  //     if (!isCheckAttachment) {
+  //       throw new NotFoundException("Attachment not found")
+  //     }
+  //     await this.prisma.attachmentToAssociation.create({
+  //       data: {
+  //         attachmentId: createCategoryDto.attachmentId,
+  //         attachmentAssociationId: isUploadFile.id
+  //       }
+  //     })
+  //     const data = {
+  //       id: newCategory.id,
+  //       name: newCategory.name,
+  //       description: newCategory.description,
+  //       type: newCategory.type,
+  //       parentId: newCategory.parentId,
+  //       userId: newCategory.userId,
+  //       createdAt: newCategory.createdAt,
+  //       updatedAt: newCategory.updatedAt,
+  //       file: isCheckAttachment.filePath
+
+  //     }
+  //     return { data, message };
+  //   } catch (error) {
+  //     console.error('Error creating category:', error);
+  //     throw error;
+  //   }
+  // }
   async create(createCategoryDto: CreateCategoryDto, userId: number) {
+
     let message = 'Category created successfully';
+
     if (createCategoryDto.parentId) {
       const parentCategory = await this.prisma.category.findUnique({
         where: { id: createCategoryDto.parentId },
       });
 
       if (!parentCategory) {
-        throw new NotFoundException('Invalid CategoryId');
+        throw new NotFoundException("Invalid CategoryId");
       }
 
       message = 'Subcategory created successfully';
@@ -59,6 +128,7 @@ export class CategoryService {
 
       file = isCheckAttachment.filePath;
     }
+
     const data = {
       id: newCategory.id,
       name: newCategory.name,
@@ -83,8 +153,9 @@ export class CategoryService {
     });
 
     if (!category) {
-      throw new NotFoundException('Category not found');
+      throw new NotFoundException(`Category not found`);
     }
+
 
     const attachmentAssociation = await this.prisma.attachmentAssociation.findFirst({
       where: {
@@ -158,6 +229,7 @@ export class CategoryService {
         return acc;
       }, {} as Record<number, { id: number; fileName: string; filePath: string }[]>);
 
+
       const products = await this.prisma.product.findMany({
         where: {
           exclude: false,
@@ -173,9 +245,6 @@ export class CategoryService {
           parentId: category.parentId,
           type: category.type,
           description: category.description,
-          attachment: attachmentMap[category.id] || [],
-          isDeletable: category.subCategories.length !== 0,
-          attachment: attachmentMap[category.id] || [],
           isDeletable: category.subCategories.length !== 0,
           attachment: attachmentMap[category.id] || [],
         },
@@ -186,9 +255,6 @@ export class CategoryService {
           parentId: subCategory.parentId,
           type: subCategory.type,
           description: subCategory.description,
-          attachment: attachmentMap[subCategory.id] || [],
-          isDeletable: productCategoryIds.includes(subCategory.id),
-          attachment: attachmentMap[subCategory.id] || [],
           isDeletable: productCategoryIds.includes(subCategory.id),
           attachment: attachmentMap[subCategory.id] || [],
         }))
