@@ -166,7 +166,15 @@ export class CategoryService {
       }, {} as Record<number, { id: number; fileName: string; filePath: string }[]>);
 
 
-      const formatted = data.flatMap(category => [
+      const products = await this.prisma.product.findMany({
+        where: {
+          exclude: false,
+        },
+      });
+
+      const productCategoryIds = products.map((product) => product.categoryId);
+
+      const formatted = data.flatMap((category) => [
         {
           id: category.id,
           name: category.name,
@@ -174,6 +182,7 @@ export class CategoryService {
           type: category.type,
           description: category.description,
           attachment: attachmentMap[category.id] || [],
+          isDeletable: category.subCategories.length !== 0,
         },
         ...category.subCategories.map(subCategory => ({
           id: subCategory.id,
@@ -183,6 +192,7 @@ export class CategoryService {
           type: subCategory.type,
           description: subCategory.description,
           attachment: attachmentMap[subCategory.id] || [],
+          isDeletable: productCategoryIds.includes(subCategory.id),
         }))
       ])
 
