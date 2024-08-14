@@ -112,6 +112,20 @@ export class UpdateProductDto {
   workFlowId?: number;
 
   @ApiProperty({
+    required: true,
+  })
+  @IsNotEmpty({ message: 'Gst cannot be empty.' })
+  @IsInt({ message: 'Gst must be a integer' })
+  gst: number;
+
+  @ApiProperty({
+    required: false,
+  })
+  @IsOptional()
+  @IsNotEmpty({ message: 'Discount cannot be empty.' })
+  discount?: number;
+
+  @ApiProperty({
     description: 'Indicates if a measurement is required',
     example: true,
   })
