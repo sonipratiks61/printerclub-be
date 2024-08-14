@@ -9,29 +9,23 @@ import { AttachmentService } from 'src/attachment/attachment.service';
 export class CategoryService {
   constructor(private prisma: PrismaService,
     private attachmentService: AttachmentService) { }
-    
+
   async create(createCategoryDto: CreateCategoryDto, userId: number) {
-
     let message = 'Category created successfully';
-
     if (createCategoryDto.parentId) {
       const parentCategory = await this.prisma.category.findUnique({
         where: { id: createCategoryDto.parentId },
       });
 
       if (!parentCategory) {
-        throw new NotFoundException("Invalid CategoryId");
+        throw new NotFoundException('Invalid CategoryId');
       }
 
       message = 'Subcategory created successfully';
     }
 
-    const isCheckAttachment = await this.attachmentService.findOne(createCategoryDto.attachmentId);
-
-      if (!isCheckAttachment) {
-        throw new NotFoundException("Attachment not found");
-      }
     const parentId = createCategoryDto.parentId || null;
+
     const newCategory = await this.prisma.category.create({
       data: {
         name: createCategoryDto.name,
@@ -43,8 +37,14 @@ export class CategoryService {
     });
 
     let file = null;
-
     if (createCategoryDto.attachmentId) {
+      const isCheckAttachment = await this.attachmentService.findOne(createCategoryDto.attachmentId);
+
+      if (!isCheckAttachment) {
+        throw new NotFoundException('Attachment not found');
+      }
+
+
       const isUploadFile = await this.prisma.attachmentAssociation.create({
         data: {
           relationId: newCategory.id,
@@ -61,7 +61,6 @@ export class CategoryService {
 
       file = isCheckAttachment.filePath;
     }
-
     const data = {
       id: newCategory.id,
       name: newCategory.name,
