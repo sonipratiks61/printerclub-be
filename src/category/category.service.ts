@@ -157,7 +157,6 @@ export class CategoryService {
         return acc;
       }, {} as Record<number, { id: number; fileName: string; filePath: string }[]>);
 
-
       const products = await this.prisma.product.findMany({
         where: {
           exclude: false,
