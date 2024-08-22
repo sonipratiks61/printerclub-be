@@ -72,6 +72,7 @@ export class ProductService {
       data: {
         relationId: createdProduct.id,
         relationType: 'product',
+        productId: createdProduct.id,
       },
     });
 
@@ -285,11 +286,27 @@ export class ProductService {
         exclude:false
       },
       include: {
-        attributes: true
-      }
+        attributes: true,
+        attachments: {
+          include: {
+            attachments: {
+              include: {
+                attachment: true,
+              },
+            },
+          },
+        },
+      },
     });
-
-    return data;
+  
+    const transformedData = data.map(product => ({
+      ...product,
+      attachments: product.attachments.flatMap(association =>
+        association.attachments.map(a => a.attachment)
+      ),
+    }));
+  
+    return transformedData;
   }
 
   async update(id: number, updateProductDto: UpdateProductDto) {

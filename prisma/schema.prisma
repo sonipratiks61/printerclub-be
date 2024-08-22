@@ -118,6 +118,8 @@ model AttachmentAssociation {
   relationType String
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
+  productId    Int?
+  product      Product?                @relation("ProductAttachments", fields: [productId], references: [id], onDelete: Cascade)
   attachments  AttachmentToAssociation[]
   // categoryAttachments   Category[]              @relation("CategoryAttachments", references: [id])
   // productAttachments    Product[]               @relation("ProductAttachments", references: [id])
@@ -169,7 +171,7 @@ model Product {
   attributes            ProductAttribute[]
   orderItems            OrderItem[]
   exclude               Boolean                 @default(false)
-  // attachmentAssociations AttachmentAssociation[] @relation("ProductAttachments")
+  attachments           AttachmentAssociation[] @relation("ProductAttachments")
 
 }
 
