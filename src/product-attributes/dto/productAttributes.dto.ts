@@ -9,7 +9,7 @@ export class CreateProductAttributesDto {
   })
   @IsNotEmpty({ message: 'Product Name cannot be empty.' })
   @IsString({ message: 'Product Name must be a string' })
-  name: string;
+  attributeId: string;
 
   @ApiProperty({
     description: 'Quantity type',

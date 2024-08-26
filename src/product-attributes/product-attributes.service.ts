@@ -29,12 +29,12 @@ export class ProductAttributesService {
 
     const createData = createProductAttributesDto.map(dto => {
 
-      if (!dto.name || !dto.productId || !dto.type) {
+      if (!dto.attributeId || !dto.productId || !dto.type) {
         throw new BadRequestException("All fields are Required")
       }
 
       let data: any = {
-        name: dto.name,
+        attributeId: dto.attributeId,
         type: dto.type,
         productId: dto.productId,
       };
@@ -77,7 +77,7 @@ export class ProductAttributesService {
     }
 
     let updateProductAttributeData: any = {
-      name: updateProductAttributeDto.name,
+      attributeId: updateProductAttributeDto.attributeId,
       type: updateProductAttributeDto.type as AttributeType,
       productId: updateProductAttributeDto.productId,
     };
@@ -109,7 +109,7 @@ export class ProductAttributesService {
     else {
       return {
         id: id,
-        name: data.name,
+        name: data.attributeId,
         type: data.type,
         productId: data.productId,
       };
