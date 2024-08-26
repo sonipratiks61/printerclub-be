@@ -52,6 +52,8 @@ import { WorkFlowService } from './work-flow/work-flow.service';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 
+import { RoleAndOrderStatusService } from './role-and-order-status/role-and-order-status.service';
+import { RoleAndOrderStatusController } from './role-and-order-status/role-and-order-status.controller';
 @Module({
   imports: [
     JwtModule.register({}),
@@ -115,6 +117,8 @@ import { join } from 'path';
     CapabilityService,
     RoleAndCapabilityController,
     WorkFlowService,
+    RoleAndOrderStatusService,
+    RoleAndOrderStatusController
   ],
 })
 export class AppModule {
