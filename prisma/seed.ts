@@ -1098,6 +1098,11 @@ async function main() {
       type:"text",
       
 
+  
+      attributeId: 2,
+      productId:1,
+      type:"text",
+      
     },
     update: {}
   })
