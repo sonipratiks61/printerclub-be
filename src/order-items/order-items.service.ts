@@ -6,12 +6,14 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { OrderStatusService } from 'src/order-status/order-status.service';
 import { OrderHistoryService } from 'src/order-history/order-history.service';
 import { UpdateOrderItemDto } from './dto/order-Item.dto';
+import { RoleService } from 'src/role/role.service';
 
 @Injectable()
 export class OrderItemsService {
     constructor(
         private prisma: PrismaService,
         private orderStatusService: OrderStatusService,
+        private roleService: RoleService
     ) {
     }
 
@@ -64,14 +66,26 @@ export class OrderItemsService {
 
         const sequence = Array.isArray(data.workflow.sequence) ? data.workflow.sequence : [];
 
+        const roles = (await this.roleService.findAll()).map((role) => ({
+            id: role.id,
+            orderStatuses: role.orderStatuses.map(
+              (orderStatuses) => orderStatuses.id,
+            ),
+          }));
+
         const formattedSequence = await Promise.all(
             sequence
                 .filter((item): item is number => typeof item === 'number')
                 .map(async (id: number) => {
                     const formate = await this.orderStatusService.findOne(id);
+                    const roleId = roles.find(
+                        (role) => role.id !== 1 && role.orderStatuses.includes(formate.id),
+                      )?.id;
+
                     return {
                         id: formate?.id,
                         name: formate?.status,
+                        roleId: roleId ?? 1
                     };
                 })
         );
@@ -115,7 +129,7 @@ export class OrderItemsService {
                 ...data.workflow,
                 sequence: data.orderItemStatus === 'Cancelled'
                     ? completedStatusFilter
-                    : formattedSequence.map(item => ({ id: item.id, name: item.name })),
+                    : formattedSequence.map(item => ({ id: item.id, name: item.name, roleId: item.roleId, })),
                 completedStatus: completedStatus
             }
         };
