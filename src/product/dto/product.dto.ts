@@ -104,7 +104,21 @@ export class CreateProductDto {
   @IsNotEmpty({ message: 'WorkFlow Id cannot be empty.' })
   @IsInt({ message: 'WorkFlow Id must be a integer' })
   workflowId?: number;
-  
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsNotEmpty({ message: 'Gst cannot be empty.' })
+  @IsInt({ message: 'Gst must be a integer' })
+  gst: number;
+
+  @ApiProperty({
+    required: false,
+  })
+  @IsOptional()
+  @IsInt({ message: 'Discount must be a integer' })
+  discount?: number;
+
   @ApiProperty({
     description: 'Indicates if a fitment is required',
     example: true,

@@ -1038,10 +1038,12 @@ async function main() {
       categoryId: 2,
       workflowId: 1,
       userId: 1,
-      quantity: {
-        type: "text",
-        min: 234,
-        max: 323
+      gst:8,
+      discount: 20,
+      quantity:{
+        type:"text",
+        min:234,
+        max:323
       },
       price: "3452",
       createdAt: new Date('2023-07-09'),
@@ -1061,9 +1063,11 @@ async function main() {
       categoryId: 2,
       workflowId: 1,
       userId: 1,
-      quantity: {
-        type: "dropDown",
-        options: [23, 43, 54]
+      gst:5,
+      discount: 10,
+      quantity:{
+        type:"dropDown",
+       options:[23,43,54]
       },
       price: "3452",
       createdAt: new Date('2023-07-09'),
