@@ -1080,10 +1080,10 @@ async function main() {
       id: 1
     },
     create: {
-      name: "ProductAttribute 1",
-      productId: 1,
-      type: "dropDown",
-      options: ["23", "43", "54"],
+      attributeId: 1,
+      productId:1,
+      type:"dropDown",
+       options:["23","43","54"],
     },
     update: {}
   })
@@ -1092,10 +1092,10 @@ async function main() {
       id: 2
     },
     create: {
-      name: "ProductAttribute 2",
-      productId: 1,
-      type: "text",
-
+      attributeId: 2,
+      productId:1,
+      type:"text",
+      
     },
     update: {}
   })

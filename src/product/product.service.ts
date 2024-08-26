@@ -287,11 +287,26 @@ export class ProductService {
         exclude:false
       },
       include: {
-        attributes: true
-      }
+        attributes: {
+          include: {
+            attribute: true,
+          },
+        },
+      },
     });
 
-    return data;
+    const transformedData = data.map(product => ({
+      ...product,
+      attributes: product.attributes.map(attribute =>({
+        id: attribute.id,
+        productId: attribute.productId,
+        name: attribute.attribute.name,
+        type: attribute.type,
+        ...(attribute.type === 'dropDown' && { options: attribute.options })
+      })),
+    }));
+
+    return transformedData;
   }
 
   async update(id: number, updateProductDto: UpdateProductDto) {

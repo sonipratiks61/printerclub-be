@@ -186,12 +186,13 @@ model Product {
 }
 
 model ProductAttribute {
-  id        Int           @id @default(autoincrement())
-  productId Int
-  name      String
-  product   Product       @relation(fields: [productId], references: [id])
-  type      AttributeType
-  options   Json?
+  id              Int           @id @default(autoincrement())
+  productId       Int
+  attributeId     Int
+  product         Product       @relation(fields: [productId], references: [id])
+  attribute       Attribute     @relation(fields: [attributeId], references: [id])
+  type            AttributeType
+  options         Json?
 }
 
 enum AttributeType {
@@ -200,8 +201,9 @@ enum AttributeType {
 }
 
 model Attribute {
-  id        Int      @id @default(autoincrement())
-  name      String?  @unique
+  id                 Int                @id @default(autoincrement())
+  name               String?            @unique
+  ProductAttribute   ProductAttribute[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
