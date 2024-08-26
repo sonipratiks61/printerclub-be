@@ -32,5 +32,7 @@ export class UpdateRoleDto {
   @IsInt({ each: true })
   capabilityIds: number[];
 
+  @IsArray()
+  @IsInt({ each: true })
   orderStatusIds:number[];
 }

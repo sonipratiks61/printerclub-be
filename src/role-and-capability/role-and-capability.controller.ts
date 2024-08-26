@@ -13,7 +13,7 @@ export class RoleAndCapabilityController {
   constructor(
     private readonly roleAndCapabilityService: RoleAndCapabilityService,
     private readonly responseService: ResponseService,
-  ) {}
+  ) { }
 
   @Get()
   @UseGuards(AuthGuard('jwt'))
@@ -51,7 +51,7 @@ export class RoleAndCapabilityController {
 
   @Post()
   @UseGuards(AuthGuard('jwt'))
-  async udpateRoleAndCapabilities(
+  async updateRoleAndCapabilities(
     @Body() roleAndCapabilityDto: UpdateRoleAndCapabilityDto,
     @Res() res,
   ) {
@@ -77,7 +77,7 @@ export class RoleAndCapabilityController {
           capabilityIds: capabilitiesToDelete,
         });
 
-        if(!deleted.length) {
+        if (!deleted.length) {
           success = false;
           throw new Error('Error while deleting old mapping')
         }

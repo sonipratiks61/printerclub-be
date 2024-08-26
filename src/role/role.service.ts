@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateRoleDto } from './dto/role.dto';
 import { Role } from '@prisma/client';
@@ -24,7 +24,7 @@ export class RoleService {
       },
     });
     if (existingCapabilities?.length !== capabilityIds?.length) {
-    throw new NotFoundException("One or more capability IDs are invalid");
+      throw new NotFoundException("One or more capability IDs are invalid");
     }
 
     const role = await this.prisma.role.create({
@@ -37,7 +37,7 @@ export class RoleService {
             },
           })),
         },
-        orderStatusIds:{
+        orderStatusIds: {
           create: createRoleDto.orderStatusIds.map((orderStatusId) => ({
             orderStatus: {
               connect: { id: orderStatusId },
@@ -53,8 +53,9 @@ export class RoleService {
   async findAll() {
     const role = await this.prisma.role.findMany(
       {
-select:{id:true,
-  name:true,
+        select: {
+          id: true,
+          name: true,
 
           capabilityIds: {
             select: {
@@ -66,18 +67,18 @@ select:{id:true,
               }
             }
           },
-          orderStatusIds:{
-            select:{
-              orderStatus:{
-                select:{
-                  id:true,
-                  status:true
+          orderStatusIds: {
+            select: {
+              orderStatus: {
+                select: {
+                  id: true,
+                  status: true
                 }
-            }
+              }
 
+            }
           }
         }
-      }
       }
     );
     const formattedRoles = role.map((role) => {
@@ -153,16 +154,16 @@ select:{id:true,
             }
           }
         },
-        orderStatusIds:{
-          select:{
-            orderStatus:{
-              select:{
-          id:true,
-          status:true
+        orderStatusIds: {
+          select: {
+            orderStatus: {
+              select: {
+                id: true,
+                status: true
+              }
+            }
+          }
         }
-      }
-      }
-      }
       }
     }
     );
@@ -171,11 +172,6 @@ select:{id:true,
   }
 
   async delete(id: number) {
-    const data= await this.prisma.user.deleteMany({
-      where: {
-        roleId:id
-      }
-    })
     const role = await this.prisma.role.delete({
       where: {
         id: id
@@ -190,6 +186,16 @@ select:{id:true,
               }
             }
           }
+        },
+        orderStatusIds:{
+          select: {
+            orderStatus: {
+              select:{
+              id:true,
+              status:true
+              }
+            }
+          }
         }
       }
     }
@@ -198,6 +204,14 @@ select:{id:true,
   }
 
   async updateRoleName(roleId: number, name: string): Promise<Role | null> {
+    const existingRole = await this.prisma.role.findUnique({
+      where: { name },
+    });
+  
+    if (existingRole && existingRole.id !== roleId) {
+      // If the role with the same name exists and it's not the current role, throw an error
+      throw new ConflictException('Role name already exists');
+    }
     const role = await this.prisma.role.update({
       where: { id: roleId },
       data: { name },
