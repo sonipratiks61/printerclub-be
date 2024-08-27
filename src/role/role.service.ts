@@ -78,7 +78,8 @@ export class RoleService {
 
           }
         }
-      });
+      }
+    });
       
     
     const formattedRoles = role.map((role) => {
@@ -91,7 +92,7 @@ export class RoleService {
             name: capability.capability.name,
           };
         }),
-        orderStatuses: role.orderStatusIds.map((orderStatus) => {
+        sequence: role.orderStatusIds.map((orderStatus) => {
           return {
             id: orderStatus.orderStatus.id,
             name: orderStatus.orderStatus.status
@@ -162,9 +163,11 @@ export class RoleService {
           status:true
         }
       }
-      })
+      }
+    }
      
-   
+  }
+})
 
     return role;
   }
