@@ -28,6 +28,8 @@ export class ProductService {
       description: createProductDto.description,
       price: createProductDto.price,
       userId: userId,
+      gst:createProductDto.gst,
+      discount:createProductDto.discount,
       categoryId: createProductDto.categoryId,
       workflowId: createProductDto.workflowId,
       isFitmentRequired: createProductDto.isFitmentRequired,
