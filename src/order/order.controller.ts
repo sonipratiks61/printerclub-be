@@ -21,7 +21,8 @@ export class OrderController {
     ) {
         try {
             const owner = req.user.name;
-            const data = await this.orderService.create(createOrderDto, owner);
+            const userId= req.user.id
+            const data = await this.orderService.create(createOrderDto, owner, userId);
             if (data) {
                 this.responseService.sendSuccess(res, 'Created Order Successfully', data);
             } else {
@@ -38,6 +39,24 @@ export class OrderController {
         }
     }
 
+    @UseGuards(AuthGuard('jwt')) // Protect the route with authentication guard
+    @Post('create')
+    async createUserOrder(@Body() createOrderDto: CreateOrderDto, @Req() req,@Res() res) {
+        try{
+      const loggedInUser = req.user.id; // Extract logged-in user details from request object (e.g., JWT)
+      const ownerName = req.user.name; // Assume owner's name is the same as the logged-in user's name
+  
+      const order = await this.orderService.createUserOrder(createOrderDto, ownerName, loggedInUser);
+      console.log(order);
+      this.responseService.sendSuccess(
+        res,
+        'Order Fetched Successfully',
+        order
+    );
+    } catch (error) {
+        console.log(error);
+    }
+    }
     @Get()
     @UseGuards(AuthGuard('jwt'))
     async fetchAll(@Res() res) {

@@ -30,6 +30,7 @@ export class CreateOrderDto {
     @IsNotEmpty({ message: 'CustomerDetails must not be empty.' })
     @ValidateNested()
     @IsDefined()
+    @IsOptional()
     @Type(() => CreateCustomerDetailsDto)
     customerDetails: CreateCustomerDetailsDto
 

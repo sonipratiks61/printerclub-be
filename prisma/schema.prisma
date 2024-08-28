@@ -33,6 +33,7 @@ model User {
   categories            Category[]
   products              Product[]
   orderHistory          OrderHistory[]
+  order                 Order[]
 }
 
 model Address {
@@ -171,6 +172,8 @@ model AttachmentAssociation {
   categoryId   Int
   attachment   Attachment @relation(fields: [attachmentId], references: [id])
   attachmentId Int
+  orderItemId  Int
+  orderItem    OrderItem       @relation("orderItem_attachmentAssociations", fields: [orderItemId], references: [id])
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 }
@@ -223,7 +226,7 @@ model OrderItem {
   updatedAt              DateTime @updatedAt
   workflow               WorkFlow @relation(fields: [workflowId], references: [id])
   orderItemStatus        String 
- 
+  AttachmentAssociation AttachmentAssociation[] @relation("orderItem_attachmentAssociations")
 }
 
 model Order {
@@ -236,6 +239,8 @@ model Order {
   invoiceNumber    Int
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
+  userId           Int
+  userDetails      User   @relation(fields: [userId], references: [id])
   customerDetails  OrderCustomer?
   orderItems       OrderItem[]
 }
