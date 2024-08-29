@@ -168,7 +168,7 @@ enum AttributeType {
 model Attribute {
   id                 Int                @id @default(autoincrement())
   name               String?            @unique
-  ProductAttribute   ProductAttribute[]
+  productAttribute   ProductAttribute[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
