@@ -67,25 +67,26 @@ export class OrderItemsService {
         const sequence = Array.isArray(data.workflow.sequence) ? data.workflow.sequence : [];
 
         const roles = (await this.roleService.findAll()).map((role) => ({
-            id: role.id,
-            sequence: role.sequence.map(
-              (orderStatuses) => orderStatuses.id,
-            ),
-          }));
-
+          id: role.id,
+          sequence: role.sequence.map((orderStatuses) => orderStatuses.id),
+        }));
+    
         const formattedSequence = await Promise.all(
             sequence
                 .filter((item): item is number => typeof item === 'number')
                 .map(async (id: number) => {
                     const formate = await this.orderStatusService.findOne(id);
-                    const roleId = roles.find(
-                        (role) => role.id !== 1 && role.sequence.includes(formate.id),
-                      )?.id;
-
+           
+                    const roleIds = roles
+                    .filter(
+                      (role) => role.id !== 1 && role.sequence.includes(formate.id),
+                    )
+                    .map((role) => role.id);
+                    
                     return {
                         id: formate?.id,
                         name: formate?.status,
-                        roleId: roleId ?? 1
+                        roleIds: roleIds
                     };
                 })
         );
@@ -129,7 +130,7 @@ export class OrderItemsService {
                 ...data.workflow,
                 sequence: data.orderItemStatus === 'Cancelled'
                     ? completedStatusFilter
-                    : formattedSequence.map(item => ({ id: item.id, name: item.name, roleId: item.roleId, })),
+                    : formattedSequence.map(item => ({ id: item.id, name: item.name, roleIds: item.roleIds, })),
                 completedStatus: completedStatus
             }
         };
