@@ -8,9 +8,9 @@ export class UpdateProductAttributesDto {
     example: 'Acme Corp',
   })
   @IsOptional()
-  @IsNotEmpty({ message: 'Product Name cannot be empty.' })
-  @IsString({ message: 'Product Name must be a string' })
-  name: string;
+  @IsNotEmpty({ message: 'Attribute Name cannot be empty.' })
+  @IsInt({ message: 'Attribute Name must be a integer' })
+  attributeId: number;
 
   @ApiProperty({
     description: 'Quantity type',
