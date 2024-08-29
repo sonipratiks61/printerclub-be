@@ -130,6 +130,8 @@ model Product {
   id                    Int                     @id @default(autoincrement())
   categoryId            Int
   workflowId            Int
+  gst                   Int
+  discount              Int?
   workflow              WorkFlow                @relation(fields: [workflowId], references: [id])
   name                  String
   description           String                  @db.Text

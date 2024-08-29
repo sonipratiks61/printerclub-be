@@ -222,4 +222,49 @@ export class UserController {
     }
   }
   
+  @Patch('user/edit')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: 200,
+    description: 'Updated Successfully',
+    type: CreateUserDto,
+  })
+  async editProfile(
+    @Body() updateUserDto: UpdateUserDto,
+    @Res() res,
+    @Req() req,
+    
+  ) {
+    try {
+   
+      const userId= req.user.id
+      const data = await this.userService.editUser(
+        userId,
+        updateUserDto,
+      );
+      if(data){
+      this.responseService.sendSuccess(
+        res,
+        'User Updated Successfully',
+        data,
+      );
+      }else{
+        this.responseService.sendBadRequest(res, 'Failed to update Profile');
+      }
+    } catch (error) {
+      if(error instanceof NotFoundException){
+        return this.responseService.sendNotFound(res, error.message);
+      }
+      else if (error instanceof ConflictException) {
+        this.responseService.sendConflict(res, error.message,error.getResponse());
+      }else{
+        this.responseService.sendInternalError(
+          res,
+          'Something Went Wrong',
+          error,
+        );
+      } 
+    }
+  }
 }

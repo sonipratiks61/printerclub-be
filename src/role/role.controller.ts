@@ -10,6 +10,7 @@ import {
   NotFoundException,
   Delete,
   Patch,
+  ConflictException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiResponse } from '@nestjs/swagger';
@@ -19,6 +20,7 @@ import { ResponseService } from 'utils/response/customResponse';
 import { RoleService } from './role.service';
 import { IdValidationPipe } from 'utils/validation/paramsValidation';
 import { RoleAndCapabilityController } from 'src/role-and-capability/role-and-capability.controller';
+import { RoleAndOrderStatusController } from 'src/role-and-order-status/role-and-order-status.controller';
 
 @Controller('role')
 export class RoleController {
@@ -26,7 +28,8 @@ export class RoleController {
     private readonly roleService: RoleService,
     private readonly responseService: ResponseService,
     private readonly roleAndCapabilityController: RoleAndCapabilityController,
-  ) {}
+    private readonly roleAndOrderStatusController: RoleAndOrderStatusController
+  ) { }
 
   @Get()
   async fetchAll(@Res() res) {
@@ -125,7 +128,7 @@ export class RoleController {
   ) {
     try {
       const roleId = parseInt(id, 10);
-      const { name, capabilityIds } = updateRoleDto;
+      const { name, capabilityIds, orderStatusIds } = updateRoleDto;
 
       const role = await this.roleService.findOne(roleId);
 
@@ -136,6 +139,9 @@ export class RoleController {
       let existingCapabilities = role.capabilityIds.map((cap, index) => {
         return cap.capability.id;
       });
+      let existingOrderStatus = role.orderStatusIds.map((ord, index) => {
+        return ord.orderStatus.id;
+      })
 
       const capabilitiesToAdd = capabilityIds.filter(
         (id) => !existingCapabilities.includes(id),
@@ -145,15 +151,20 @@ export class RoleController {
         (id) => !capabilityIds.includes(id),
       );
 
+      const orderStatusToDelete = existingOrderStatus.filter(
+        (id) => !existingOrderStatus.includes(id),
+      );
+      const orderStatusToAdd = orderStatusIds.filter((id) => !existingOrderStatus.includes(id),);
+
       const updatedCapabilities =
-        await this.roleAndCapabilityController.udpateRoleAndCapabilities(
+        await this.roleAndCapabilityController.updateRoleAndCapabilities(
           { roleId, capabilitiesToAdd, capabilitiesToDelete },
           res,
         );
-
+      const updatedOrderStatus = await this.roleAndOrderStatusController.updateRoleAndOrderStatus({ roleId, orderStatusToAdd, orderStatusToDelete }, res);
       const updatedRole = await this.roleService.updateRoleName(roleId, name);
 
-      if (!updatedRole || !updatedCapabilities) {
+      if (!updatedRole || !updatedCapabilities || !updatedOrderStatus) {
         this.responseService.sendInternalError(res, 'Something Went Wrong');
       }
 
@@ -163,6 +174,9 @@ export class RoleController {
         updatedRole,
       );
     } catch (error) {
+      if (error instanceof ConflictException) {
+        this.responseService.sendConflict(res, error.message);
+      }
       this.responseService.sendInternalError(res, 'Something Went Wrong');
     }
   }
