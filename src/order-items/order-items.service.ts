@@ -68,7 +68,7 @@ export class OrderItemsService {
 
         const roles = (await this.roleService.findAll()).map((role) => ({
             id: role.id,
-            orderStatuses: role.orderStatuses.map(
+            sequence: role.sequence.map(
               (orderStatuses) => orderStatuses.id,
             ),
           }));
@@ -79,7 +79,7 @@ export class OrderItemsService {
                 .map(async (id: number) => {
                     const formate = await this.orderStatusService.findOne(id);
                     const roleId = roles.find(
-                        (role) => role.id !== 1 && role.orderStatuses.includes(formate.id),
+                        (role) => role.id !== 1 && role.sequence.includes(formate.id),
                       )?.id;
 
                     return {
