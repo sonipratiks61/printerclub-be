@@ -10,6 +10,7 @@ import {
   NotFoundException,
   Delete,
   Res,
+  BadRequestException,
 } from '@nestjs/common';
 
 import { AttachmentService } from './attachment.service';
@@ -38,12 +39,18 @@ export class AttachmentController {
       await this.attachmentService.create(files, userId);
       this.responseService.sendSuccess(res, 'Upload Successfully');
     } catch (error) {
+      if(error instanceof BadRequestException)
+      {
+        this.responseService.sendBadRequest(res,error.message)
+      }
+      else{
       this.responseService.sendInternalError(
         res,
         error.message || 'Something Went Wrong',
         error,
       );
     }
+  }
   }
 
   @Get(':id')
@@ -54,14 +61,12 @@ export class AttachmentController {
   ): Promise<void> {
     try {
       const attachmentId = parseInt(id);
-      console.log(attachmentId);
       const attachment = await this.attachmentService.findOne(attachmentId);
       if (!attachment) {
         this.responseService.sendNotFound(res, 'Invalid Attachment Id');
       }
       this.responseService.sendSuccess(res, 'Fetch Successfully', attachment);
     } catch (error) {
-      console.log(error);
       if (error instanceof NotFoundException) {
         this.responseService.sendNotFound(res, error.message);
         return;
@@ -106,7 +111,6 @@ export class AttachmentController {
       await this.attachmentService.remove(attachmentId);
       this.responseService.sendSuccess(res, 'Attachment Deleted Successfully');
     } catch (error) {
-      console.log(error);
       if (error instanceof NotFoundException) {
         this.responseService.sendNotFound(res, error.message);
       } else {

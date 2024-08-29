@@ -68,7 +68,7 @@ export class OrderItemsService {
 
         const roles = (await this.roleService.findAll()).map((role) => ({
             id: role.id,
-            orderStatuses: role.orderStatuses.map(
+            orderStatuses: role.sequence.map(
               (orderStatuses) => orderStatuses.id,
             ),
           }));

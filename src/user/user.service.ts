@@ -3,10 +3,12 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto, UpdateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { RoleService } from 'src/role/role.service';
+import { AttachmentService } from 'src/attachment/attachment.service';
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService,
-    private roleService: RoleService) { }
+    private roleService: RoleService,
+    private attachmentService:AttachmentService) { }
 
   async findAllUsersWithAddresses() {
     const users = await this.prisma.user.findMany({
@@ -143,6 +145,32 @@ export class UserService {
         }
       }
     })
+    let file = null;
+
+    if (createUserDto.attachmentId) {
+      const isUploadFile = await this.prisma.attachmentAssociation.create({
+        data: {
+          relationId: data.id,
+          relationType: 'user',
+        },
+      });
+
+      const isCheckAttachment = await this.attachmentService.findOne(createUserDto.attachmentId);
+
+      if (!isCheckAttachment) {
+        throw new NotFoundException("Attachment not found");
+      }
+
+      await this.prisma.attachmentToAssociation.create({
+        data: {
+          attachmentId: createUserDto.attachmentId,
+          attachmentAssociationId: isUploadFile.id,
+        },
+      });
+
+      file = isCheckAttachment.filePath;
+    }
+    
     return data;
   }
 
@@ -228,6 +256,44 @@ export class UserService {
         }
       }
     })
+    if (updateUserDto.attachmentId) {
+      const isCheckAttachment = await this.attachmentService.findOne(updateUserDto.attachmentId);
+      if (!isCheckAttachment) {
+        throw new NotFoundException("Attachment not found");
+      }
+
+      const existingAttachmentAssociation = await this.prisma.attachmentAssociation.findFirst({
+        where: {
+          relationId: id,
+          relationType: 'user',
+        },
+      });
+
+      if (existingAttachmentAssociation) {
+        await this.prisma.attachmentToAssociation.updateMany({
+          where: {
+            attachmentAssociationId: existingAttachmentAssociation.id,
+          },
+          data: {
+            attachmentId: updateUserDto.attachmentId,
+          },
+        });
+      } else {
+        const newAttachmentAssociation = await this.prisma.attachmentAssociation.create({
+          data: {
+            relationId: id,
+            relationType: 'user',
+          },
+        });
+
+        await this.prisma.attachmentToAssociation.create({
+          data: {
+            attachmentId: updateUserDto.attachmentId,
+            attachmentAssociationId: newAttachmentAssociation.id,
+          },
+        });
+      }
+    }
     return data;
 
   }
@@ -306,6 +372,44 @@ export class UserService {
         role:true
       }
     })
+    if (updateUserDto.attachmentId) {
+      const isCheckAttachment = await this.attachmentService.findOne(updateUserDto.attachmentId);
+      if (!isCheckAttachment) {
+        throw new NotFoundException("Attachment not found");
+      }
+
+      const existingAttachmentAssociation = await this.prisma.attachmentAssociation.findFirst({
+        where: {
+          relationId: id,
+          relationType: 'user',
+        },
+      });
+
+      if (existingAttachmentAssociation) {
+        await this.prisma.attachmentToAssociation.updateMany({
+          where: {
+            attachmentAssociationId: existingAttachmentAssociation.id,
+          },
+          data: {
+            attachmentId: updateUserDto.attachmentId,
+          },
+        });
+      } else {
+        const newAttachmentAssociation = await this.prisma.attachmentAssociation.create({
+          data: {
+            relationId: id,
+            relationType: 'user',
+          },
+        });
+
+        await this.prisma.attachmentToAssociation.create({
+          data: {
+            attachmentId: updateUserDto.attachmentId,
+            attachmentAssociationId: newAttachmentAssociation.id,
+          },
+        });
+      }
+    }
     return data;
 
   }

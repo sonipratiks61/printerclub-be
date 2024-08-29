@@ -132,13 +132,28 @@ export class AuthService {
     if (!user.isActive) {
       throw new Error('User not Activated yet, Please contact admin');
     }
-
+    const attachmentAssociation = await this.prisma.attachmentAssociation.findFirst({
+      where: {
+        relationId: user.id,
+        relationType: 'user',
+      },
+    });
+    let attachment = null;
+    if (attachmentAssociation) {
+      attachment = await this.prisma.attachment.findUnique({
+        where: {
+          id: attachmentAssociation.id,
+        },
+        select: { id: true, fileName: true, filePath: true }
+      });
+    }
     if (user.isActive && (await bcrypt.compare(pass, user.password))) {
       const { password: _password, role, ...result } = user;
       const capabilityIds = user.role.capabilityIds.map((item) => item.capability.id);
       return {
         ...result,
         roleId: role.id,
+        attachment: attachment ? attachment : null,
         role: role.name,
         capabilities: capabilityIds
       };

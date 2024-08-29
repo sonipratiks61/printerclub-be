@@ -10,30 +10,19 @@ export class FileUploadMiddleware implements NestMiddleware {
     //   fileSize: 5 * 1024 * 1024,
     // },
     storage: multer.diskStorage({
-      destination: process.env.DESTINATION || './files',
-      filename: (req, file, callback) => {
-        const randomName = Array(32)
-          .fill(null)
-          .map(() => Math.round(Math.random() * 16).toString(16))
-          .join('');
-        callback(null, `${randomName}${extname(file.originalname)}`);
+      destination: (req, file, cb) => {
+        cb(null, process.env.DESTINATION || 'files/');
       },
+      filename: (req, file, cb) => {
+
+        return cb(null, `${file.fieldname}_${new Date().toISOString().replace(/[:-]/g, '').replace('T', '_').replace('Z', '_')}${file.originalname}`);
+
+      },
+
     }),
     limits: {
       fileSize: 5 * 1024 * 1024 || parseInt(process.env.FILE_SIZE, 10),
-      files: 5, // Maximum of 5 files per request
-    },
-    fileFilter: (req, file, cb) => {
-      try {
-        const fileExt = extname(file.originalname).toLowerCase(); //  for a mimeType
-        const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif'];
-        if (!allowedExtensions.includes(fileExt)) {
-          throw new Error('Unsupported file type');
-        }
-        cb(null, true);
-      } catch (error) {
-        cb(error, false);
-      }
+      files: 5,
     },
   }).array('files', 5);
   use(req: Request, res: Response, next: NextFunction) {

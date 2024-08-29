@@ -26,6 +26,10 @@ export class CreateCategoryDto {
   parentId: number | null;
 
   @IsOptional()
+  @IsInt({ message: 'Attachment Id must be a number' })
+  attachmentId:number
+  
+  @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => CreateSubCategoryDto)
   subCategories?: CreateSubCategoryDto[];

@@ -5,12 +5,15 @@ import { UpdateProductDto } from './dto/updateProduct.dto';
 import { CategoryService } from 'src/category/category.service';
 import { SubCategoryService } from 'src/sub-category/sub-category.service';
 import { WorkFlowService } from 'src/work-flow/work-flow.service';
+import { AttachmentService } from 'src/attachment/attachment.service';
 
 @Injectable()
 export class ProductService {
   constructor(private prisma: PrismaService,
     private categoryService: CategoryService,
-    private workFlowService: WorkFlowService) { }
+    private workFlowService: WorkFlowService,
+    private attachmentService: AttachmentService) { }
+
   async create(createProductDto: CreateProductDto, userId: number) {
     const categoryId = await this.categoryService.findOne(createProductDto.categoryId);
     if (!categoryId) {
@@ -67,13 +70,32 @@ export class ProductService {
       },
     });
 
+    const isUploadFile = await this.prisma.attachmentAssociation.create({
+      data: {
+        relationId: createdProduct.id,
+        relationType: 'product',
+      },
+    });
+
+   for (const attachmentId of createProductDto.attachmentId) {
+    const isCheckAttachment = await this.attachmentService.findOne(attachmentId);
+    if (!isCheckAttachment) {
+      throw new NotFoundException(`Attachment not found`);
+    }
+    await this.prisma.attachmentToAssociation.create({
+      data: {
+        attachmentId: attachmentId,
+        attachmentAssociationId: isUploadFile.id,
+      },
+    });
+  }
     return createdProduct;
   }
 
   async findAll() {
     const products = await this.prisma.product.findMany({
       where: {
-        exclude: false
+        exclude: false,
       },
       include: {
         category: {
@@ -81,87 +103,175 @@ export class ProductService {
             id: true,
             name: true,
             parentId: true,
-          }
+          },
         },
         attributes: true,
         workflow: {
           select: {
             id: true,
             name: true,
-          }
-        }
-      }
-    });
-
-    const formattedProducts = await Promise.all(products.map(async product => {
-      let parentCategory;
-
-      if (product.category.parentId) {
-        parentCategory = await this.categoryService.findOne(product.category.parentId);
-      }
-      return {
-        id: product.id,
-        categoryId: product.category.id,
-        name: product.name,
-        description: product.description,
-        quantity: product.quantity,
-        price: product.price,
-        gst: product.gst,
-        discount: product.discount || undefined,
-        createdAt: product.createdAt,
-        updatedAt: product.updatedAt,
-        userId: product.userId,
-        workflowId:product.workflowId,
-        isFitmentRequired: product.isFitmentRequired,
-        isMeasurementRequired: product.isMeasurementRequired,
-        category: {
-          id: product.category.id,
-          name: product.category.name,
-          parentId: parentCategory?.id,
-          parent: parentCategory?.name
-          
+          },
         },
-        attributes: product.attributes.map(attribute => ({
-          id: attribute.id,
-          productId: attribute.productId,
-          attributeId: attribute.attributeId,
-          type: attribute.type,
-          ...(attribute.type === 'dropDown' && { options: attribute.options })
-        })),
-        workflow:{
-          id:product.workflow.id,
-          name:product.workflow.name
+      },
+    });
+  
+    const attachmentAssociations = await this.prisma.attachmentAssociation.findMany({
+      where: {
+        relationType: 'product',
+      },
+      select: {
+        relationId: true,
+        attachments: {
+          select: {
+            attachment: {
+              select: {
+                id: true,
+                fileName: true,
+                filePath: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    const attachmentMap = attachmentAssociations.reduce((acc, item) => {
+      acc[item.relationId] = item.attachments.map(attachment => ({
+        id: attachment.attachment.id,
+        fileName: attachment.attachment.fileName,
+        filePath: attachment.attachment.filePath,
+      }));
+      return acc;
+    }, {} as Record<number, { id: number; fileName: string; filePath: string }[]>);
+  
+    const formattedProducts = await Promise.all(
+      products.map(async (product) => {
+        let parentCategory;
+  
+        if (product.category.parentId) {
+          parentCategory = await this.categoryService.findOne(product.category.parentId);
         }
-      };
-    }));
+  
+        return {
+          id: product.id,
+          categoryId: product.category.id,
+          name: product.name,
+          description: product.description,
+          quantity: product.quantity,
+          price: product.price,
+          gst: product.gst,
+          discount: product.discount || undefined,
+          createdAt: product.createdAt,
+          updatedAt: product.updatedAt,
+          userId: product.userId,
+          workflowId: product.workflowId,
+          isFitmentRequired: product.isFitmentRequired,
+          isMeasurementRequired: product.isMeasurementRequired,
+          category: {
+            id: product.category.id,
+            name: product.category.name,
+            parentId: parentCategory?.id,
+            parent: parentCategory?.name,
+          },
+          attachments: attachmentMap[product.id] || [],
+          attributes: product.attributes.map((attribute) => ({
+            id: attribute.id,
+            productId: attribute.productId,
+            name: attribute.attributeId,
+            type: attribute.type,
+            options: attribute.options,
+          })),
+          workflow: {
+            id: product.workflow.id,
+            name: product.workflow.name,
+          },
+        };
+      })
+    );
   
     return formattedProducts;
   }
+  
+  
+  // async findOne(id: number) {
+  //   return await this.prisma.product.findUnique({
+  //     where: {
+  //       id,
+  //       exclude: false
+  //     },
+  //     select: {
+  //       id: true,
+  //       name: true,
+  //       userId: true,
+  //       categoryId: true,
+  //       workflowId: true,
+  //       description: true,
+  //       quantity: true,
+  //       attributes: true,
+  //       isFitmentRequired: true,
+  //       isMeasurementRequired: true,
+  //       price: true,
+  //       category: true,
+  //       createdAt: true,
+  //       updatedAt: true,
+  //     }
+  //   });
+  // }
 
   async findOne(id: number) {
-    return await this.prisma.product.findUnique({
+    const product = await this.prisma.product.findUnique({
       where: {
-        id,
-        exclude: false
+        id: id,
+      },
+      include: {
+        category: {
+          select: {
+            id: true,
+            name: true,
+            parentId: true,
+          },
+        },
+        attributes: true,
+        workflow: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+  
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+    const attachmentAssociations = await this.prisma.attachmentAssociation.findMany({
+      where: {
+        relationId: id,
+        relationType: 'product',
       },
       select: {
-        id: true,
-        name: true,
-        userId: true,
-        categoryId: true,
-        workflowId: true,
-        description: true,
-        quantity: true,
-        attributes: true,
-        isFitmentRequired: true,
-        isMeasurementRequired: true,
-        price: true,
-        category: true,
-        createdAt: true,
-        updatedAt: true,
-      }
+        attachments: {
+          select: {
+            attachment: {
+              select: {
+                id: true,
+                fileName: true,
+                filePath: true,
+              },
+            },
+          },
+        },
+      },
     });
+  
+    const attachments = attachmentAssociations.flatMap(assoc => assoc.attachments.map(att => att.attachment));
+  
+    return {
+      ...product,
+      attachments: attachments || [],
+    };
   }
+  
+
 
   async findProductByCategoryId(categoryId: number) {
     if (isNaN(categoryId) || categoryId <= 0) {
@@ -251,13 +361,56 @@ export class ProductService {
         quantity: { type, options },
       };
     }
-    return this.prisma.product.update({
+  
+    const updatedProduct = await this.prisma.product.update({
       where: {
         id: id,
       },
       data: productData,
     });
+    if (updateProductDto.attachmentId && Array.isArray(updateProductDto.attachmentId)) {
+      for (const attachmentId of updateProductDto.attachmentId) {
+        const isCheckAttachment = await this.attachmentService.findOne(attachmentId);
+        if (!isCheckAttachment) {
+          throw new NotFoundException('Attachment not found');
+        }
+      }
+
+      let attachmentAssociation = await this.prisma.attachmentAssociation.findFirst({
+        where: {
+          relationId: id,
+          relationType: 'product',
+        },
+      });
+  
+      if (!attachmentAssociation) {
+        attachmentAssociation = await this.prisma.attachmentAssociation.create({
+          data: {
+            relationId: id,
+            relationType: 'product',
+          },
+        });
+      }
+  
+      await this.prisma.attachmentToAssociation.deleteMany({
+        where: {
+          attachmentAssociationId: attachmentAssociation.id,
+        },
+      });
+  
+      for (const attachmentId of updateProductDto.attachmentId) {
+        await this.prisma.attachmentToAssociation.create({
+          data: {
+            attachmentId,
+            attachmentAssociationId: attachmentAssociation.id,
+          },
+        });
+      }
+    }
+  
+    return updatedProduct;
   }
+  
 
   async remove(id: number) {
     await this.prisma.productAttribute.deleteMany({

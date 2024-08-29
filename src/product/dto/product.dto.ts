@@ -10,6 +10,7 @@ import {
   ArrayNotEmpty,
   IsOptional,
   IsBoolean,
+  IsNumber,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
@@ -96,6 +97,18 @@ export class CreateProductDto {
   @IsInt({ message: 'Category Id must be a integer' })
   categoryId?: number;
 
+
+  @ApiProperty({
+    description: 'ID of the Attachment Id should be Array',
+    example: [1],
+    required: false,
+  })
+
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsNumber({}, { each: true })
+  attachmentId: number[];
+  
   @ApiProperty({
     description: 'ID of the workFlow the product belongs to',
     example: 1,
@@ -136,11 +149,3 @@ export class CreateProductDto {
   isFitmentRequired : boolean;
 
 }
-
-
-
-
-
-
- 
-

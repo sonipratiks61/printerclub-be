@@ -81,6 +81,10 @@ export class CreateUserDto {
   @IsInt({ message: 'Role Id must be a Integer' })
   roleId: number;
 
+  @IsOptional()
+  @IsInt({ message: 'Attachment Id must be a number' })
+  attachmentId:number
+  
   @ApiProperty({
     type: [CreateAddressDto],
     description: 'List of addresses associated with the user',
@@ -169,6 +173,10 @@ export class UpdateUserDto {
   @IsBoolean({ message: 'Accept Terms must be Boolean ' })
   acceptTerms: boolean;
 
+  @IsOptional()
+  @IsInt({ message: 'Attachment Id must be a number' })
+  attachmentId:number
+  
   @ApiProperty({
     type: [CreateAddressDto],
     description: 'List of addresses associated with the user',
