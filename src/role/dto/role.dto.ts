@@ -20,6 +20,8 @@ export class CreateRoleDto {
   name: string;
 
   capabilityIds: number[];
+  orderStatusIds:number[];
+  
 }
 
 export class UpdateRoleDto {
@@ -29,4 +31,8 @@ export class UpdateRoleDto {
   @IsArray()
   @IsInt({ each: true })
   capabilityIds: number[];
+
+  @IsArray()
+  @IsInt({ each: true })
+  orderStatusIds:number[];
 }
