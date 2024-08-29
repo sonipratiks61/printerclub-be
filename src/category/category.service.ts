@@ -112,10 +112,7 @@ export class CategoryService {
   async findAll(includeSubCategory: boolean) {
     if (includeSubCategory) {
       const data = await this.prisma.category.findMany({
-        where: {
-          parentId: null
-        },
-
+        where: { parentId: null },
         include: {
           subCategories: {
             select: {
@@ -123,19 +120,18 @@ export class CategoryService {
               name: true,
               parentId: true,
               type: true,
-              description: true
-            }
-          }
-        }
-      })
-      const attachment = await this.prisma.attachmentAssociation.findMany({
+              description: true,
+            },
+          },
+        },
+      });
+  
+      const attachmentAssociations = await this.prisma.attachmentAssociation.findMany({
         where: {
           relationType: 'category',
         },
         select: {
-          id: true,
           relationId: true,
-          relationType: true,
           attachments: {
             select: {
               attachment: {
@@ -149,23 +145,25 @@ export class CategoryService {
           },
         },
       });
-      const attachmentMap = attachment.reduce((acc, item) => {
-        acc[item.relationId] = item.attachments.map(attachment => ({
-          id: attachment.attachment.id,
-          fileName: attachment.attachment.fileName,
-          filePath: attachment.attachment.filePath,
-        }));
-        return acc;
-      }, {} as Record<number, { id: number; fileName: string; filePath: string }[]>);
-
+  
+      // Create a map to store attachment objects
+      const attachmentMap = attachmentAssociations.reduce(
+        (acc, item) => {
+          const attachment = item.attachments[0]?.attachment || null; // Fetch the first attachment if exists
+          acc[item.relationId] = attachment;
+          return acc;
+        },
+        {} as Record<number, { id: number; fileName: string; filePath: string } | null>,
+      );
+  
       const products = await this.prisma.product.findMany({
         where: {
           exclude: false,
         },
       });
-
+  
       const productCategoryIds = products.map((product) => product.categoryId);
-
+  
       const formatted = data.flatMap((category) => [
         {
           id: category.id,
@@ -173,23 +171,24 @@ export class CategoryService {
           parentId: category.parentId,
           type: category.type,
           description: category.description,
-          attachment: attachmentMap[category.id] || [],
+          attachment: attachmentMap[category.id] || null, // Assign attachment as object
           isDeletable: category.subCategories.length !== 0,
         },
-        ...category.subCategories.map(subCategory => ({
+        ...category.subCategories.map((subCategory) => ({
           id: subCategory.id,
           name: subCategory.name,
           parent: category.name,
           parentId: subCategory.parentId,
           type: subCategory.type,
           description: subCategory.description,
-          attachment: attachmentMap[subCategory.id] || [],
+          attachment: attachmentMap[subCategory.id] || null, // Assign attachment as object
           isDeletable: productCategoryIds.includes(subCategory.id),
-        }))
-      ])
-
-      return formatted
+        })),
+      ]);
+  
+      return formatted;
     }
+  
     const data = await this.prisma.category.findMany({
       where: { parentId: null },
       select: {
@@ -200,14 +199,13 @@ export class CategoryService {
         description: true,
       },
     });
-
-    const attachment = await this.prisma.attachmentAssociation.findMany({
+  
+    const attachmentAssociations = await this.prisma.attachmentAssociation.findMany({
       where: {
         relationType: 'category',
       },
       select: {
         relationId: true,
-        relationType: true,
         attachments: {
           select: {
             attachment: {
@@ -221,40 +219,41 @@ export class CategoryService {
         },
       },
     });
-
-    const attachmentMap = attachment.reduce((acc, item) => {
-      acc[item.relationId] = item.attachments.map(attachment => ({
-        id: attachment.attachment.id,
-        fileName: attachment.attachment.fileName,
-        filePath: attachment.attachment.filePath,
-      }));
-      return acc;
-    }, {} as Record<number, { id: number; fileName: string; filePath: string }[]>);
-
-    const formatted = data.map(category => ({
+  
+    // Create a map to store attachment objects
+    const attachmentMap = attachmentAssociations.reduce(
+      (acc, item) => {
+        const attachment = item.attachments[0]?.attachment || null; // Fetch the first attachment if exists
+        acc[item.relationId] = attachment;
+        return acc;
+      },
+      {} as Record<number, { id: number; fileName: string; filePath: string } | null>,
+    );
+  
+    const formatted = data.map((category) => ({
       id: category.id,
       name: category.name,
       parentId: category.parentId,
       type: category.type,
       description: category.description,
-      attachment: attachmentMap[category.id] || [],
+      attachment: attachmentMap[category.id] || null, // Assign attachment as object
     }));
-
+  
     return formatted;
   }
+  
 
   async update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    
     if (updateCategoryDto.parentId) {
       const parentCategory = await this.prisma.category.findUnique({
         where: { id: updateCategoryDto.parentId },
       });
-  
+
       if (!parentCategory) {
         throw new NotFoundException(`Parent category with ID ${updateCategoryDto.parentId} not found`);
       }
     }
-  
+
     const updatedCategory = await this.prisma.category.update({
       where: { id: id },
       data: {
@@ -271,14 +270,14 @@ export class CategoryService {
       if (!isCheckAttachment) {
         throw new NotFoundException("Attachment not found");
       }
-  
+
       const existingAttachmentAssociation = await this.prisma.attachmentAssociation.findFirst({
         where: {
           relationId: id,
           relationType: 'category',
         },
       });
-  
+
       if (existingAttachmentAssociation) {
         await this.prisma.attachmentToAssociation.updateMany({
           where: {

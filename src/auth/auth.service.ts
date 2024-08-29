@@ -16,7 +16,7 @@ export class AuthService {
     private jwtService: JwtService,
     private mailService: MailService,
     private readonly responseService: ResponseService,
-  ) {}
+  ) { }
 
   async signUp(user: CreateUserDto, res: Response): Promise<void> {
     const hashedPassword = await bcrypt.hash(user.password, 8);
@@ -114,14 +114,14 @@ export class AuthService {
           }
         },
 
-        addresses:{
-          select:{
-            address:true,
-            city:true,
-            state:true,
-            pinCode:true,
-            country:true,
-            
+        addresses: {
+          select: {
+            address: true,
+            city: true,
+            state: true,
+            pinCode: true,
+            country: true,
+
           }
         }
       },
@@ -138,18 +138,24 @@ export class AuthService {
         relationType: 'user',
       },
     });
+
+    const attachmentToAssociation = await this.prisma.attachmentToAssociation.findFirst({
+      where: { attachmentAssociationId: attachmentAssociation.id }
+    })
     let attachment = null;
     if (attachmentAssociation) {
       attachment = await this.prisma.attachment.findUnique({
         where: {
-          id: attachmentAssociation.id,
+          id: attachmentToAssociation.attachmentId
         },
         select: { id: true, fileName: true, filePath: true }
       });
     }
+
     if (user.isActive && (await bcrypt.compare(pass, user.password))) {
       const { password: _password, role, ...result } = user;
       const capabilityIds = user.role.capabilityIds.map((item) => item.capability.id);
+      console.log(attachment);
       return {
         ...result,
         roleId: role.id,
