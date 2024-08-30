@@ -27,6 +27,10 @@ export class UpdateCategoryDto {
   @IsOptional()
   @IsInt({ message: 'Parent Id must be a number' })
   parentId?: number;
+  
+  @IsOptional()
+  @IsInt({ message: 'Parent Id must be a number' })
+  attachmentId:number;
 
   @IsOptional()
   @ValidateNested({ each: true })

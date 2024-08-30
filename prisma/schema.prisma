@@ -129,9 +129,6 @@ model AttachmentAssociation {
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   attachments  AttachmentToAssociation[]
-  // categoryAttachments   Category[]              @relation("CategoryAttachments", references: [id])
-  // productAttachments    Product[]               @relation("ProductAttachments", references: [id])
-
 }
 
 model AttachmentToAssociation {
@@ -156,7 +153,6 @@ model Category {
   includeSubCategory     Boolean                 @default(false)
   createdAt              DateTime                @default(now())
   updatedAt              DateTime                @updatedAt
-  //  attachmentAssociations AttachmentAssociation[] @relation("CategoryAttachments")
 
 }
 
@@ -181,7 +177,6 @@ model Product {
   attributes            ProductAttribute[]
   orderItems            OrderItem[]
   exclude               Boolean                 @default(false)
-  // attachmentAssociations AttachmentAssociation[] @relation("ProductAttachments")
 
 }
 
