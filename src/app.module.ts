@@ -57,13 +57,13 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 @Module({
   imports: [
     JwtModule.register({}),
+    ConfigModule.forRoot(),
     ServeStaticModule.forRoot({
       rootPath: join(process.env.FILE_PATH),
     }),
     MulterModule.register({
-      dest: './uploads',
+      dest: './files',
     }),
-    ConfigModule.forRoot()
   ],
   controllers: [
     AppController,
