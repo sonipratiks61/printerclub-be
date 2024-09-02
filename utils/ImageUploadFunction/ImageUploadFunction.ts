@@ -2,7 +2,6 @@ import { NestMiddleware, HttpException, HttpStatus } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 import * as multer from 'multer';
 
-import { extname } from 'path';
 
 export class FileUploadMiddleware implements NestMiddleware {
   private upload = multer({
