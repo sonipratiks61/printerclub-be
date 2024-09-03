@@ -30,11 +30,62 @@ export class CreateOrderDto {
     @IsNotEmpty({ message: 'CustomerDetails must not be empty.' })
     @ValidateNested()
     @IsDefined()
+    @IsOptional()
     @Type(() => CreateCustomerDetailsDto)
     customerDetails: CreateCustomerDetailsDto
 
+    
 
 
 }
 
+export class OrderUserDto {
 
+   
+    @IsNumber({ allowInfinity: false, allowNaN: false }, { message: 'TotalPayment must be a number' })
+    @IsNotEmpty()
+    totalPayment: number;
+
+    @IsNotEmpty()
+    paymentMode: string
+
+    @IsNotEmpty({ message: 'OrderItems must not be empty.' })
+    @ValidateNested({ each: true })
+    @IsDefined()
+    @Type(() => OrderItemUserDto)
+    orderItems: OrderItemUserDto[]
+
+    @IsNotEmpty({ message: 'CustomerDetails must not be empty.' })
+    @ValidateNested()
+    @IsDefined()
+    @IsOptional()
+    @Type(() => CreateCustomerDetailsDto)
+    customerDetails: CreateCustomerDetailsDto
+
+    
+
+
+}
+export class OrderItemUserDto {
+    @IsNotEmpty()
+    @IsNumber()
+    productId: number;
+
+    @IsNotEmpty()
+    @IsNumber()
+    quantity: number;
+
+    @IsOptional()
+    @IsNumber()
+    discount?: number;
+
+    @IsOptional()
+    @IsString()
+    additionalDetails?: string;
+
+    
+    @IsOptional()
+    @IsNumber()
+    attachmentId?: number;
+    
+}
