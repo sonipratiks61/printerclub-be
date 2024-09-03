@@ -82,6 +82,8 @@ export class CreateOrderItemsDto {
     @IsOptional()
     isMeasurementAddressId: number
 
+    attachmentId:number
+
 }
 
 export class CreateOrderItemAttributeDto {
