@@ -1,5 +1,5 @@
 // attachments.service.ts
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
@@ -11,22 +11,26 @@ export class AttachmentService {
       if (files.length === 0) {
         throw new BadRequestException('Please upload at least 1 file.');
       }
-      for (const file of files) {
-        
-        const data= await this.prisma.attachment.create({
-          data: {
-            fileName: file.originalname,
-            filePath: file.path,
-            attachmentType: file.mimetype,
-            userId: userId,
-          },
-        });
-          
-            return data;
+
+      const attachmentData = files.map(file => ({
+        fileName: file.originalname,
+        filePath: file.path,
+        attachmentType: file.mimetype,
+        userId: userId,
+      }));
+      const data = await this.prisma.attachment.createMany({
+        data: attachmentData,
+      });
+
+      return data;
+    }
+    catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      } else {
+        throw new InternalServerErrorException('An unexpected error occurred.');
       }
-    } catch (error) {
-      console.error('Error creating attachments:', error);
-      throw error;
+
     }
   }
 
