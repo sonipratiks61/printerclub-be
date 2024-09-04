@@ -7,29 +7,24 @@ export class AttachmentService {
   constructor(private prisma: PrismaService) { }
 
   async create(files: Express.Multer.File[], userId: number) {
-    try {
+  
       if (files.length === 0) {
         throw new BadRequestException('Please upload at least 1 file.');
       }
-      for (const file of files) {
-        
-        const data= await this.prisma.attachment.create({
-          data: {
-            fileName: file.originalname,
-            filePath: file.path,
-            attachmentType: file.mimetype,
-            userId: userId,
-          },
-        });
-          
-            return data;
-      }
-    } catch (error) {
-      console.error('Error creating attachments:', error);
-      throw error;
-    }
+  
+      const attachmentData = files.map(file => ({
+        fileName: file.originalname,
+        filePath: file.path,
+        attachmentType: file.mimetype,
+        userId: userId,
+      }));
+      const data = await this.prisma.attachment.createMany({
+        data: attachmentData,
+      });
+      return data;
+   
   }
-
+  
   async findAll() {
     return await this.prisma.attachment.findMany();
   }

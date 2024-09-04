@@ -79,7 +79,7 @@ export class SubCategoryService {
         name: subCategory.name,
         parentId: subCategory.parentId,
         description: subCategory.description,
-        attachments: attachmentMap[subCategory.id] || null, 
+        attachment: attachmentMap[subCategory.id] || null, 
         })),
     );
     return formattedCategories;
