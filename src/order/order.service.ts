@@ -10,6 +10,7 @@ import { ProductService } from 'src/product/product.service';
 import { generateInvoiceNumber } from 'utils/invoiceFunction/invoiceFunction';
 import { CreateAddressDto } from 'src/user/dto/create-and-update-address.dto';
 import { AttachmentService } from 'src/attachment/attachment.service';
+import { calculatePrice } from 'utils/calculatePriceFunction/calculatePriceFunction';
 
 @Injectable()
 export class OrderService {
@@ -204,9 +205,15 @@ export class OrderService {
   }
 
   async createUserOrder(createOrderDto:  OrderUserDto, ownerName: string, userId: number) {
-    const { totalPayment, paymentMode, orderItems } = createOrderDto;
-    // const productIds = [...new Set(orderItems.map(item => item.productId))];
-    
+    const {paymentMode, orderItems } = createOrderDto;
+    const productIds = [...new Set(orderItems.map(item => item.productId))];
+  
+    for (const productId of productIds) {
+      const product = await this.productService.findOne(productId);
+      if (!product) {
+        throw new NotFoundException("One of the Products does not exist");
+      }
+    }
     const user = await this.prisma.user.findUnique({
         where: { id: userId },
         include: { addresses: true },
@@ -215,6 +222,7 @@ export class OrderService {
     if (!user) {
         throw new NotFoundException("User does not exist");
     }
+      let totalPayment = 0;
     const orderItemsWithAddressIds = await Promise.all(orderItems.map(async (item) => {
       
      
@@ -222,7 +230,15 @@ export class OrderService {
         if (!product) {
             throw new NotFoundException("One of the Products does not exist");
         }
-
+        const itemTotalPrice = calculatePrice({
+          price: Number(product.price),
+          quantity: item.quantity,
+          gst: product.gst,
+          discount: product.discount || 0,
+      });
+  
+      
+        totalPayment += Number(itemTotalPrice);
 
        return {
             ...item,
@@ -230,7 +246,6 @@ export class OrderService {
             gst: product.gst,
             discount: product.discount,
             name: product.name, 
-            attributes:product.attributes,
             workflowId:product.workflowId,
             description:product.description
         };
@@ -275,7 +290,10 @@ export class OrderService {
                         ownerName,
                         orderItemStatus: 'Pending',
                         description: item.description,
-                        attributes: item.attributes,
+                        attributes: item.attributes?.map(attr => ({
+                          name: attr.name,
+                          value: attr.value,
+                        })),
                     })),
                 },
             },
