@@ -334,5 +334,104 @@ export class OrderService {
 
     return createdOrder;
 }
+ 
+async fetchAllOrderByUser(userId: number) {
+  const orders = await this.prisma.order.findMany({
+    where: {
+      userId: userId,
+    },
+    select: {
+      id: true,
+      paymentMode: true,
+      totalPayment: true,
+      ownerName: true,
+      invoiceNumber: true,
+      orderItems: {
+        select: {
+          id: true,
+          quantity: true,
+          name: true,
+          price: true,
+          additionalDetails: true,
+          productId: true,
+          gst: true,
+          discount: true,
+          description: true,
+          attributes: true,
+          ownerName: true,
+        },
+      },
+      customerDetails: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          mobileNumber: true,
+          additionalDetails: true,
+          address: {
+            select: {
+              id: true,
+              country: true,
+              state: true,
+              city: true,
+              pinCode: true,
+              address: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const attachments = await this.prisma.attachmentAssociation.findMany({
+    where: {
+      relationType: 'orderItem',
+    },
+    select: {
+      relationId: true,
+      attachments: {
+        select: {
+          attachment: {
+            select: {
+              id: true,
+              fileName: true,
+              filePath: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  // Create a map of attachments by order item ID
+  const attachmentMap = attachments.reduce((acc, item) => {
+    if (item.attachments.length > 0) {
+      acc[item.relationId] = item.attachments[0].attachment; // Take only the first attachment
+    }
+    return acc;
+  }, {} as Record<number, { id: number; fileName: string; filePath: string } | null>);
+
+  // Format orders and include attachments for each order item
+  const formattedOrders = orders.map(order => ({
+    id: order.id,
+    totalPayment: Number(order.totalPayment).toFixed(2),
+    paymentMode: order.paymentMode,
+    ownerName: order.ownerName,
+    invoiceNumber: order.invoiceNumber,
+    customerDetails: {
+      ...order.customerDetails,
+      address: {
+        ...order.customerDetails.address,
+      }
+    },
+    orderItems: order.orderItems.map(item => ({
+      ...item,
+      attachments: attachmentMap[item.id] || null, // Attachments for this order item (single object)
+    })),
+  }));
+
+  return formattedOrders;
+}
+
   
 }

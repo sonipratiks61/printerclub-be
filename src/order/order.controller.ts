@@ -21,7 +21,7 @@ export class OrderController {
     ) {
         try {
             const owner = req.user.name;
-            const userId= req.user.id;
+            const userId = req.user.id;
             const data = await this.orderService.create(createOrderDto, owner, userId);
             if (data) {
                 this.responseService.sendSuccess(res, 'Created Order Successfully', data);
@@ -34,7 +34,7 @@ export class OrderController {
                 this.responseService.sendBadRequest(res, error.message)
             }
             else {
-                this.responseService.sendInternalError(res,'Something went wrong');
+                this.responseService.sendInternalError(res, 'Something went wrong');
             }
         }
     }
@@ -42,13 +42,13 @@ export class OrderController {
     @Post('/user')
     @UseGuards(AuthGuard('jwt'))
     async createByUser(
-        @Body() createOrderDto:  OrderUserDto,
+        @Body() createOrderDto: OrderUserDto,
         @Res() res,
         @Req() req
     ) {
         try {
             const owner = req.user.name;
-            const userId= req.user.id;
+            const userId = req.user.id;
             const data = await this.orderService.createUserOrder(createOrderDto, owner, userId);
             if (data) {
                 this.responseService.sendSuccess(res, 'Created Order Successfully', data);
@@ -62,7 +62,7 @@ export class OrderController {
                 this.responseService.sendBadRequest(res, error.message)
             }
             else {
-                this.responseService.sendInternalError(res,'Something went wrong');
+                this.responseService.sendInternalError(res, 'Something went wrong');
             }
         }
     }
@@ -83,6 +83,26 @@ export class OrderController {
             );
         }
     }
+
+    @Get('/user')
+    @UseGuards(AuthGuard('jwt'))
+    async fetchAllOrderByUser(@Res() res, @Req() req) {
+        try {
+            const userId = req.user.id;
+            const data = await this.orderService.fetchAllOrderByUser(userId)
+            this.responseService.sendSuccess(
+                res,
+                'Order Fetched Successfully',
+                data,
+            );
+        } catch (error) {
+            this.responseService.sendInternalError(
+                res,
+                'Something Went Wrong'
+            );
+        }
+    }
+
 
     @Get(':id')
     @UseGuards(AuthGuard('jwt'))
@@ -151,13 +171,13 @@ export class OrderController {
         try {
             const orderId = parseInt(id, 10);
             const Invoice = await this.customerOrderInvoiceService.customerOrderInvoice(orderId);
-           if(Invoice){
-           this.responseService.sendSuccess(res, 'Fetch Successfully', Invoice);
-            }else{
-                this.responseService.sendBadRequest(res,'Failed to Fetch Invoice');
+            if (Invoice) {
+                this.responseService.sendSuccess(res, 'Fetch Successfully', Invoice);
+            } else {
+                this.responseService.sendBadRequest(res, 'Failed to Fetch Invoice');
             }
         } catch (error) {
-            if(error instanceof(NotFoundException)){
+            if (error instanceof (NotFoundException)) {
                 this.responseService.sendNotFound(res, error.message);
             }
             this.responseService.sendInternalError(
