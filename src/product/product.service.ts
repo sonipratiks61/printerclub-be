@@ -158,6 +158,8 @@ export class ProductService {
           description: product.description,
           quantity: product.quantity,
           price: product.price,
+          gst:product.gst,
+          discount:product.discount,
           createdAt: product.createdAt,
           updatedAt: product.updatedAt,
           userId: product.userId,
@@ -174,9 +176,9 @@ export class ProductService {
           attributes: product.attributes.map((attribute) => ({
             id: attribute.id,
             productId: attribute.productId,
-            name: attribute.attributeId,
+            attributeId: attribute.attributeId,
             type: attribute.type,
-            options: attribute.options,
+            ...(attribute.type==='dropDown'&&{ options: attribute.options})
           })),
           workflow: {
             id: product.workflow.id,
