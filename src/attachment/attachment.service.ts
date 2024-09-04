@@ -7,11 +7,11 @@ export class AttachmentService {
   constructor(private prisma: PrismaService) { }
 
   async create(files: Express.Multer.File[], userId: number) {
-  try{
+    try {
       if (files.length === 0) {
         throw new BadRequestException('Please upload at least 1 file.');
       }
-  
+
       const attachmentData = files.map(file => ({
         fileName: file.originalname,
         filePath: file.path,
@@ -30,10 +30,10 @@ export class AttachmentService {
       } else {
         throw new InternalServerErrorException('An unexpected error occurred.');
       }
-    
+
     }
-    }
-  
+  }
+
   async findAll() {
     return await this.prisma.attachment.findMany();
   }
