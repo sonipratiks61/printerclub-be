@@ -265,12 +265,7 @@ export class CategoryService {
       attachment: attachmentMap[category.id] || null, // Attach single attachment object or null
     }));
   
-    return {
-      success: true,
-      data: formatted,
-      message: "Fetch categories successful",
-      errors: null,
-    };
+    return formatted;
   }
   
   async update(id: number, updateCategoryDto: UpdateCategoryDto) {
