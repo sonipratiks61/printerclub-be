@@ -118,8 +118,6 @@ model AttachmentAssociation {
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
   attachments  AttachmentToAssociation[]
-
-  OrderItem OrderItem[] @relation("orderItem_attachmentAssociations")
 }
 
 model AttachmentToAssociation {
@@ -242,7 +240,6 @@ model OrderItem {
   updatedAt              DateTime @updatedAt
   workflow               WorkFlow @relation(fields: [workflowId], references: [id])
   orderItemStatus        String 
-  AttachmentAssociation AttachmentAssociation[] @relation("orderItem_attachmentAssociations")
 }
 
 model Order {
