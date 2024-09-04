@@ -23,7 +23,6 @@ model User {
   gstNumber             String?
   addresses             Address[]
   attachments           Attachment[]
-  attachmentAssociation AttachmentAssociation[] @relation("user_attachmentAssociations")
   roleId                Int
   role                  Role?                   @relation(fields: [roleId], references: [id])
   acceptTerms           Boolean
@@ -49,7 +48,6 @@ model Address {
   createdAt            DateTime       @default(now())
   updatedAt            DateTime       @updatedAt
 }
-
 
 model Role {
   id            Int                        @id @default(autoincrement())
@@ -89,6 +87,7 @@ model RoleAndOrderStatusMapping {
   updatedAt    DateTime   @updatedAt
   @@id([orderStatusId, roleId])
 }
+
 model GeoLocation {
   id      Int    @id @default(autoincrement())
   state   String
@@ -96,17 +95,36 @@ model GeoLocation {
   pincode String
 }
 
+
 model Attachment {
   id             Int                     @id @default(autoincrement())
-  path           String
+  filePath       String
+  fileName       String
   attachmentType String
   userId         Int
-  associations   AttachmentAssociation[]
+  associations   AttachmentToAssociation[]
   user           User                    @relation(fields: [userId], references: [id])
   createdAt      DateTime                @default(now())
   updatedAt      DateTime                @updatedAt
 
-  @@map("attachments") // Optional: maps the model to a table named "attachments"
+  @@map("attachments")
+}
+
+model AttachmentAssociation {
+  id           Int                     @id @default(autoincrement())
+  relationId   Int
+  relationType String
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  attachments  AttachmentToAssociation[]
+}
+
+model AttachmentToAssociation {
+  attachmentId             Int
+  attachmentAssociationId  Int
+  attachment               Attachment            @relation(fields: [attachmentId], references: [id])
+  attachmentAssociation    AttachmentAssociation @relation(fields: [attachmentAssociationId], references: [id])
+  @@id([attachmentId, attachmentAssociationId])
 }
 
 model Category {
@@ -118,12 +136,12 @@ model Category {
   name                   String
   description            String?                 @db.Text
   product                Product[]
-  attachmentAssociations AttachmentAssociation[] @relation("category_attachmentAssociations")
-  user                   User                    @relation(fields: [userId], references: [id])
+   user                   User                    @relation(fields: [userId], references: [id])
   type                   CategoryType
   includeSubCategory     Boolean                 @default(false)
   createdAt              DateTime                @default(now())
   updatedAt              DateTime                @updatedAt
+
 }
 
 model Product {
@@ -137,8 +155,7 @@ model Product {
   description           String                  @db.Text
   quantity              Json?
   category              Category?               @relation(fields: [categoryId], references: [id])
-  AttachmentAssociation AttachmentAssociation[] @relation("product_attachmentAssociations")
-  price                 String
+   price                 String
   createdAt             DateTime                @default(now())
   updatedAt             DateTime                @updatedAt
   User                  User                    @relation(fields: [userId], references: [id])
@@ -148,6 +165,7 @@ model Product {
   attributes            ProductAttribute[]
   orderItems            OrderItem[]
   exclude               Boolean                 @default(false)
+
 }
 
 model ProductAttribute {
@@ -172,21 +190,6 @@ model Attribute {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
-
-model AttachmentAssociation {
-  id           Int        @id @default(autoincrement())
-  category     Category   @relation("category_attachmentAssociations", fields: [categoryId], references: [id])
-  productId    Int
-  product      Product    @relation("product_attachmentAssociations", fields: [productId], references: [id])
-  userId       Int
-  user         User       @relation("user_attachmentAssociations", fields: [userId], references: [id])
-  categoryId   Int
-  attachment   Attachment @relation(fields: [attachmentId], references: [id])
-  attachmentId Int
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
-}
-
 model OrderStatus {
   id             Int           @id @default(autoincrement())
   status         String

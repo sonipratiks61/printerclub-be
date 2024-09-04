@@ -35,14 +35,52 @@ export class SubCategoryService {
         },
       },
     });
-
-    const formattedCategories = parentCategories.flatMap((category) =>
+  
+  
+    const attachments = await this.prisma.attachmentAssociation.findMany({
+      where: {
+        relationType: 'category',
+        relationId: {
+          in: parentCategories.flatMap((category) =>
+            category.subCategories.map((subCategory) => subCategory.id),
+          ),
+        },
+      },
+        select: {
+          relationId: true,
+          attachments: {
+            select: {
+              attachment: {
+                select: {
+                  id: true,
+                  fileName: true,
+                  filePath: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    );
+  
+  
+    const attachmentMap = attachments.reduce((map, attachment) => {
+      const categoryId = attachment.relationId;
+      if (!map[categoryId] && attachment.attachments.length > 0) {
+        
+        map[categoryId] = attachment.attachments[0].attachment;
+      }
+      return map;
+    }, {});
+  
+   const formattedCategories = parentCategories.flatMap((category) =>
       category.subCategories.map((subCategory) => ({
         id: subCategory.id,
         name: subCategory.name,
         parentId: subCategory.parentId,
         description: subCategory.description,
-      })),
+        attachments: attachmentMap[subCategory.id] || null, 
+        })),
     );
     return formattedCategories;
   }

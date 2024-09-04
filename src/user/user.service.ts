@@ -3,10 +3,12 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto, UpdateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { RoleService } from 'src/role/role.service';
+import { AttachmentService } from 'src/attachment/attachment.service';
 @Injectable()
 export class UserService {
   constructor(private prisma: PrismaService,
-    private roleService: RoleService) { }
+    private roleService: RoleService,
+    private attachmentService: AttachmentService) { }
 
   async findAllUsersWithAddresses() {
     const users = await this.prisma.user.findMany({
@@ -32,7 +34,7 @@ export class UserService {
         },
         role: {
           select: {
-            id:true,
+            id: true,
             name: true,
           },
         },
@@ -143,6 +145,32 @@ export class UserService {
         }
       }
     })
+    let file = null;
+
+    if (createUserDto.attachmentId) {
+      const isUploadFile = await this.prisma.attachmentAssociation.create({
+        data: {
+          relationId: data.id,
+          relationType: 'user',
+        },
+      });
+
+      const isCheckAttachment = await this.attachmentService.findOne(createUserDto.attachmentId);
+
+      if (!isCheckAttachment) {
+        throw new NotFoundException("Attachment not found");
+      }
+
+      await this.prisma.attachmentToAssociation.create({
+        data: {
+          attachmentId: createUserDto.attachmentId,
+          attachmentAssociationId: isUploadFile.id,
+        },
+      });
+
+      file = isCheckAttachment.filePath;
+    }
+
     return data;
   }
 
@@ -228,6 +256,44 @@ export class UserService {
         }
       }
     })
+    if (updateUserDto.attachmentId) {
+      const isCheckAttachment = await this.attachmentService.findOne(updateUserDto.attachmentId);
+      if (!isCheckAttachment) {
+        throw new NotFoundException("Attachment not found");
+      }
+
+      const existingAttachmentAssociation = await this.prisma.attachmentAssociation.findFirst({
+        where: {
+          relationId: id,
+          relationType: 'user',
+        },
+      });
+
+      if (existingAttachmentAssociation) {
+        await this.prisma.attachmentToAssociation.updateMany({
+          where: {
+            attachmentAssociationId: existingAttachmentAssociation.id,
+          },
+          data: {
+            attachmentId: updateUserDto.attachmentId,
+          },
+        });
+      } else {
+        const newAttachmentAssociation = await this.prisma.attachmentAssociation.create({
+          data: {
+            relationId: id,
+            relationType: 'user',
+          },
+        });
+
+        await this.prisma.attachmentToAssociation.create({
+          data: {
+            attachmentId: updateUserDto.attachmentId,
+            attachmentAssociationId: newAttachmentAssociation.id,
+          },
+        });
+      }
+    }
     return data;
 
   }
@@ -269,7 +335,7 @@ export class UserService {
         addresses: {
           update: {
             where: {
-              id: address.id
+              id: address?.id ?? undefined,
             },
             data: {
               address: updateUserDto.addresses.address,
@@ -286,13 +352,13 @@ export class UserService {
         id: true,
         name: true,
         businessName: true,
-        email:true,
-        mobileNumber:true,
-        gstNumber:true,
-        isActive:true,
-        acceptTerms:true,
-        createdAt:true,
-        updatedAt:true,
+        email: true,
+        mobileNumber: true,
+        gstNumber: true,
+        isActive: true,
+        acceptTerms: true,
+        createdAt: true,
+        updatedAt: true,
         addresses: {
           select: {
             id: true,
@@ -303,10 +369,113 @@ export class UserService {
             country: true,
           }
         },
-        role:true
+        role: true,
+        attachments: {
+          select: {
+            id: true,
+            fileName: true,
+            filePath: true,
+          },
+          where: {
+            id: updateUserDto.attachmentId
+          }
+        },
       }
-    })
-    return data;
+    });
 
+    if (updateUserDto.attachmentId) {
+      const isCheckAttachment = await this.attachmentService.findOne(updateUserDto.attachmentId);
+
+      if (!isCheckAttachment) {
+        throw new NotFoundException("Attachment not found");
+      }
+
+      const existingAttachmentAssociation = await this.prisma.attachmentAssociation.findFirst({
+        where: {
+          relationId: id,
+          relationType: 'user',
+        },
+      });
+
+      if (existingAttachmentAssociation) {
+        await this.prisma.attachmentToAssociation.updateMany({
+          where: {
+            attachmentAssociationId: existingAttachmentAssociation.id,
+          },
+          data: {
+            attachmentId: updateUserDto.attachmentId,
+          },
+        });
+      } else {
+        const newAttachmentAssociation = await this.prisma.attachmentAssociation.create({
+          data: {
+            relationId: id,
+            relationType: 'user',
+          },
+        });
+
+        await this.prisma.attachmentToAssociation.create({
+          data: {
+            attachmentId: updateUserDto.attachmentId,
+            attachmentAssociationId: newAttachmentAssociation.id,
+          },
+        });
+      }
+
+
+      const updatedData = await this.prisma.user.findUnique({
+        where: {
+          id: id
+        },
+        select: {
+          id: true,
+          name: true,
+          businessName: true,
+          email: true,
+          mobileNumber: true,
+          gstNumber: true,
+          isActive: true,
+          acceptTerms: true,
+          createdAt: true,
+          updatedAt: true,
+          addresses: {
+            select: {
+              id: true,
+              address: true,
+              city: true,
+              state: true,
+              pinCode: true,
+              country: true,
+            }
+          },
+          role: true,
+          attachments: {
+            select: {
+              id: true,
+              fileName: true,
+              filePath: true,
+            },
+            where: {
+              id: updateUserDto.attachmentId
+            }
+          },
+        }
+      });
+
+      const result = {
+        ...updatedData,
+        attachment: updatedData?.attachments.length > 0 ? updatedData.attachments[0] : null,
+      };
+
+      return result;
+    }
+
+    const finalData = {
+      ...data,
+      attachment: data?.attachments.length > 0 ? data.attachments[0] : null,
+    };
+
+    return finalData;
   }
+
 }
