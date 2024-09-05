@@ -111,156 +111,62 @@ export class OrderService {
   }
 
   async fetchAll(userId: number) {
-      let orders;
-      const userDetails = await this.prisma.user.findFirst({
-        where: {
-          id: userId
+    let orders;
+    const userDetails = await this.prisma.user.findFirst({
+      where: {
+        id: userId
+      },
+      select: {
+        role: true
+      }
+    })
+    const isAdmin = userDetails.role.name;
+    if (isAdmin === 'Admin') {
+      orders = await this.prisma.order.findMany({
+        orderBy: {
+          createdAt: 'desc', // Order by createdAt in descending order
         },
         select: {
-          role: true
+          id: true,
+          paymentMode: true,
+          remainingPayment: true,
+          totalPayment: true,
+          advancePayment: true,
+          ownerName: true,
+          invoiceNumber: true,
+          createdAt: true,
+          orderItems: {
+            select: {
+              id: true,
+              quantity: true,
+              name: true,
+              price: true,
+              additionalDetails: true,
+              productId: true,
+              gst: true,
+              discount: true,
+              description: true,
+              attributes: true,
+              ownerName: true,
+              measurement: true,
+              isMeasurementAddress: true,
+              orderItemStatus: true,
+            }
+          },
+          customerDetails:
+          {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              mobileNumber: true,
+              additionalDetails: true,
+              address: true
+            }
+
+          }
         }
       })
-      const isAdmin = userDetails.role.name;
-      if (isAdmin === 'Admin') {
-        orders = await this.prisma.order.findMany({
-          select: {
-            id: true,
-            paymentMode: true,
-            remainingPayment: true,
-            totalPayment: true,
-            advancePayment: true,
-            ownerName: true,
-            invoiceNumber: true,
-            createdAt: true,
-            orderItems: {
-              select: {
-                id: true,
-                quantity: true,
-                name: true,
-                price: true,
-                additionalDetails: true,
-                productId: true,
-                gst: true,
-                discount: true,
-                description: true,
-                attributes: true,
-                ownerName: true,
-                measurement: true,
-                isMeasurementAddress: true,
-                orderItemStatus:true,
-              }
-            },
-            customerDetails:
-            {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-                mobileNumber: true,
-                additionalDetails: true,
-                address: true
-              }
-    
-            }
-          }
-        })
-        const attachments = await this.prisma.attachmentAssociation.findMany({
-          where: {
-            relationType: 'orderItem',
-          },
-          select: {
-            relationId: true,
-            attachments: {
-              select: {
-                attachment: {
-                  select: {
-                    id: true,
-                    fileName: true,
-                    filePath: true,
-                  },
-                },
-              },
-            },
-          },
-        });
-        const attachmentMap = attachments.reduce((acc, item) => {
-          if (item.attachments.length > 0) {
-            acc[item.relationId] = item.attachments[0].attachment; // Take only the first attachment
-          }
-          return acc;
-        }, {} as Record<number, { id: number; fileName: string; filePath: string } | null>);
-         const formattedAllOrders = orders.map(order => ({
-          id: order.id,
-          advancePayment: Number(order.advancePayment)?.toFixed(2),
-          totalPayment: Number(order.totalPayment).toFixed(2),
-          remainingPayment: Number(order.remainingPayment).toFixed(2),
-          paymentMode: order.paymentMode,
-          ownerName: order.ownerName,
-          invoiceNumber: order.invoiceNumber,
-          createdAt:order.createdAt,
-          customerDetails: {
-            ...order.customerDetails,
-            address: {
-              ...order.customerDetails.address,
-            },
-          },
-          orderItems: order.orderItems.map(item => ({
-            ...item,
-            attachments: attachmentMap[item.id] || null, // Attachments for this order item (single object)
-          })),
-        }));
-        return formattedAllOrders;
-      } else {
-             orders = await this.prisma.order.findMany({
-          where: {
-            userId: userId,
-          },
-          select: {
-            id: true,
-            paymentMode: true,
-            totalPayment: true,
-            ownerName: true,
-            invoiceNumber: true,
-            createdAt:true,
-            orderItems: {
-              select: {
-                id: true,
-                quantity: true,
-                name: true,
-                price: true,
-                additionalDetails: true,
-                productId: true,
-                gst: true,
-                discount: true,
-                description: true,
-                attributes: true,
-                orderItemStatus:true,
-                ownerName: true,
-              },
-            },
-            customerDetails: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-                mobileNumber: true,
-                additionalDetails: true,
-                address: {
-                  select: {
-                    id: true,
-                    country: true,
-                    state: true,
-                    city: true,
-                    pinCode: true,
-                    address: true,
-                  },
-                },
-              },
-            },
-          },
-        });
-      }
-  
       const attachments = await this.prisma.attachmentAssociation.findMany({
         where: {
           relationType: 'orderItem',
@@ -280,20 +186,21 @@ export class OrderService {
           },
         },
       });
-  
       const attachmentMap = attachments.reduce((acc, item) => {
         if (item.attachments.length > 0) {
           acc[item.relationId] = item.attachments[0].attachment; // Take only the first attachment
         }
         return acc;
       }, {} as Record<number, { id: number; fileName: string; filePath: string } | null>);
-      const formattedOrders = orders.map(order => ({
+      const formattedAllOrders = orders.map(order => ({
         id: order.id,
+        advancePayment: Number(order.advancePayment)?.toFixed(2),
         totalPayment: Number(order.totalPayment).toFixed(2),
+        remainingPayment: Number(order.remainingPayment).toFixed(2),
         paymentMode: order.paymentMode,
         ownerName: order.ownerName,
         invoiceNumber: order.invoiceNumber,
-        createdAt:order.createdAt,
+        createdAt: order.createdAt,
         customerDetails: {
           ...order.customerDetails,
           address: {
@@ -302,11 +209,109 @@ export class OrderService {
         },
         orderItems: order.orderItems.map(item => ({
           ...item,
-          attachments: attachmentMap[item.id] || null,
+          attachments: attachmentMap[item.id] || null, // Attachments for this order item (single object)
         })),
       }));
-      return formattedOrders;
+      return formattedAllOrders;
+    } else {
+      orders = await this.prisma.order.findMany({
+        where: {
+          userId: userId,
+        },  orderBy: {
+          createdAt: 'desc', 
+        },
+        select: {
+          id: true,
+          paymentMode: true,
+          totalPayment: true,
+          ownerName: true,
+          invoiceNumber: true,
+          createdAt: true,
+          orderItems: {
+            select: {
+              id: true,
+              quantity: true,
+              name: true,
+              price: true,
+              additionalDetails: true,
+              productId: true,
+              gst: true,
+              discount: true,
+              description: true,
+              attributes: true,
+              orderItemStatus: true,
+              ownerName: true,
+            },
+          },
+          customerDetails: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              mobileNumber: true,
+              additionalDetails: true,
+              address: {
+                select: {
+                  id: true,
+                  country: true,
+                  state: true,
+                  city: true,
+                  pinCode: true,
+                  address: true,
+                },
+              },
+            },
+          },
+        },
+      });
     }
+
+    const attachments = await this.prisma.attachmentAssociation.findMany({
+      where: {
+        relationType: 'orderItem',
+      },
+      select: {
+        relationId: true,
+        attachments: {
+          select: {
+            attachment: {
+              select: {
+                id: true,
+                fileName: true,
+                filePath: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const attachmentMap = attachments.reduce((acc, item) => {
+      if (item.attachments.length > 0) {
+        acc[item.relationId] = item.attachments[0].attachment; // Take only the first attachment
+      }
+      return acc;
+    }, {} as Record<number, { id: number; fileName: string; filePath: string } | null>);
+    const formattedOrders = orders.map(order => ({
+      id: order.id,
+      totalPayment: Number(order.totalPayment).toFixed(2),
+      paymentMode: order.paymentMode,
+      ownerName: order.ownerName,
+      invoiceNumber: order.invoiceNumber,
+      createdAt: order.createdAt,
+      customerDetails: {
+        ...order.customerDetails,
+        address: {
+          ...order.customerDetails.address,
+        },
+      },
+      orderItems: order.orderItems.map(item => ({
+        ...item,
+        attachments: attachmentMap[item.id] || null,
+      })),
+    }));
+    return formattedOrders;
+  }
 
   async findOne(id: number) {
     return await this.prisma.order.findUnique({
@@ -394,7 +399,7 @@ export class OrderService {
 
     const createdOrder = await this.prisma.order.create({
       data: {
-        advancePayment: 0,
+        advancePayment: totalPayment,
         remainingPayment: 0,
         totalPayment,
         paymentMode,
