@@ -191,7 +191,9 @@ export class OrderService {
         }, {} as Record<number, { id: number; fileName: string; filePath: string } | null>);
          const formattedAllOrders = orders.map(order => ({
           id: order.id,
+          advancePayment: Number(order.advancePayment)?.toFixed(2),
           totalPayment: Number(order.totalPayment).toFixed(2),
+          remainingPayment: Number(order.remainingPayment).toFixed(2),
           paymentMode: order.paymentMode,
           ownerName: order.ownerName,
           invoiceNumber: order.invoiceNumber,
