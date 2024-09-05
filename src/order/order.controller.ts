@@ -68,9 +68,10 @@ export class OrderController {
     }
     @Get()
     @UseGuards(AuthGuard('jwt'))
-    async fetchAll(@Res() res) {
+    async fetchAll(@Res() res,@Req() req) {
         try {
-            const data = await this.orderService.findAll();
+            const userId=req.user.id;
+            const data = await this.orderService.fetchAll(userId);
             this.responseService.sendSuccess(
                 res,
                 'Order Fetched Successfully',
@@ -83,26 +84,6 @@ export class OrderController {
             );
         }
     }
-
-    @Get('/user')
-    @UseGuards(AuthGuard('jwt'))
-    async fetchAllOrderByUser(@Res() res, @Req() req) {
-        try {
-            const userId = req.user.id;
-            const data = await this.orderService.fetchAllOrderByUser(userId)
-            this.responseService.sendSuccess(
-                res,
-                'Order Fetched Successfully',
-                data,
-            );
-        } catch (error) {
-            this.responseService.sendInternalError(
-                res,
-                'Something Went Wrong'
-            );
-        }
-    }
-
 
     @Get(':id')
     @UseGuards(AuthGuard('jwt'))
