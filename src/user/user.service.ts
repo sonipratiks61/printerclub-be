@@ -80,7 +80,7 @@ export class UserService {
       roleId: user.role.id,
       role: user.role.name,
       addresses: user.addresses,
-      attachments: attachmentMap[user.id] || null,
+      attachment: attachmentMap[user.id] || null,
     }));
   }
 
