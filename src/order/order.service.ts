@@ -110,7 +110,7 @@ export class OrderService {
     return createdOrder;
   }
 
-  async fetchAll(userId: number, adminViewUserId: number) {
+  async fetchAll(userId: number) {
 
     let orders;
     const userDetails = await this.prisma.user.findFirst({
@@ -121,18 +121,7 @@ export class OrderService {
         role: true
       }
     })
-    const adminUserDetail = await this.prisma.user.findFirst({
-      where: {
-        id: adminViewUserId
-      },
-      select: {
-        role: true
-      }
-    })
 
-    if (!adminUserDetail) {
-      throw new NotFoundException("User not found");
-    }
     const isAdmin = userDetails.role.name;
     if (isAdmin === 'Admin') {
 
@@ -230,109 +219,6 @@ export class OrderService {
         })),
       }));
       return formattedAllOrders;
-    }
-    else if (isAdmin === 'Admin' && adminViewUserId) {
-      orders = await this.prisma.order.findMany({
-        where: {
-          userId: adminViewUserId,
-        }, orderBy: {
-          createdAt: 'desc',
-        },
-        select: {
-          id: true,
-          paymentMode: true,
-          remainingPayment: true,
-          totalPayment: true,
-          advancePayment: true,
-          ownerName: true,
-          invoiceNumber: true,
-          createdAt: true,
-          userId: true,
-          orderItems: {
-            select: {
-              id: true,
-              quantity: true,
-              name: true,
-              price: true,
-              additionalDetails: true,
-              productId: true,
-              gst: true,
-              discount: true,
-              description: true,
-              attributes: true,
-              orderItemStatus: true,
-              ownerName: true,
-            },
-          },
-          customerDetails: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-              mobileNumber: true,
-              additionalDetails: true,
-              address: {
-                select: {
-                  id: true,
-                  country: true,
-                  state: true,
-                  city: true,
-                  pinCode: true,
-                  address: true,
-                },
-              },
-            },
-          },
-        },
-      });
-      const attachments = await this.prisma.attachmentAssociation.findMany({
-        where: {
-          relationType: 'orderItem',
-        },
-        select: {
-          relationId: true,
-          attachments: {
-            select: {
-              attachment: {
-                select: {
-                  id: true,
-                  fileName: true,
-                  filePath: true,
-                },
-              },
-            },
-          },
-        },
-      });
-
-      const attachmentMap = attachments.reduce((acc, item) => {
-        if (item.attachments.length > 0) {
-          acc[item.relationId] = item.attachments[0].attachment; // Take only the first attachment
-        }
-        return acc;
-      }, {} as Record<number, { id: number; fileName: string; filePath: string } | null>);
-      const formattedOrders = orders.map(order => ({
-        id: order.id,
-        advancePayment: Number(order.advancePayment)?.toFixed(2),
-        totalPayment: Number(order.totalPayment).toFixed(2),
-        remainingPayment: Number(order.remainingPayment).toFixed(2),
-        paymentMode: order.paymentMode,
-        ownerName: order.ownerName,
-        invoiceNumber: order.invoiceNumber,
-        createdAt: order.createdAt,
-        userId: order.userId,
-        customerDetails: {
-          ...order.customerDetails,
-          address: {
-            ...order.customerDetails.address,
-          },
-        },
-        orderItems: order.orderItems.map(item => ({
-          ...item,
-          attachments: attachmentMap[item.id] || null,
-        })),
-      }));
-      return formattedOrders;
     }
     else {
       orders = await this.prisma.order.findMany({
@@ -438,6 +324,111 @@ export class OrderService {
       }));
       return formattedOrders;
     }
+  }
+  async fetchAllDataByAdminUser(adminViewUserId:number)
+  {
+     const orders = await this.prisma.order.findMany({
+        where: {
+          userId: adminViewUserId,
+        }, orderBy: {
+          createdAt: 'desc',
+        },
+        select: {
+          id: true,
+          paymentMode: true,
+          remainingPayment: true,
+          totalPayment: true,
+          advancePayment: true,
+          ownerName: true,
+          invoiceNumber: true,
+          createdAt: true,
+          userId: true,
+          orderItems: {
+            select: {
+              id: true,
+              quantity: true,
+              name: true,
+              price: true,
+              additionalDetails: true,
+              productId: true,
+              gst: true,
+              discount: true,
+              description: true,
+              attributes: true,
+              orderItemStatus: true,
+              ownerName: true,
+            },
+          },
+          customerDetails: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              mobileNumber: true,
+              additionalDetails: true,
+              address: {
+                select: {
+                  id: true,
+                  country: true,
+                  state: true,
+                  city: true,
+                  pinCode: true,
+                  address: true,
+                },
+              },
+            },
+          },
+        },
+      });
+      const attachments = await this.prisma.attachmentAssociation.findMany({
+        where: {
+          relationType: 'orderItem',
+        },
+        select: {
+          relationId: true,
+          attachments: {
+            select: {
+              attachment: {
+                select: {
+                  id: true,
+                  fileName: true,
+                  filePath: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      const attachmentMap = attachments.reduce((acc, item) => {
+        if (item.attachments.length > 0) {
+          acc[item.relationId] = item.attachments[0].attachment;
+        }
+        return acc;
+      }, {} as Record<number, { id: number; fileName: string; filePath: string } | null>);
+      const formattedOrders = orders.map(order => ({
+        id: order.id,
+        advancePayment: Number(order.advancePayment)?.toFixed(2),
+        totalPayment: Number(order.totalPayment).toFixed(2),
+        remainingPayment: Number(order.remainingPayment).toFixed(2),
+        paymentMode: order.paymentMode,
+        ownerName: order.ownerName,
+        invoiceNumber: order.invoiceNumber,
+        createdAt: order.createdAt,
+        userId: order.userId,
+        customerDetails: {
+          ...order.customerDetails,
+          address: {
+            ...order.customerDetails.address,
+          },
+        },
+        orderItems: order.orderItems.map(item => ({
+          ...item,
+          attachments: attachmentMap[item.id] || null,
+        })),
+      }));
+      return formattedOrders;
+    
   }
 
   async findOne(id: number) {

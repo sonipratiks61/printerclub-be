@@ -72,13 +72,25 @@ export class OrderController {
     @Query('adminViewUserId') adminViewUserId?: number,) {
         try {
             const userId=req.user.id;
-            const data = await this.orderService.fetchAll(userId,adminViewUserId);
+            if(adminViewUserId)
+            {
+                const data = await this.orderService.fetchAllDataByAdminUser(adminViewUserId);
+                this.responseService.sendSuccess(
+                    res,
+                    'Order Fetched Successfully',
+                    data,
+                );
+            }
+            else{
+                const data = await this.orderService.fetchAll(userId,);
            
-            this.responseService.sendSuccess(
-                res,
-                'Order Fetched Successfully',
-                data,
-            );
+                this.responseService.sendSuccess(
+                    res,
+                    'Order Fetched Successfully',
+                    data,
+                );
+            }
+            
         } catch (error) {
             if (error instanceof NotFoundException) {
                 this.responseService.sendNotFound(
