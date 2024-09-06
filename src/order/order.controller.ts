@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { ResponseService } from 'utils/response/customResponse';
 import { AuthGuard } from '@nestjs/passport';
 import { IdValidationPipe } from 'utils/validation/paramsValidation';
@@ -68,21 +68,31 @@ export class OrderController {
     }
     @Get()
     @UseGuards(AuthGuard('jwt'))
-    async fetchAll(@Res() res,@Req() req) {
+    async fetchAll(@Res() res,  @Req() req, 
+    @Query('adminViewUserId') adminViewUserId?: number,) {
         try {
             const userId=req.user.id;
-            const data = await this.orderService.fetchAll(userId);
+            const data = await this.orderService.fetchAll(userId,adminViewUserId);
+           
             this.responseService.sendSuccess(
                 res,
                 'Order Fetched Successfully',
                 data,
             );
         } catch (error) {
+            if (error instanceof NotFoundException) {
+                this.responseService.sendNotFound(
+                    res,
+                    error.message
+                );
+            }
+            else{
             this.responseService.sendInternalError(
                 res,
                 'Something Went Wrong'
             );
         }
+    }
     }
 
     @Get(':id')

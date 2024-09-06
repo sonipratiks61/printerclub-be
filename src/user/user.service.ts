@@ -40,7 +40,32 @@ export class UserService {
         },
       },
     });
+    const attachments = await this.prisma.attachmentAssociation.findMany({
+      where: {
+        relationType: 'user',
+      },
+      select: {
+        relationId: true,
+        attachments: {
+          select: {
+            attachment: {
+              select: {
+                id: true,
+                fileName: true,
+                filePath: true,
+              },
+            },
+          },
+        },
+      },
+    });
 
+    const attachmentMap = attachments.reduce((acc, item) => {
+      if (item.attachments.length > 0) {
+        acc[item.relationId] = item.attachments[0].attachment; // Take only the first attachment
+      }
+      return acc;
+    }, {} as Record<number, { id: number; fileName: string; filePath: string } | null>);
     return users.map((user) => ({
       id: user.id,
       name: user.name,
@@ -55,6 +80,7 @@ export class UserService {
       roleId: user.role.id,
       role: user.role.name,
       addresses: user.addresses,
+      attachments: attachmentMap[user.id] || null,
     }));
   }
 

@@ -55,7 +55,7 @@ export class UserController {
     }
   }
 
-  @Get('/admin/allUser')
+  @Get('admin/allUser')
   @UseGuards(AuthGuard('jwt')) // Ensures only authenticated users can access this route
   @ApiOkResponse({
     description: 'List of all users with addresses',
