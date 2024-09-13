@@ -32,6 +32,7 @@ model User {
   categories            Category[]
   products              Product[]
   orderHistory          OrderHistory[]
+  order                 Order[]
 }
 
 model Address {
@@ -239,7 +240,6 @@ model OrderItem {
   updatedAt              DateTime @updatedAt
   workflow               WorkFlow @relation(fields: [workflowId], references: [id])
   orderItemStatus        String 
- 
 }
 
 model Order {
@@ -252,6 +252,8 @@ model Order {
   invoiceNumber    Int
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
+  userId           Int
+  userDetails      User   @relation(fields: [userId], references: [id])
   customerDetails  OrderCustomer?
   orderItems       OrderItem[]
 }

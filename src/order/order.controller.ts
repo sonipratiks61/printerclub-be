@@ -1,9 +1,9 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { ResponseService } from 'utils/response/customResponse';
 import { AuthGuard } from '@nestjs/passport';
 import { IdValidationPipe } from 'utils/validation/paramsValidation';
 import { OrderService } from './order.service';
-import { CreateOrderDto } from './dto/create-order.dto';
+import { CreateOrderDto, OrderUserDto } from './dto/create-order.dto';
 import { CustomerOrderInvoiceService } from './orderInvoice/orderCustomerInvoice.service';
 
 @Controller('order')
@@ -21,7 +21,8 @@ export class OrderController {
     ) {
         try {
             const owner = req.user.name;
-            const data = await this.orderService.create(createOrderDto, owner);
+            const userId = req.user.id;
+            const data = await this.orderService.create(createOrderDto, owner, userId);
             if (data) {
                 this.responseService.sendSuccess(res, 'Created Order Successfully', data);
             } else {
@@ -33,27 +34,77 @@ export class OrderController {
                 this.responseService.sendBadRequest(res, error.message)
             }
             else {
-                this.responseService.sendInternalError(res,'Something went wrong');
+                this.responseService.sendInternalError(res, 'Something went wrong');
             }
         }
     }
 
+    @Post('/user')
+    @UseGuards(AuthGuard('jwt'))
+    async createByUser(
+        @Body() createOrderDto: OrderUserDto,
+        @Res() res,
+        @Req() req
+    ) {
+        try {
+            const owner = req.user.name;
+            const userId = req.user.id;
+            const data = await this.orderService.createUserOrder(createOrderDto, owner, userId);
+            if (data) {
+                this.responseService.sendSuccess(res, 'Created Order Successfully', data);
+            } else {
+                this.responseService.sendBadRequest(res, "Failed to Created Order")
+            }
+        }
+        catch (error) {
+            console.log(error);
+            if (error instanceof NotFoundException) {
+                this.responseService.sendBadRequest(res, error.message)
+            }
+            else {
+                this.responseService.sendInternalError(res, 'Something went wrong');
+            }
+        }
+    }
     @Get()
     @UseGuards(AuthGuard('jwt'))
-    async fetchAll(@Res() res) {
+    async fetchAll(@Res() res,  @Req() req, 
+    @Query('adminViewUserId') adminViewUserId?: number,) {
         try {
-            const data = await this.orderService.findAll();
-            this.responseService.sendSuccess(
-                res,
-                'Order Fetched Successfully',
-                data,
-            );
+            const userId=req.user.id;
+            if(adminViewUserId)
+            {
+                const data = await this.orderService.fetchAllDataByAdminUser(adminViewUserId);
+                this.responseService.sendSuccess(
+                    res,
+                    'Order Fetched Successfully',
+                    data,
+                );
+            }
+            else{
+                const data = await this.orderService.fetchAll(userId,);
+           
+                this.responseService.sendSuccess(
+                    res,
+                    'Order Fetched Successfully',
+                    data,
+                );
+            }
+            
         } catch (error) {
+            if (error instanceof NotFoundException) {
+                this.responseService.sendNotFound(
+                    res,
+                    error.message
+                );
+            }
+            else{
             this.responseService.sendInternalError(
                 res,
                 'Something Went Wrong'
             );
         }
+    }
     }
 
     @Get(':id')
@@ -123,13 +174,13 @@ export class OrderController {
         try {
             const orderId = parseInt(id, 10);
             const Invoice = await this.customerOrderInvoiceService.customerOrderInvoice(orderId);
-           if(Invoice){
-           this.responseService.sendSuccess(res, 'Fetch Successfully', Invoice);
-            }else{
-                this.responseService.sendBadRequest(res,'Failed to Fetch Invoice');
+            if (Invoice) {
+                this.responseService.sendSuccess(res, 'Fetch Successfully', Invoice);
+            } else {
+                this.responseService.sendBadRequest(res, 'Failed to Fetch Invoice');
             }
         } catch (error) {
-            if(error instanceof(NotFoundException)){
+            if (error instanceof (NotFoundException)) {
                 this.responseService.sendNotFound(res, error.message);
             }
             this.responseService.sendInternalError(

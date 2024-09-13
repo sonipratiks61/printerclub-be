@@ -82,6 +82,8 @@ export class CreateOrderItemsDto {
     @IsOptional()
     isMeasurementAddressId: number
 
+    attachmentId:number
+
 }
 
 export class CreateOrderItemAttributeDto {
@@ -101,5 +103,34 @@ export class UpdateOrderItemDto {
 
     @IsInt()
     updatedBy:number;
+}
+
+export class OrderItemUserDto {
+    @IsNotEmpty()
+    @IsNumber()
+    productId: number;
+
+    @IsNotEmpty()
+    @IsNumber()
+    quantity: number;
+
+    @IsOptional()
+    @IsNumber()
+    discount?: number;
+
+    @IsOptional()
+    @IsString()
+    additionalDetails?: string;
+
+    @IsOptional()
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => CreateOrderItemAttributeDto)
+    attributes: CreateOrderItemAttributeDto[];
+    
+    @IsOptional()
+    @IsNumber()
+    attachmentId?: number;
+    
 }
 

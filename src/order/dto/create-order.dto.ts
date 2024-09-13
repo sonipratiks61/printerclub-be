@@ -1,7 +1,7 @@
 // CreateOrderItemsDto.ts
 import { IsNotEmpty, IsNumber, IsString, ValidateNested, IsArray, IsDecimal, IsInt, IsDefined, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
-import { CreateOrderItemsDto } from 'src/order-items/dto/order-Item.dto';
+import { CreateOrderItemAttributeDto, CreateOrderItemsDto, OrderItemUserDto } from 'src/order-items/dto/order-Item.dto';
 import { CreateCustomerDetailsDto } from 'src/customer-details/dto/customer-details.dto';
 
 export class CreateOrderDto {
@@ -30,11 +30,24 @@ export class CreateOrderDto {
     @IsNotEmpty({ message: 'CustomerDetails must not be empty.' })
     @ValidateNested()
     @IsDefined()
+    @IsOptional()
     @Type(() => CreateCustomerDetailsDto)
     customerDetails: CreateCustomerDetailsDto
 
+    
 
 
 }
 
+export class OrderUserDto {
 
+    @IsNotEmpty()
+    paymentMode: string
+
+    @IsNotEmpty({ message: 'OrderItems must not be empty.' })
+    @ValidateNested({ each: true })
+    @IsDefined()
+    @Type(() => OrderItemUserDto)
+    orderItems: OrderItemUserDto[]
+
+}
