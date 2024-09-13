@@ -133,6 +133,29 @@ export class AuthService {
       throw new Error('User not Activated yet, Please contact admin');
     }
 
+    const attachmentData = await this.prisma.attachmentAssociation.findMany({
+      where: {
+        relationType: 'user',
+      },
+      select: {
+        attachments: {
+          select: {
+            attachment: {
+              select: {
+                id: true,
+                filePath: true,
+                fileName: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    
+    const formattedAttachments = attachmentData.flatMap(item =>
+      item.attachments.map(attachment => attachment.attachment)
+    );
+    
     if (user.isActive && (await bcrypt.compare(pass, user.password))) {
       const { password: _password, role, ...result } = user;
       const capabilityIds = user.role.capabilityIds.map((item) => item.capability.id);
@@ -140,7 +163,8 @@ export class AuthService {
         ...result,
         roleId: role.id,
         role: role.name,
-        capabilities: capabilityIds
+        capabilities: capabilityIds,
+        attachment: formattedAttachments?.[0]
       };
     }
     return null;
