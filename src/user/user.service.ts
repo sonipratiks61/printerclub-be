@@ -487,10 +487,11 @@ export class UserService {
           },
         }
       });
+      const { attachments, ...rest} = updatedData
 
       const result = {
-        ...updatedData,
-        attachment: updatedData?.attachments.length > 0 ? updatedData.attachments[0] : null,
+        ...rest,
+        attachment: attachments?.length > 0 ? attachments[0] : null,
       };
 
       return result;
