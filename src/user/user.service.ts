@@ -460,7 +460,7 @@ export class UserService {
     return {
       ...rest,
       attachment: attachments.find(
-        (attachment) => existingAttachmentAssociation.id === attachment.id,
+        (attachment) => existingAttachmentAssociation?.id === attachment.id,
       ),
     };
   }
