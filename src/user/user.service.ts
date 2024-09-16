@@ -1,4 +1,9 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto, UpdateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
@@ -6,9 +11,11 @@ import { RoleService } from 'src/role/role.service';
 import { AttachmentService } from 'src/attachment/attachment.service';
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService,
+  constructor(
+    private prisma: PrismaService,
     private roleService: RoleService,
-    private attachmentService: AttachmentService) { }
+    private attachmentService: AttachmentService,
+  ) {}
 
   async findAllUsersWithAddresses() {
     const users = await this.prisma.user.findMany({
@@ -60,12 +67,18 @@ export class UserService {
       },
     });
 
-    const attachmentMap = attachments.reduce((acc, item) => {
-      if (item.attachments.length > 0) {
-        acc[item.relationId] = item.attachments[0].attachment; // Take only the first attachment
-      }
-      return acc;
-    }, {} as Record<number, { id: number; fileName: string; filePath: string } | null>);
+    const attachmentMap = attachments.reduce(
+      (acc, item) => {
+        if (item.attachments.length > 0) {
+          acc[item.relationId] = item.attachments[0].attachment; // Take only the first attachment
+        }
+        return acc;
+      },
+      {} as Record<
+        number,
+        { id: number; fileName: string; filePath: string } | null
+      >,
+    );
     return users.map((user) => ({
       id: user.id,
       name: user.name,
@@ -103,32 +116,30 @@ export class UserService {
     const hashedPassword = await bcrypt.hash(createUserDto.password, 8);
     const userEmail = await this.prisma.user.findFirst({
       where: {
-        email: createUserDto.email
-
-      }
+        email: createUserDto.email,
+      },
     });
     const userMobileNumber = await this.prisma.user.findFirst({
       where: {
-        mobileNumber: createUserDto.mobileNumber
-
-      }
-    })
-    const role = await this.roleService.findOne(createUserDto.roleId)
+        mobileNumber: createUserDto.mobileNumber,
+      },
+    });
+    const role = await this.roleService.findOne(createUserDto.roleId);
     if (!role) {
-      throw new NotFoundException('Role not found')
+      throw new NotFoundException('Role not found');
     }
     const errors: { email?: string; mobileNumber?: string } = {};
 
     if (userEmail) {
-      errors.email = "Email is Already Exist";
+      errors.email = 'Email is Already Exist';
     }
     if (userMobileNumber) {
-      errors.mobileNumber = "MobileNumber is Already Exist";
+      errors.mobileNumber = 'MobileNumber is Already Exist';
     }
     if (Object.keys(errors).length > 0) {
       throw new ConflictException(errors);
     }
-    
+
     const data = await this.prisma.user.create({
       data: {
         name: createUserDto.name,
@@ -141,8 +152,8 @@ export class UserService {
         isActive: false,
         password: hashedPassword,
         addresses: {
-          create: createUserDto.addresses
-        }
+          create: createUserDto.addresses,
+        },
       },
       select: {
         id: true,
@@ -160,17 +171,17 @@ export class UserService {
             city: true,
             state: true,
             country: true,
-            pinCode: true
-          }
+            pinCode: true,
+          },
         },
         role: {
           select: {
             id: true,
             name: true,
-          }
-        }
-      }
-    })
+          },
+        },
+      },
+    });
     let file = null;
 
     if (createUserDto.attachmentId) {
@@ -181,10 +192,12 @@ export class UserService {
         },
       });
 
-      const isCheckAttachment = await this.attachmentService.findOne(createUserDto.attachmentId);
+      const isCheckAttachment = await this.attachmentService.findOne(
+        createUserDto.attachmentId,
+      );
 
       if (!isCheckAttachment) {
-        throw new NotFoundException("Attachment not found");
+        throw new NotFoundException('Attachment not found');
       }
 
       await this.prisma.attachmentToAssociation.create({
@@ -203,22 +216,22 @@ export class UserService {
   async updateUserByAdmin(id: number, updateUserDto: UpdateUserDto) {
     const userData = await this.findOne(id);
     if (!userData) {
-      throw new NotFoundException("User not found")
+      throw new NotFoundException('User not found');
     }
     const role = await this.roleService.findOne(updateUserDto.roleId);
     if (!role) {
-      throw new NotFoundException("Role not found")
+      throw new NotFoundException('Role not found');
     }
     const errors: { mobileNumber?: string } = {};
 
     const userMobileNumber = await this.prisma.user.findFirst({
       where: {
         mobileNumber: updateUserDto.mobileNumber,
-        id: { not: id }
-      }
-    })
+        id: { not: id },
+      },
+    });
     if (userMobileNumber) {
-      errors.mobileNumber = "Mobile number already exists";
+      errors.mobileNumber = 'Mobile number already exists';
     }
     if (Object.keys(errors).length > 0) {
       throw new ConflictException(errors);
@@ -230,12 +243,11 @@ export class UserService {
       },
       select: {
         id: true,
-
-      }
+      },
     });
     const data = await this.prisma.user.update({
       where: {
-        id: id
+        id: id,
       },
       data: {
         name: updateUserDto.name,
@@ -246,7 +258,7 @@ export class UserService {
         addresses: {
           update: {
             where: {
-              id: address.id
+              id: address.id,
             },
             data: {
               address: updateUserDto.addresses.address,
@@ -254,10 +266,9 @@ export class UserService {
               state: updateUserDto.addresses.state,
               pinCode: updateUserDto.addresses.pinCode,
               country: updateUserDto.addresses.country,
-            }
-          }
+            },
+          },
         },
-
       },
       select: {
         id: true,
@@ -271,29 +282,31 @@ export class UserService {
             state: true,
             pinCode: true,
             country: true,
-          }
+          },
         },
         role: {
           select: {
             id: true,
             name: true,
-
-          }
-        }
-      }
-    })
-    if (updateUserDto.attachmentId) {
-      const isCheckAttachment = await this.attachmentService.findOne(updateUserDto.attachmentId);
-      if (!isCheckAttachment) {
-        throw new NotFoundException("Attachment not found");
-      }
-
-      const existingAttachmentAssociation = await this.prisma.attachmentAssociation.findFirst({
-        where: {
-          relationId: id,
-          relationType: 'user',
+          },
         },
-      });
+      },
+    });
+    if (updateUserDto.attachmentId) {
+      const isCheckAttachment = await this.attachmentService.findOne(
+        updateUserDto.attachmentId,
+      );
+      if (!isCheckAttachment) {
+        throw new NotFoundException('Attachment not found');
+      }
+
+      const existingAttachmentAssociation =
+        await this.prisma.attachmentAssociation.findFirst({
+          where: {
+            relationId: id,
+            relationType: 'user',
+          },
+        });
 
       if (existingAttachmentAssociation) {
         await this.prisma.attachmentToAssociation.updateMany({
@@ -305,12 +318,13 @@ export class UserService {
           },
         });
       } else {
-        const newAttachmentAssociation = await this.prisma.attachmentAssociation.create({
-          data: {
-            relationId: id,
-            relationType: 'user',
-          },
-        });
+        const newAttachmentAssociation =
+          await this.prisma.attachmentAssociation.create({
+            data: {
+              relationId: id,
+              relationType: 'user',
+            },
+          });
 
         await this.prisma.attachmentToAssociation.create({
           data: {
@@ -321,7 +335,6 @@ export class UserService {
       }
     }
     return data;
-
   }
 
   async editUser(id: number, updateUserDto: UpdateUserDto) {
@@ -330,29 +343,22 @@ export class UserService {
     const userMobileNumber = await this.prisma.user.findFirst({
       where: {
         mobileNumber: updateUserDto.mobileNumber,
-        id: { not: id }
-      }
-    })
+        id: { not: id },
+      },
+    });
+
     if (userMobileNumber) {
-      errors.mobileNumber = "Mobile number already exists";
-    }
-    if (Object.keys(errors).length > 0) {
+      errors.mobileNumber = 'Mobile number already exists';
       throw new ConflictException(errors);
     }
 
     const address = await this.prisma.address.findFirst({
-      where: {
-        userId: id,
-      },
-      select: {
-        id: true,
-
-      }
+      where: { userId: id },
+      select: { id: true },
     });
-    const data = await this.prisma.user.update({
-      where: {
-        id: id
-      },
+
+    const updatedUser = await this.prisma.user.update({
+      where: { id },
       data: {
         name: updateUserDto.name,
         businessName: updateUserDto.businessName,
@@ -360,19 +366,16 @@ export class UserService {
         gstNumber: updateUserDto.gstNumber,
         addresses: {
           update: {
-            where: {
-              id: address?.id ?? undefined,
-            },
+            where: { id: address?.id },
             data: {
               address: updateUserDto.addresses.address,
               city: updateUserDto.addresses.city,
               state: updateUserDto.addresses.state,
               pinCode: updateUserDto.addresses.pinCode,
               country: updateUserDto.addresses.country,
-            }
-          }
+            },
+          },
         },
-
       },
       select: {
         id: true,
@@ -393,7 +396,7 @@ export class UserService {
             state: true,
             pinCode: true,
             country: true,
-          }
+          },
         },
         role: true,
         attachments: {
@@ -402,43 +405,28 @@ export class UserService {
             fileName: true,
             filePath: true,
           },
-          where: {
-            id: updateUserDto.attachmentId
-          }
         },
-      }
+      },
     });
 
-    if (updateUserDto.attachmentId) {
-      const isCheckAttachment = await this.attachmentService.findOne(updateUserDto.attachmentId);
-
-      if (!isCheckAttachment) {
-        throw new NotFoundException("Attachment not found");
-      }
-
-      const existingAttachmentAssociation = await this.prisma.attachmentAssociation.findFirst({
-        where: {
-          relationId: id,
-          relationType: 'user',
-        },
+    const existingAttachmentAssociation =
+      await this.prisma.attachmentAssociation.findFirst({
+        where: { relationId: id, relationType: 'user' },
       });
 
+    const { attachments, ...rest } = updatedUser;
+
+    if (updateUserDto.attachmentId) {
       if (existingAttachmentAssociation) {
         await this.prisma.attachmentToAssociation.updateMany({
-          where: {
-            attachmentAssociationId: existingAttachmentAssociation.id,
-          },
-          data: {
-            attachmentId: updateUserDto.attachmentId,
-          },
+          where: { attachmentAssociationId: existingAttachmentAssociation.id },
+          data: { attachmentId: updateUserDto.attachmentId },
         });
       } else {
-        const newAttachmentAssociation = await this.prisma.attachmentAssociation.create({
-          data: {
-            relationId: id,
-            relationType: 'user',
-          },
-        });
+        const newAttachmentAssociation =
+          await this.prisma.attachmentAssociation.create({
+            data: { relationId: id, relationType: 'user' },
+          });
 
         await this.prisma.attachmentToAssociation.create({
           data: {
@@ -448,61 +436,32 @@ export class UserService {
         });
       }
 
-
-      const updatedData = await this.prisma.user.findUnique({
-        where: {
-          id: id
-        },
-        select: {
-          id: true,
-          name: true,
-          businessName: true,
-          email: true,
-          mobileNumber: true,
-          gstNumber: true,
-          isActive: true,
-          acceptTerms: true,
-          createdAt: true,
-          updatedAt: true,
-          addresses: {
-            select: {
-              id: true,
-              address: true,
-              city: true,
-              state: true,
-              pinCode: true,
-              country: true,
-            }
-          },
-          role: true,
-          attachments: {
-            select: {
-              id: true,
-              fileName: true,
-              filePath: true,
-            },
-            where: {
-              id: updateUserDto.attachmentId
-            }
-          },
-        }
-      });
-      const { attachments, ...rest} = updatedData
-
-      const result = {
+      return {
         ...rest,
-        attachment: attachments?.length > 0 ? attachments[0] : null,
+        attachment: attachments.find(
+            (a) => a.id === updateUserDto.attachmentId,
+          ) || null,
       };
+    } else if (existingAttachmentAssociation) {
+      await this.prisma.attachmentToAssociation.deleteMany({
+        where: { attachmentAssociationId: existingAttachmentAssociation.id },
+      });
 
-      return result;
+      await this.prisma.attachmentAssociation.delete({
+        where: { id: existingAttachmentAssociation.id },
+      });
+
+      return {
+        ...rest,
+        attachment: null,
+      };
     }
 
-    const finalData = {
-      ...data,
-      attachment: data?.attachments.length > 0 ? data.attachments[0] : null,
+    return {
+      ...rest,
+      attachment: attachments.find(
+        (attachment) => existingAttachmentAssociation?.id === attachment.id,
+      ),
     };
-
-    return finalData;
   }
-
 }
