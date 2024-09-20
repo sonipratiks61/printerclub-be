@@ -21,7 +21,9 @@ class QuantityRange {
     example: 'text',
   })
   @IsOptional()
-  @IsIn(['text', 'dropDown'], { message: 'Quantity type must be either text or dropDown' })
+  @IsIn(['text', 'dropDown'], {
+    message: 'Quantity type must be either text or dropDown',
+  })
   type: AttributeType;
 
   @ApiProperty({
@@ -103,7 +105,6 @@ export class UpdateProductDto {
 
   @IsOptional()
   @IsArray({ message: 'AttachmentIds must be an array' })
-  @ArrayNotEmpty({ message: 'AttachmentIds array should not be empty' })
   @IsInt({ each: true, message: 'Each AttachmentId must be an integer' })
   attachmentId?: number[];
 
@@ -138,7 +139,7 @@ export class UpdateProductDto {
   @IsOptional()
   @IsNotEmpty({ message: 'RequiredMeasurement cannot be empty.' })
   @IsBoolean({ message: 'RequiredMeasurement must be a boolean' })
-  isMeasurementRequired : boolean;
+  isMeasurementRequired: boolean;
 
   @ApiProperty({
     description: 'Indicates if a measurement is required',
@@ -147,6 +148,5 @@ export class UpdateProductDto {
   @IsOptional()
   @IsNotEmpty({ message: 'Required Fitment cannot be empty.' })
   @IsBoolean({ message: 'Required Fitment must be a boolean' })
-  isFitmentRequired : boolean;
-
+  isFitmentRequired: boolean;
 }

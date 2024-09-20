@@ -104,10 +104,10 @@ export class CreateProductDto {
     required: false,
   })
 
-  @IsArray()
-  @ArrayNotEmpty()
-  @IsNumber({}, { each: true })
-  attachmentId: number[];
+  @IsOptional()
+  @IsArray({ message: 'AttachmentIds must be an array' })
+  @IsInt({ each: true, message: 'Each AttachmentId must be an integer' })
+  attachmentId?: number[];
   
   @ApiProperty({
     description: 'ID of the workFlow the product belongs to',
