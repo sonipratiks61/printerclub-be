@@ -104,10 +104,9 @@ export class CreateProductDto {
     required: false,
   })
 
+  @IsOptional()
   @IsArray()
-  @ArrayNotEmpty()
-  @IsNumber({}, { each: true })
-  attachmentId: number[];
+  attachmentId?: number[];
   
   @ApiProperty({
     description: 'ID of the workFlow the product belongs to',
