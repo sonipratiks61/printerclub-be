@@ -105,8 +105,7 @@ export class CreateProductDto {
   })
 
   @IsOptional()
-  @IsArray({ message: 'AttachmentIds must be an array' })
-  @IsInt({ each: true, message: 'Each AttachmentId must be an integer' })
+  @IsArray()
   attachmentId?: number[];
   
   @ApiProperty({
