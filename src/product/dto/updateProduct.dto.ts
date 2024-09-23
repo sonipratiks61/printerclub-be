@@ -145,6 +145,6 @@ export class UpdateProductDto {
   @IsOptional()
   @IsNotEmpty({ message: 'Required Fitment cannot be empty.' })
   @IsBoolean({ message: 'Required Fitment must be a boolean' })
-  
   isFitmentRequired: boolean;
+  
 }
