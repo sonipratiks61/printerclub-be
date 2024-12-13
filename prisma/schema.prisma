@@ -10,7 +10,7 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = process.env.DATABASE_URL
+  url      =  "mysql://ujzbxf3wphrrwds0:8tlmiAt9q97DtFdFatXw@bx4uwg2oxeibwaj7pak8-mysql.services.clever-cloud.com:3306/bx4uwg2oxeibwaj7pak8"
  // shadowDatabaseUrl = env("DATABASE_URL")
 }
 
