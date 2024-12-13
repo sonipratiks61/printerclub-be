@@ -19,7 +19,8 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "db-seed": "tsc prisma/seed.ts && cat prisma/seed.js | node --input-type=\"commonjs\" && rm prisma/seed.js",
-    "db-migrate": "npx prisma migrate dev --name init"
+    "db-migrate": "npx prisma migrate dev --name init",
+    "db-generate: "npx prisma generate"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
