@@ -41,6 +41,7 @@ async function bootstrap() {
       stopAtFirstError: true,
     }),
   );
+  console.log(process.env)
   await app.listen(3000);
 }
 bootstrap();
