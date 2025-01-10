@@ -59,7 +59,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
     JwtModule.register({}),
     ConfigModule.forRoot(),
     ServeStaticModule.forRoot({
-      rootPath: join(process.env.FILE_PATH),
+      rootPath: join(resolve(__dirname)),
     }),
     MulterModule.register({
       dest: './files',
