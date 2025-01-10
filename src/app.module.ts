@@ -49,7 +49,7 @@ import { CapabilityService } from './capabilities/capability.service';
 import { CustomerOrderInvoiceService } from './order/orderInvoice/orderCustomerInvoice.service';
 import { WorkFlowController } from './work-flow/work-flow.controller';
 import { WorkFlowService } from './work-flow/work-flow.service';
-import { join } from 'path';
+import { join, resolve } from 'path';
 import { RoleAndOrderStatusService } from './role-and-order-status/role-and-order-status.service';
 import { RoleAndOrderStatusController } from './role-and-order-status/role-and-order-status.controller';
 import { ServeStaticModule } from '@nestjs/serve-static';
