@@ -25,11 +25,6 @@ export class CategoryService {
       message = 'Subcategory created successfully';
     }
 
-    const isCheckAttachment = await this.attachmentService.findOne(createCategoryDto.attachmentId);
-
-      if (!isCheckAttachment) {
-        throw new NotFoundException("Attachment not found");
-      }
     const parentId = createCategoryDto.parentId || null;
     const newCategory = await this.prisma.category.create({
       data: {
@@ -326,7 +321,28 @@ export class CategoryService {
           },
         });
       }
+    } else {
+      const existingAttachmentAssociation = await this.prisma.attachmentAssociation.findFirst({
+        where: {
+          relationId: id,
+          relationType: 'category',
+        },
+      });
+  
+      if (existingAttachmentAssociation) {
+        await this.prisma.attachmentToAssociation.deleteMany({
+          where: {
+            attachmentAssociationId: existingAttachmentAssociation.id,
+          },
+        });
+        await this.prisma.attachmentAssociation.delete({
+          where: {
+            id: existingAttachmentAssociation.id,
+          },
+        });
+      }
     }
+
     return updatedCategory;
   }
 
