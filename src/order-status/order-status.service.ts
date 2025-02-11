@@ -16,6 +16,7 @@ export class OrderStatusService {
         const orderStatus = await this.prisma.orderStatus.create({
           data: {
             status: createOrderStatusDto.status,
+            showToUser: createOrderStatusDto.showToUser,
             description: createOrderStatusDto.description,
             dependOn: dependOnId
           },
@@ -32,6 +33,7 @@ export class OrderStatusService {
         id:true,
         status:true,
         description:true,
+        showToUser: true,
         dependOn:true,
         subOrderStatus : {
           select:{
@@ -50,6 +52,7 @@ export class OrderStatusService {
           id: orderStatus.id,
           status: orderStatus.status,
           description: orderStatus.description,
+          showToUser: orderStatus.showToUser,
           dependOn:orderStatus.dependOn
         },
         ...orderStatus.subOrderStatus.map((subOrderStatus) => ({
@@ -75,6 +78,7 @@ export class OrderStatusService {
       where: { id:id },
       data: {
         status:updateOrderStatusDto.status,
+        showToUser: updateOrderStatusDto.showToUser,
         description:updateOrderStatusDto.description,
         dependOn:updateOrderStatusDto.dependOn
       },

@@ -195,6 +195,7 @@ model OrderStatus {
   id             Int           @id @default(autoincrement())
   status         String
   description    String?        @db.Text
+  showToUser     Boolean
   dependOn       Int?
   orderStatus    OrderStatus?  @relation("orderStatusTosubOrderStatus", fields: [dependOn], references: [id])
   subOrderStatus OrderStatus[] @relation("orderStatusTosubOrderStatus")

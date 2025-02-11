@@ -86,6 +86,7 @@ export class OrderItemsService {
                     return {
                         id: formate?.id,
                         name: formate?.status,
+                        showToUser: formate.showToUser,
                         roleIds: roleIds
                     };
                 })
@@ -120,7 +121,8 @@ export class OrderItemsService {
             return {
                 
                 id: record.statusId,
-                name: status?.status 
+                name: status?.status,
+                showToUser: status.showToUser
             };
         }));
         
@@ -130,7 +132,7 @@ export class OrderItemsService {
                 ...data.workflow,
                 sequence: data.orderItemStatus === 'Cancelled'
                     ? completedStatusFilter
-                    : formattedSequence.map(item => ({ id: item.id, name: item.name, roleIds: item.roleIds, })),
+                    : formattedSequence.map(item => ({ id: item.id, name: item.name, showToUser: item.showToUser, roleIds: item.roleIds, })),
                 completedStatus: completedStatus
             }
         };
