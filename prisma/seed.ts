@@ -1106,6 +1106,7 @@ async function main() {
     },
     create: {
       status: "Cancelled",
+      showToUser: true,
       description: " Order Cancelled",
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
@@ -1120,6 +1121,7 @@ async function main() {
     },
     create: {
       status: "Register Order",
+      showToUser: true,
       description: "Register Order",
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
@@ -1136,6 +1138,7 @@ async function main() {
     },
     create: {
       status: "Payment Update(Cannot Delete Entry)",
+      showToUser: true,
       description: "Payment Update(Cannot Delete Entry)",
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
@@ -1152,6 +1155,7 @@ async function main() {
     },
     create: {
       status: "Transfer to Designer",
+      showToUser: true,
       description: "Transfer to Designer",
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
@@ -1169,8 +1173,8 @@ async function main() {
     },
     create: {
       status: "Material Received in Office",
+      showToUser: true,
       description: "Material Received in Office",
-      dependOn: 4,
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
 
@@ -1186,8 +1190,8 @@ async function main() {
     },
     create: {
       status: "Material Received in Workshop",
+      showToUser: true,
       description: "Material Received in Workshop",
-      dependOn: 4,
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
 
@@ -1203,8 +1207,8 @@ async function main() {
     },
     create: {
       status: "Ready to Dispatch",
+      showToUser: true,
       description: "Ready to Dispatch",
-      dependOn: 4,
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
 
@@ -1220,8 +1224,8 @@ async function main() {
     },
     create: {
       status: "Mark an Order if advance amount not deposited.",
+      showToUser: true,
       description: "Mark an Order if advance amount not deposited.",
-      dependOn: 4,
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
 
@@ -1237,8 +1241,8 @@ async function main() {
     },
     create: {
       status: "Check & Update Payment (Cannot Delete Entry)",
+      showToUser: true,
       description: "Check & Update Payment (Cannot Delete Entry)",
-      dependOn: 4,
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
 
@@ -1254,6 +1258,7 @@ async function main() {
     },
     create: {
       status: "Manage Discounts",
+      showToUser: true,
       description: "Received for Packing",
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
@@ -1269,6 +1274,7 @@ async function main() {
     },
     create: {
       status: "Under Designing",
+      showToUser: true,
       description: "Under Designing",
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
@@ -1284,6 +1290,7 @@ async function main() {
     },
     create: {
       status: "Under Correction",
+      showToUser: true,
       description: "Correction",
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
@@ -1299,6 +1306,7 @@ async function main() {
     },
     create: {
       status: "Improper Matter",
+      showToUser: true,
       description: "Improper Matter",
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
@@ -1317,6 +1325,7 @@ async function main() {
     },
     create: {
       status: "Transfer to Machine Operator",
+      showToUser: true,
       description: "Transfer to Machine Operator",
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
@@ -1333,6 +1342,7 @@ async function main() {
     },
     create: {
       status: "Under Printing",
+      showToUser: true,
       description: "Under Printing",
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
@@ -1350,6 +1360,7 @@ async function main() {
     },
     create: {
       status: "Completed",
+      showToUser: true,
       description: "Completed",
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
@@ -1366,6 +1377,7 @@ async function main() {
     },
     create: {
       status: "Under Cutting",
+      showToUser: true,
       description: "Under Cutting",
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
@@ -1382,6 +1394,7 @@ async function main() {
     },
     create: {
       status: "Improper File",
+      showToUser: true,
       description: "Improper File",
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
@@ -1398,6 +1411,7 @@ async function main() {
     },
     create: {
       status: "Ready to Dispatch from Workshop",
+      showToUser: true,
       description: "Ready to Dispatch from Workshop",
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
@@ -1414,6 +1428,7 @@ async function main() {
     },
     create: {
       status: "Raw Material Not Available",
+      showToUser: true,
       description: "Raw Material Not Available",
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
@@ -1430,6 +1445,7 @@ async function main() {
     },
     create: {
       status: "File Sent",
+      showToUser: true,
       description: "File Sent",
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
@@ -1444,6 +1460,7 @@ async function main() {
     },
     create: {
       status: "Material Ready",
+      showToUser: true,
       description: "Material Ready",
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
@@ -1460,6 +1477,7 @@ async function main() {
     },
     create: {
       status: "Dispatched",
+      showToUser: true,
       description: "Dispatched",
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
@@ -1475,22 +1493,8 @@ async function main() {
       id: 24
     },
     create: {
-      status: "Material Received In Office",
-      description: "Material Received In Office",
-      createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-
-
-    },
-    update: {status: "Material Received In Office",
-    description: "Material Received In Office",}
-  })
-  await prisma.orderStatus.upsert({
-    where: {
-      id: 25
-    },
-    create: {
       status: "Any Other Requirement (Like Fabrication, Cutting or anything)",
+      showToUser: true,
       description: "Any Other Requirement (Like Fabrication, Cutting or anything)",
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
@@ -1933,25 +1937,6 @@ async function main() {
     create: {
       roleId: 1,
       orderStatusId: 24,
-      createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-  });
-  await prisma.roleAndOrderStatusMapping.upsert({
-    where: {
-      orderStatusId_roleId: {
-        roleId: 1,
-        orderStatusId: 25,
-      }
-    },
-    update: {
-      roleId: 1,
-      orderStatusId: 25,
-      updatedAt: new Date('2023-07-09'),
-    },
-    create: {
-      roleId: 1,
-      orderStatusId: 25,
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
     },
@@ -2525,25 +2510,6 @@ async function main() {
     create: {
       roleId: 8,
       orderStatusId: 24,
-      createdAt: new Date('2023-07-09'),
-      updatedAt: new Date('2023-07-09'),
-    },
-  });
-  await prisma.roleAndOrderStatusMapping.upsert({
-    where: {
-      orderStatusId_roleId: {
-        roleId: 8,
-        orderStatusId: 25,
-      }
-    },
-    update: {
-      roleId: 8,
-      orderStatusId: 25,
-      updatedAt: new Date('2023-07-09'),
-    },
-    create: {
-      roleId: 8,
-      orderStatusId: 25,
       createdAt: new Date('2023-07-09'),
       updatedAt: new Date('2023-07-09'),
     },

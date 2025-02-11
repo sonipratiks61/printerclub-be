@@ -1,5 +1,5 @@
 // CreateOrderItemsDto.ts
-import { IsNotEmpty, IsNumber, IsString, ValidateNested, IsArray, IsOptional, IsInt, IsEnum } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString, ValidateNested, IsArray, IsOptional, IsInt, IsEnum, IsBoolean } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateOrderStatusDto {
@@ -17,6 +17,10 @@ export class CreateOrderStatusDto {
     @IsNotEmpty()
     dependOn: number
 
+    @IsOptional()
+    @IsBoolean()
+    showToUser: boolean
+
 }
 export class UpdateOrderStatusDto {
 
@@ -33,6 +37,10 @@ export class UpdateOrderStatusDto {
     @IsInt()
     @IsNotEmpty()
     dependOn: number
+
+    @IsOptional()
+    @IsBoolean()
+    showToUser: boolean
 
 }
 
