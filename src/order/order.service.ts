@@ -443,6 +443,41 @@ export class OrderService {
     })
   }
 
+  async findByOrderAndMobile(orderNumber: number, lastFourDigits: string) {
+    return this.prisma.order.findFirst({
+      where: {
+        id: Number(orderNumber),
+        customerDetails: {
+          mobileNumber: {
+            endsWith: lastFourDigits,
+          },
+        },
+      },
+      include: {
+        customerDetails: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            mobileNumber: true,
+            additionalDetails: true,
+            address: {
+              select: {
+                id: true,
+                country: true,
+                state: true,
+                city: true,
+                pinCode: true,
+                address: true,
+              },
+            },
+          },
+        },
+        orderItems: true,
+      },
+    });
+  }
+
   async remove(id: number) {
     return await this.prisma.order.delete({
       where: {
