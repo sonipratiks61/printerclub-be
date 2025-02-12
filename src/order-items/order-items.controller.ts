@@ -46,7 +46,6 @@ export class OrderItemsController {
     }
 
     @Get(':id')
-    @UseGuards(AuthGuard('jwt'))
     async findOne(@Param('id', IdValidationPipe) id: string, @Res() res) {
         try {
             const orderItemId = parseInt(id, 10);

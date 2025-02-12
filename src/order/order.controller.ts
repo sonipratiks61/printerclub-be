@@ -107,6 +107,32 @@ export class OrderController {
     }
     }
 
+    @Get('/search')
+    async searchOrder(@Query('orderId') orderId: number, @Query('mobileNumber') mobileNumber: string, @Res() res) {
+      try {
+  
+        const order = await this.orderService.findByOrderAndMobile(
+            orderId,
+            mobileNumber,
+        );
+  
+        if (!order) {
+          return this.responseService.sendNotFound(res, 'Order Not Found');
+        }
+  
+        return this.responseService.sendSuccess(
+          res,
+          'Order Found Successfully',
+          order,
+        );
+      } catch (error) {
+        return this.responseService.sendInternalError(
+          res,
+          'Something Went Wrong',
+        );
+      }
+    }
+
     @Get(':id')
     @UseGuards(AuthGuard('jwt'))
     async findOne(@Param('id', IdValidationPipe) id: string, @Res() res) {
@@ -169,7 +195,6 @@ export class OrderController {
     }
 
     @Get('invoice/:id')
-    @UseGuards(AuthGuard('jwt'))
     async Invoice(@Param('id', IdValidationPipe) id: string, @Res() res) {
         try {
             const orderId = parseInt(id, 10);
