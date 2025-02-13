@@ -62,6 +62,9 @@ export class CreateOrderItemsDto {
     description: string;
 
     @IsOptional()
+    deliveryDate: string;
+
+    @IsOptional()
     @IsInt()
     @IsNotEmpty()
     discount: number
@@ -131,6 +134,8 @@ export class OrderItemUserDto {
     @IsOptional()
     @IsNumber()
     attachmentId?: number;
-    
+
+    @IsOptional()
+    attachmentType: "online" | "email"
 }
 

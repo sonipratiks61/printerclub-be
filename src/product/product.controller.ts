@@ -63,12 +63,14 @@ export class ProductController {
 
   @Get()
   @UseGuards(AuthGuard('jwt'))
-  async findProductByCategoryId(@Res() res, @Query('categoryId') categoryId?: string) {
+  async findProductByCategoryId(@Res() res,  @Req() req, @Query('categoryId') categoryId?: string) {
     try {
       let data;
       const category = parseInt(categoryId, 10)
+      const userId = req.user.id;
+
       if (category) {
-        data = await this.productService.findProductByCategoryId(category);
+        data = await this.productService.findProductByCategoryId(category, userId);
         this.responseService.sendSuccess(res, 'Products fetched successfully by subCategory', data);
       } else {
         data = await this.productService.findAll();

@@ -81,6 +81,7 @@ export class OrderService {
           createMany: {
             data: orderItemsWithAddressIds.map((item: CreateOrderItemsDto) => ({
               quantity: item.quantity,
+              deliveryDate: item.deliveryDate,
               name: item.name,
               price: item.price,
               workflowId: item.workflowId,
@@ -122,8 +123,8 @@ export class OrderService {
       }
     })
 
-    const isAdmin = userDetails.role.name;
-    if (isAdmin === 'Admin') {
+    const id = userDetails.role.id;
+    if (id !== 2) {
 
       orders = await this.prisma.order.findMany({
         orderBy: {
@@ -140,11 +141,16 @@ export class OrderService {
           createdAt: true,
           userId: true,
           orderItems: {
+            orderBy: {
+              deliveryDate: 'asc',
+            },
             select: {
               id: true,
               quantity: true,
               name: true,
               price: true,
+              deliveryDate: true,
+              attachmentType: true,
               additionalDetails: true,
               productId: true,
               gst: true,
@@ -155,6 +161,15 @@ export class OrderService {
               measurement: true,
               isMeasurementAddress: true,
               orderItemStatus: true,
+              assignedTo: {
+                select: {
+                  id: true,
+                  name: true,
+                  email: true,
+                  mobileNumber: true,
+                },
+              },
+              expectedBy: true
             }
           },
           customerDetails:
@@ -197,28 +212,66 @@ export class OrderService {
         }
         return acc;
       }, {} as Record<number, { id: number; fileName: string; filePath: string } | null>);
-      const formattedAllOrders = orders.map(order => ({
-        id: order.id,
-        advancePayment: Number(order.advancePayment)?.toFixed(2),
-        totalPayment: Number(order.totalPayment).toFixed(2),
-        remainingPayment: Number(order.remainingPayment).toFixed(2),
-        paymentMode: order.paymentMode,
-        ownerName: order.ownerName,
-        invoiceNumber: order.invoiceNumber,
-        createdAt: order.createdAt,
-        userId: order.userId,
-        customerDetails: {
-          ...order.customerDetails,
-          address: {
-            ...order.customerDetails.address,
-          },
-        },
-        orderItems: order.orderItems.map(item => ({
-          ...item,
-          attachments: attachmentMap[item.id] || null, // Attachments for this order item (single object)
-        })),
-      }));
-      return formattedAllOrders;
+
+      const formattedAllOrders = orders.map(order => {
+        let earliestNonExpiredDate = null;
+        let earliestExpiredDate = null;
+        
+        order.orderItems.forEach(item => {
+            if (item.deliveryDate) {
+                const itemDate = new Date(item.deliveryDate);
+                const today = new Date();
+    
+                if (itemDate >= today) {
+                    earliestNonExpiredDate = !earliestNonExpiredDate || itemDate < earliestNonExpiredDate
+                        ? itemDate
+                        : earliestNonExpiredDate;
+                } else {
+                    earliestExpiredDate = !earliestExpiredDate || itemDate < earliestExpiredDate
+                        ? itemDate
+                        : earliestExpiredDate;
+                }
+            }
+        });
+    
+        return {
+            ...order,
+            orderItems: order.orderItems.map(item => ({
+                ...item,
+                assignedTo: item.assignedTo ? {...item.assignedTo, expectedBy: item.expectedBy } : null,
+                attachments: attachmentMap[item.id] || null, 
+            })),
+            earliestDeliveryDate: earliestNonExpiredDate || earliestExpiredDate,
+        };
+    });
+    
+    return formattedAllOrders.sort((a, b) => {
+        const today = new Date().toISOString().split('T')[0];
+    
+        const dateA = a.earliestDeliveryDate ? a.earliestDeliveryDate.toISOString().split('T')[0] : null;
+        const dateB = b.earliestDeliveryDate ? b.earliestDeliveryDate.toISOString().split('T')[0] : null;
+    
+        const createdDateA = new Date(a.createdAt).toISOString().split('T')[0];
+        const createdDateB = new Date(b.createdAt).toISOString().split('T')[0];
+    
+        const isExpiredA = dateA && dateA < today;
+        const isExpiredB = dateB && dateB < today;
+    
+        if (!isExpiredA && !isExpiredB) {
+            if (dateA && dateB) return dateA.localeCompare(dateB);
+            if (dateA) return -1;
+            if (dateB) return 1;
+        }
+    
+        if (!isExpiredA && isExpiredB) return -1;
+        if (isExpiredA && !isExpiredB) return 1;
+    
+        if (isExpiredA && isExpiredB) return dateB.localeCompare(dateA);
+    
+        return createdDateB.localeCompare(createdDateA);
+    });
+    
+    
     }
     else {
       orders = await this.prisma.order.findMany({
@@ -432,16 +485,102 @@ export class OrderService {
   }
 
   async findOne(id: number) {
-    return await this.prisma.order.findUnique({
-      where: {
-        id: id
+    const order = await this.prisma.order.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        paymentMode: true,
+        remainingPayment: true,
+        totalPayment: true,
+        advancePayment: true,
+        ownerName: true,
+        invoiceNumber: true,
+        createdAt: true,
+        userId: true,
+        orderItems: {
+          orderBy: { deliveryDate: 'asc' },
+          select: {
+            id: true,
+            quantity: true,
+            name: true,
+            price: true,
+            deliveryDate: true,
+            attachmentType: true,
+            additionalDetails: true,
+            productId: true,
+            gst: true,
+            discount: true,
+            description: true,
+            attributes: true,
+            ownerName: true,
+            measurement: true,
+            isMeasurementAddress: true,
+            orderItemStatus: true,
+            assignedTo: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                mobileNumber: true,
+              },
+            },
+            expectedBy: true,
+          },
+        },
+        customerDetails: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            mobileNumber: true,
+            additionalDetails: true,
+            address: true,
+          },
+        },
       },
-      include: {
-        customerDetails: true,
-        orderItems: true
+    });
+  
+    if (!order) {
+      return null;
+    }
+  
+    const attachments = await this.prisma.attachmentAssociation.findMany({
+      where: { relationType: 'orderItem' },
+      select: {
+        relationId: true,
+        attachments: {
+          select: {
+            attachment: {
+              select: {
+                id: true,
+                fileName: true,
+                filePath: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  
+    const attachmentMap = attachments.reduce((acc, item) => {
+      if (item.attachments.length > 0) {
+        acc[item.relationId] = item.attachments[0].attachment; // Take only the first attachment
       }
-    })
+      return acc;
+    }, {} as Record<number, { id: number; fileName: string; filePath: string } | null>);
+  
+    return {
+      ...order,
+      orderItems: order.orderItems.map((item) => ({
+        ...item,
+        assignedTo: item.assignedTo
+          ? { ...item.assignedTo, expectedBy: item.expectedBy }
+          : null,
+        attachments: attachmentMap[item.id] || null,
+      })),
+    };
   }
+  
 
   async findByOrderAndMobile(orderNumber: number, lastFourDigits: string) {
     return this.prisma.order.findFirst({
@@ -582,6 +721,7 @@ export class OrderService {
               name: item.name,
               price: item.price,
               gst: item.gst,
+              attachmentType: item.attachmentType,
               discount: item.discount,
               workflowId: item.workflowId,
               additionalDetails: item.additionalDetails,

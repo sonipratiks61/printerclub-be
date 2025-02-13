@@ -19,6 +19,7 @@ else{
     const data = await this.prisma.attribute.create({
       data: {
         name: createAttributeDto.name,
+        showToUser: createAttributeDto.showToUser
       }
 
     })
@@ -40,6 +41,7 @@ else{
       select: {
         id: true,
         name: true,
+        showToUser: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -53,7 +55,8 @@ else{
         id: id
       },
       data: {
-        name: createAttributeDto.name
+        name: createAttributeDto.name,
+        showToUser: createAttributeDto.showToUser
       }
     })
   }
