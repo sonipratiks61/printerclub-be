@@ -4,11 +4,12 @@ import { IdValidationPipe } from 'utils/validation/paramsValidation';
 import { CreateOrderItemsDto, UpdateOrderItemDto } from './dto/order-Item.dto';
 import { OrderItemsService } from './order-items.service';
 import { ResponseService } from 'utils/response/customResponse';
+import { UserService } from 'src/user/user.service';
 
 @Controller('orderItems')
 export class OrderItemsController {
 
-    constructor(private orderItemsService: OrderItemsService,
+    constructor(private orderItemsService: OrderItemsService, private usersService: UserService,
         private responseService: ResponseService) { }
 
     @Get()
@@ -44,6 +45,49 @@ export class OrderItemsController {
             }
         }
     }
+    
+    @Post('/assignTo/:id')
+    @UseGuards(AuthGuard('jwt'))
+    async assignTo(
+      @Param('id') id: string,
+      @Body() body: { assignTo: number; expectedBy: string },
+      @Res() res
+    ) {
+      try {
+        const orderItemId = parseInt(id, 10);
+        if (isNaN(orderItemId)) {
+          return this.responseService.sendBadRequest(res, 'Invalid Order Item ID');
+        }
+    
+        const orderItem = await this.orderItemsService.findOne(orderItemId);
+        if (!orderItem) {
+          return this.responseService.sendNotFound(res, 'OrderItem Id Invalid');
+        }
+
+        const user = await this.usersService.findOne(Number(body.assignTo));
+        if (!user) {
+          return this.responseService.sendNotFound(res, 'User Not Found');
+        }
+    
+        const updatedOrderItem = await this.orderItemsService.assignToUser(
+          orderItemId,
+          Number(body.assignTo),
+          body.expectedBy
+        );
+    
+        return this.responseService.sendSuccess(
+          res,
+          'Order Item Assigned Successfully',
+          updatedOrderItem
+        );
+      } catch (error) {
+        return this.responseService.sendInternalError(
+          res,
+          error.message || 'Something Went Wrong'
+        );
+      }
+    }
+    
 
     @Get(':id')
     async findOne(@Param('id', IdValidationPipe) id: string, @Res() res) {

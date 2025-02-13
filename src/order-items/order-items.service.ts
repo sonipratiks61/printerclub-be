@@ -43,6 +43,17 @@ export class OrderItemsService {
         })
     }
 
+    async assignToUser(orderItemId: number, userId: number, expectedBy: string) {
+        return this.prisma.orderItem.update({
+          where: { id: orderItemId },
+          data: {
+            assignedToId: userId,
+            expectedBy: new Date(expectedBy),
+          },
+        });
+      }
+      
+
     async findOne(id: number) {
         const data = await this.prisma.orderItem.findUnique({
             where: {

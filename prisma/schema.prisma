@@ -33,6 +33,7 @@ model User {
   products              Product[]
   orderHistory          OrderHistory[]
   order                 Order[]
+  orderItems            OrderItem[]
 }
 
 model Address {
@@ -187,6 +188,7 @@ enum AttributeType {
 model Attribute {
   id                 Int                @id @default(autoincrement())
   name               String?            @unique
+  showToUser         Boolean            @default(true)
   productAttribute   ProductAttribute[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -241,6 +243,11 @@ model OrderItem {
   updatedAt              DateTime @updatedAt
   workflow               WorkFlow @relation(fields: [workflowId], references: [id])
   orderItemStatus        String 
+  deliveryDate           DateTime?
+  attachmentType         String?
+  assignedTo             User?    @relation(fields: [assignedToId], references: [id])
+  assignedToId           Int?
+  expectedBy             DateTime?
 }
 
 model Order {

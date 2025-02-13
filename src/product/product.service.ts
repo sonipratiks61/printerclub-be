@@ -273,7 +273,17 @@ export class ProductService {
   
 
 
-  async findProductByCategoryId(categoryId: number) {
+  async findProductByCategoryId(categoryId: number, userId: number) {
+
+    const userDetails = await this.prisma.user.findFirst({
+      where: {
+        id: userId
+      },
+      select: {
+        role: true
+      }
+    })
+    
     if (isNaN(categoryId) || categoryId <= 0) {
       throw new BadRequestException("Invalid category ID");
     }
@@ -328,7 +338,7 @@ export class ProductService {
     const transformedData = data.map(product => ({
       ...product,
       attachments: attachmentMap[product.id] || [],
-      attributes: product.attributes.map(attribute =>({
+      attributes: product.attributes.filter(item => item.attribute.showToUser || userDetails.role.id !== 2).map(attribute =>({
         id: attribute.id,
         productId: attribute.productId,
         name: attribute.attribute.name,
