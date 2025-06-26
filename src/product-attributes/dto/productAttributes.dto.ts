@@ -33,4 +33,7 @@ export class CreateProductAttributesDto {
   @IsArray({ message: 'Options must be an array' })
   @ArrayNotEmpty({ message: 'Options array must not be empty' })
   options?: string[]
+
+  @IsOptional()
+  price?: string
 }

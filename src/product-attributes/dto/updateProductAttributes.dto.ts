@@ -34,5 +34,8 @@ export class UpdateProductAttributesDto {
   @IsOptional()
   @IsArray({ message: 'Options must be an array' })
   @ArrayNotEmpty({ message: 'Options array must not be empty' })
-   options?: string[];
+  options?: string[];
+
+  @IsOptional()
+  price?: string;
 }

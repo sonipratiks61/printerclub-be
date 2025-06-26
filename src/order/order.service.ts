@@ -10,7 +10,7 @@ import { ProductService } from 'src/product/product.service';
 import { generateInvoiceNumber } from 'utils/invoiceFunction/invoiceFunction';
 import { CreateAddressDto } from 'src/user/dto/create-and-update-address.dto';
 import { AttachmentService } from 'src/attachment/attachment.service';
-import { calculatePrice } from 'utils/calculatePriceFunction/calculatePriceFunction';
+import { calculateAttributesPrice, calculatePrice } from 'utils/calculatePriceFunction/calculatePriceFunction';
 
 @Injectable()
 export class OrderService {
@@ -97,6 +97,7 @@ export class OrderService {
               attributes: item.attributes?.map(attr => ({
                 name: attr.name,
                 value: attr.value,
+                price: attr.price,
               })),
             })),
 
@@ -669,7 +670,7 @@ export class OrderService {
         throw new NotFoundException("One of the Products does not exist");
       }
       const itemTotalPrice = calculatePrice({
-        price: Number(product.price),
+        price: calculateAttributesPrice(item.attributes) ? Number(product.price) * calculateAttributesPrice(item.attributes) : Number(product.price),
         quantity: item.quantity,
         gst: product.gst,
         discount: product.discount || 0,
@@ -732,6 +733,7 @@ export class OrderService {
               attributes: item.attributes?.map(attr => ({
                 name: attr.name,
                 value: attr.value,
+                price: attr.price,
               })),
             })),
           },

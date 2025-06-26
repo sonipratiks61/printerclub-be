@@ -98,6 +98,9 @@ export class CreateOrderItemAttributeDto {
     @IsString()
     @IsNotEmpty()
     value: string;
+
+    @IsOptional()
+    price: string
 }
 
 export class UpdateOrderItemDto {

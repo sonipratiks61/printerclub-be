@@ -178,6 +178,7 @@ model ProductAttribute {
   attribute       Attribute     @relation(fields: [attributeId], references: [id])
   type            AttributeType
   options         Json?
+  price           String        @default("")
 }
 
 enum AttributeType {

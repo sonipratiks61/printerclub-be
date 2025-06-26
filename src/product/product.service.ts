@@ -177,12 +177,13 @@ export class ProductService {
             id: attribute.id,
             productId: attribute.productId,
             attributeId: attribute.attributeId,
+            price: attribute.price,
             type: attribute.type,
             ...(attribute.type==='dropDown'&&{ options: attribute.options})
           })),
           workflow: {
             id: product.workflow.id,
-            name: product.workflow.name,
+            name: product.workflow.name,    
           },
         };
       })
@@ -343,6 +344,7 @@ export class ProductService {
         productId: attribute.productId,
         name: attribute.attribute.name,
         type: attribute.type,
+        price: attribute.price ? Number(attribute.price) : 0,
         ...(attribute.type === 'dropDown' && { options: attribute.options })
       })),
     }));
@@ -378,7 +380,9 @@ export class ProductService {
       price: updateProductDto.price,
       categoryId: updateProductDto.categoryId,
       isMeasurementRequired: updateProductDto.isMeasurementRequired,
-      isFitmentRequired: updateProductDto.isFitmentRequired
+      isFitmentRequired: updateProductDto.isFitmentRequired,
+      discount: updateProductDto.discount,
+      gst: updateProductDto.gst,
     };
   
     const { type, min, max, options } = updateProductDto.quantity;
