@@ -37,6 +37,7 @@ export class ProductAttributesService {
         attributeId: dto.attributeId,
         type: dto.type,
         productId: dto.productId,
+        price: dto.price
       };
 
       if (dto.type === 'dropDown') {
@@ -80,6 +81,7 @@ export class ProductAttributesService {
       attributeId: updateProductAttributeDto.attributeId,
       type: updateProductAttributeDto.type as AttributeType,
       productId: updateProductAttributeDto.productId,
+      price: updateProductAttributeDto.price
     };
 
     if (updateProductAttributeDto.type === 'dropDown') {

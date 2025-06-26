@@ -4,7 +4,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCustomerDetailsDto } from 'src/customer-details/dto/customer-details.dto';
 import { ProductService } from 'src/product/product.service';
 import { FinancialYear, generateInvoiceNumber } from 'utils/invoiceFunction/invoiceFunction';
-import { calculatePrice } from 'utils/calculatePriceFunction/calculatePriceFunction';
+import { calculateAttributesPrice, calculatePrice } from 'utils/calculatePriceFunction/calculatePriceFunction';
 import { addDays } from 'utils/dueDateFunction/dueDateFunction';
 
 @Injectable()
@@ -50,8 +50,8 @@ export class CustomerOrderInvoiceService {
                         discount: true,
                         orderItemStatus:true,
                         isMeasurementAddress:true,
-                        createdAt:true
-
+                        createdAt:true,
+                        attributes: true,
                     },
                     where:{
                         orderItemStatus: {not: 'Cancelled'}
@@ -69,7 +69,7 @@ export class CustomerOrderInvoiceService {
         const dueDate = addDays(order.createdAt,15)
         const totalPayment = order.orderItems.reduce((total, item) => {
             const itemTotalPrice = calculatePrice({
-                price: parseInt(item.price, 10),
+                price: calculateAttributesPrice(item.attributes) ? parseInt(item.price, 10) * calculateAttributesPrice(item.attributes) : parseInt(item.price, 10),
                 quantity: item.quantity,
                 gst: item.gst,
                 discount: item.discount
@@ -91,7 +91,7 @@ export class CustomerOrderInvoiceService {
             dueDate:dueDate,
             orderItems: order.orderItems.map(item => {
                 const totalPrice = calculatePrice({
-                    price: parseInt(item.price, 10),
+                    price: calculateAttributesPrice(item.attributes) ? parseInt(item.price, 10) * calculateAttributesPrice(item.attributes): parseInt(item.price, 10),
                     quantity: item.quantity,
                     gst: item.gst,
                     discount: item.discount
@@ -111,7 +111,8 @@ export class CustomerOrderInvoiceService {
                     state: item.isMeasurementAddress?.state,
                     pinCode: item.isMeasurementAddress?.pinCode,
                     totalPrice: parseFloat(totalPrice),
-                    orderItemStatus:item.orderItemStatus
+                    orderItemStatus:item.orderItemStatus,
+                    attributes: item.attributes,
                     
                 };
             }),
