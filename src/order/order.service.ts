@@ -734,6 +734,8 @@ export class OrderService {
                 name: attr.name,
                 value: attr.value,
                 price: attr.price,
+                width: attr.width,
+                height: attr.height
               })),
             })),
           },

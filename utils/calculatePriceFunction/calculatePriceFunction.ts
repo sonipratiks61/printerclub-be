@@ -48,12 +48,28 @@ function extractSizes(data: string) {
 
 export const calculateAttributesPrice = (attributes) => {
   const price = attributes
-    ?.filter((attribute) => attribute.value)
+    ?.filter(
+      (attribute) => attribute.value || attribute.height || attribute.width,
+    )
     .reduce((total: number, attribute) => {
-      if (attribute.name === 'size') {
-        const sizes = extractSizes(attribute.value);
+      if (attribute.name.toLowerCase() === 'square feet') {
+        if (attribute.value) {
+          const regex = /^(\d+)\s*\*\s*(\d+)$/;
+          const match = attribute.value.match(regex);
+          if (match) {
+            const width = parseInt(match[1], 10);
+            const height = parseInt(match[2], 10);
 
-        return total + sizes.size * Number(attribute.price || 0);
+            return total + width * height * (Number(attribute.price) || 1);
+          }
+        }
+
+        return (
+          total +
+          Number(attribute.width || 0) *
+            Number(attribute.height || 0) *
+            (Number(attribute.price) || 1)
+        );
       }
 
       return total + Number(attribute.price || 0);
