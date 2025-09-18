@@ -22,7 +22,6 @@ export class RoleAndOrderStatusController {
     ) {
 
         try {
-            console.log('hy');
             const { roleId, orderStatusToAdd, orderStatusToDelete } = roleAndOrderStatusDto;
 
             let success = true;

@@ -28,8 +28,8 @@ export class RoleController {
     private readonly roleService: RoleService,
     private readonly responseService: ResponseService,
     private readonly roleAndCapabilityController: RoleAndCapabilityController,
-    private readonly roleAndOrderStatusController: RoleAndOrderStatusController
-  ) { }
+    private readonly roleAndOrderStatusController: RoleAndOrderStatusController,
+  ) {}
 
   @Get()
   async fetchAll(@Res() res) {
@@ -141,7 +141,7 @@ export class RoleController {
       });
       let existingOrderStatus = role.orderStatusIds.map((ord, index) => {
         return ord.orderStatus.id;
-      })
+      });
 
       const capabilitiesToAdd = capabilityIds.filter(
         (id) => !existingCapabilities.includes(id),
@@ -152,16 +152,23 @@ export class RoleController {
       );
 
       const orderStatusToDelete = existingOrderStatus.filter(
+        (id) => !orderStatusIds.includes(id),
+      );
+
+      const orderStatusToAdd = orderStatusIds.filter(
         (id) => !existingOrderStatus.includes(id),
       );
-      const orderStatusToAdd = orderStatusIds.filter((id) => !existingOrderStatus.includes(id),);
 
       const updatedCapabilities =
         await this.roleAndCapabilityController.updateRoleAndCapabilities(
           { roleId, capabilitiesToAdd, capabilitiesToDelete },
           res,
         );
-      const updatedOrderStatus = await this.roleAndOrderStatusController.updateRoleAndOrderStatus({ roleId, orderStatusToAdd, orderStatusToDelete }, res);
+      const updatedOrderStatus =
+        await this.roleAndOrderStatusController.updateRoleAndOrderStatus(
+          { roleId, orderStatusToAdd, orderStatusToDelete },
+          res,
+        );
       const updatedRole = await this.roleService.updateRoleName(roleId, name);
 
       if (!updatedRole || !updatedCapabilities || !updatedOrderStatus) {

@@ -70,6 +70,9 @@ export class CreateOrderItemsDto {
     discount: number
 
     @IsOptional()
+    discountType: string
+
+    @IsOptional()
     @IsArray()
     @ValidateNested({ each: true })
     @Type(() => CreateOrderItemAttributeDto)

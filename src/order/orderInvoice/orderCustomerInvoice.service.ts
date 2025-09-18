@@ -48,6 +48,7 @@ export class CustomerOrderInvoiceService {
                         description: true,
                         gst: true,
                         discount: true,
+                        discountType: true,
                         orderItemStatus:true,
                         isMeasurementAddress:true,
                         createdAt:true,
@@ -72,7 +73,8 @@ export class CustomerOrderInvoiceService {
                 price: calculateAttributesPrice(item.attributes) ? parseInt(item.price, 10) * calculateAttributesPrice(item.attributes) : parseInt(item.price, 10),
                 quantity: item.quantity,
                 gst: item.gst,
-                discount: item.discount
+                discount: item.discount,
+                discountType: item.discountType
             });
             return total + parseFloat(itemTotalPrice);
         }, 0);
@@ -94,7 +96,8 @@ export class CustomerOrderInvoiceService {
                     price: calculateAttributesPrice(item.attributes) ? parseInt(item.price, 10) * calculateAttributesPrice(item.attributes): parseInt(item.price, 10),
                     quantity: item.quantity,
                     gst: item.gst,
-                    discount: item.discount
+                    discount: item.discount,
+                    discountType: item.discountType,
                 });
 
                 return {

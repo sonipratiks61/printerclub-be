@@ -3,13 +3,18 @@ export const calculatePrice = ({
   quantity,
   gst,
   discount = 0,
+  discountType = '',
 }: {
   price: number;
   quantity: number;
   gst: number;
   discount?: number | null;
+  discountType: string;
 }) => {
-  const discountedPrice = price * (1 - (discount || 0) / 100);
+  const discountedPrice =
+    discountType === 'amount'
+      ? price - discount
+      : price * (1 - (discount || 0) / 100);
   const gstAmount = discountedPrice * (gst / 100);
   const totalPricePerItem = discountedPrice + gstAmount;
   const totalPrice = totalPricePerItem * quantity;
