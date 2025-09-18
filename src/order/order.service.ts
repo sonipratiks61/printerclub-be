@@ -91,6 +91,7 @@ export class OrderService {
               isMeasurementAddressId: item.isMeasurementAddressId,
               measurement: item.measurement,
               discount: item.discount,
+              discountType: item.discountType,
               ownerName,
               orderItemStatus: 'Pending',
               description: item.description,
@@ -98,6 +99,8 @@ export class OrderService {
                 name: attr.name,
                 value: attr.value,
                 price: attr.price,
+                width: attr.width,
+                height: attr.height
               })),
             })),
 
@@ -156,6 +159,7 @@ export class OrderService {
               productId: true,
               gst: true,
               discount: true,
+              discountType: true,
               description: true,
               attributes: true,
               ownerName: true,
@@ -301,6 +305,7 @@ export class OrderService {
               productId: true,
               gst: true,
               discount: true,
+              discountType: true,
               description: true,
               attributes: true,
               orderItemStatus: true,
@@ -407,6 +412,7 @@ export class OrderService {
               productId: true,
               gst: true,
               discount: true,
+              discountType: true,
               description: true,
               attributes: true,
               orderItemStatus: true,
@@ -511,6 +517,7 @@ export class OrderService {
             productId: true,
             gst: true,
             discount: true,
+            discountType: true,
             description: true,
             attributes: true,
             ownerName: true,
@@ -674,6 +681,7 @@ export class OrderService {
         quantity: item.quantity,
         gst: product.gst,
         discount: product.discount || 0,
+        discountType: '',
       });
 
 

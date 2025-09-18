@@ -238,6 +238,7 @@ model OrderItem {
   gst                    Int
   measurement            String?
   discount               Int?
+  discountType           String?
   orderId                Int
   order                  Order    @relation(fields: [orderId], references: [id])
   createdAt              DateTime @default(now())

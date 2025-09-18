@@ -29,6 +29,7 @@ export class UserService {
         gstNumber: true,
         acceptTerms: true,
         createdAt: true,
+        password: true,
         updatedAt: true,
         addresses: {
           select: {
@@ -79,11 +80,13 @@ export class UserService {
         { id: number; fileName: string; filePath: string } | null
       >,
     );
+
     return users.map((user) => ({
       id: user.id,
       name: user.name,
       businessName: user.businessName,
       mobileNumber: user.mobileNumber,
+      password: user.password,
       email: user.email,
       isActive: user.isActive,
       acceptTerms: user.acceptTerms,
@@ -218,6 +221,12 @@ export class UserService {
     if (!userData) {
       throw new NotFoundException('User not found');
     }
+
+    const hashedPassword =
+      updateUserDto.password === userData.password
+        ? userData.password
+        : await bcrypt.hash(updateUserDto.password, 8);
+
     const role = await this.roleService.findOne(updateUserDto.roleId);
     if (!role) {
       throw new NotFoundException('Role not found');
@@ -254,6 +263,7 @@ export class UserService {
         businessName: updateUserDto.businessName,
         mobileNumber: updateUserDto.mobileNumber,
         gstNumber: updateUserDto.gstNumber,
+        password: hashedPassword,
         roleId: updateUserDto.roleId,
         addresses: {
           update: {
@@ -261,11 +271,11 @@ export class UserService {
               id: address.id,
             },
             data: {
-              address: updateUserDto.addresses.address,
-              city: updateUserDto.addresses.city,
-              state: updateUserDto.addresses.state,
-              pinCode: updateUserDto.addresses.pinCode,
-              country: updateUserDto.addresses.country,
+              address: updateUserDto.addresses[0].address,
+              city: updateUserDto.addresses[0].city,
+              state: updateUserDto.addresses[0].state,
+              pinCode: updateUserDto.addresses[0].pinCode,
+              country: updateUserDto.addresses[0].country,
             },
           },
         },
@@ -438,9 +448,8 @@ export class UserService {
 
       return {
         ...rest,
-        attachment: attachments.find(
-            (a) => a.id === updateUserDto.attachmentId,
-          ) || null,
+        attachment:
+          attachments.find((a) => a.id === updateUserDto.attachmentId) || null,
       };
     } else if (existingAttachmentAssociation) {
       await this.prisma.attachmentToAssociation.deleteMany({
