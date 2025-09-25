@@ -1080,7 +1080,7 @@ async function main() {
       id: 1
     },
     create: {
-      attributeId: 23,
+      attributeId: 1,
       productId: 1,
       type: "dropDown",
       options: ["23", "43", "54"],
@@ -1092,7 +1092,7 @@ async function main() {
       id: 2
     },
     create: {
-      attributeId: 24,
+      attributeId: 2,
       productId: 1,
       type: "text",
 
