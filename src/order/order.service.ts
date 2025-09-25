@@ -123,7 +123,8 @@ export class OrderService {
         id: userId
       },
       select: {
-        role: true
+        role: true,
+        id: true
       }
     })
 
@@ -131,6 +132,17 @@ export class OrderService {
     if (id !== 2) {
 
       orders = await this.prisma.order.findMany({
+        where: userDetails.id === 1 
+          ? {}
+          : {
+              orderItems: {
+                some: {
+                  assignedTo: {
+                      id: userDetails.id,
+                  },
+                },
+              },
+            },
         orderBy: {
           createdAt: 'desc',
         },
@@ -174,23 +186,22 @@ export class OrderService {
                   mobileNumber: true,
                 },
               },
-              expectedBy: true
-            }
+              expectedBy: true,
+            },
           },
-          customerDetails:
-          {
+          customerDetails: {
             select: {
               id: true,
               name: true,
               email: true,
               mobileNumber: true,
               additionalDetails: true,
-              address: true
-            }
-
-          }
-        }
-      })
+              address: true,
+            },
+          },
+        },
+      });
+      
 
       const attachments = await this.prisma.attachmentAssociation.findMany({
         where: {
