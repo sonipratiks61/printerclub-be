@@ -115,7 +115,7 @@ export class OrderService {
     return createdOrder;
   }
 
-  async fetchAll(userId: number) {
+  async fetchAll(userId: number, search: string) {
 
     let orders;
     const userDetails = await this.prisma.user.findFirst({
@@ -128,20 +128,33 @@ export class OrderService {
       }
     })
 
+    const searchFilter =
+      search && /^\d+$/.test(search)
+        ? search.length === 10
+          ? { customerDetails: { mobileNumber: { contains: search } } }
+          : { id: Number(search) }
+        : {};
+
     const id = userDetails.role.id;
     if (id !== 2) {
 
       orders = await this.prisma.order.findMany({
-        where: userDetails.id === 1 
-          ? {}
+        where:
+        userDetails.id === 1
+          ? searchFilter
           : {
-              orderItems: {
-                some: {
-                  assignedTo: {
-                      id: userDetails.id,
+              AND: [
+                searchFilter,
+                {
+                  orderItems: {
+                    some: {
+                      assignedTo: {
+                        id: userDetails.id,
+                      },
+                    },
                   },
                 },
-              },
+              ],
             },
         orderBy: {
           createdAt: 'desc',
@@ -251,13 +264,22 @@ export class OrderService {
         });
     
         return {
-            ...order,
-            orderItems: order.orderItems.map(item => ({
-                ...item,
-                assignedTo: item.assignedTo ? {...item.assignedTo, expectedBy: item.expectedBy } : null,
-                attachments: attachmentMap[item.id] || null, 
-            })),
-            earliestDeliveryDate: earliestNonExpiredDate || earliestExpiredDate,
+          ...order,
+          id: order.id,
+          advancePayment: Number(order.advancePayment)?.toFixed(2),
+          totalPayment: Number(order.totalPayment).toFixed(2),
+          remainingPayment: Number(order.remainingPayment).toFixed(2),
+          paymentMode: order.paymentMode,
+          ownerName: order.ownerName,
+          invoiceNumber: order.invoiceNumber,
+          createdAt: order.createdAt,
+          userId: order.userId,
+          orderItems: order.orderItems.map(item => ({
+              ...item,
+              assignedTo: item.assignedTo ? {...item.assignedTo, expectedBy: item.expectedBy } : null,
+              attachments: attachmentMap[item.id] || null, 
+          })),
+          earliestDeliveryDate: earliestNonExpiredDate || earliestExpiredDate,
         };
     });
     
@@ -292,8 +314,14 @@ export class OrderService {
     else {
       orders = await this.prisma.order.findMany({
         where: {
-          userId: userId,
-        }, orderBy: {
+          AND: [
+            {
+              userId: userId,
+            },
+            searchFilter,
+          ],
+        },
+         orderBy: {
           createdAt: 'desc',
         },
         select: {
@@ -395,12 +423,25 @@ export class OrderService {
       return formattedOrders;
     }
   }
-  async fetchAllDataByAdminUser(adminViewUserId:number)
+  async fetchAllDataByAdminUser(adminViewUserId:number, search: string)
   {
+    const searchFilter =
+      search && /^\d+$/.test(search)
+        ? search.length === 10
+          ? { customerDetails: { mobileNumber: { contains: search } } }
+          : { id: Number(search) }
+        : {};
+      
      const orders = await this.prisma.order.findMany({
         where: {
-          userId: adminViewUserId,
-        }, orderBy: {
+          AND: [
+            {
+              userId: adminViewUserId,
+            },
+            searchFilter,
+          ],
+        },
+        orderBy: {
           createdAt: 'desc',
         },
         select: {

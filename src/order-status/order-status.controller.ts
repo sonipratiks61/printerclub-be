@@ -88,7 +88,8 @@ export class OrderStatusController {
     catch (error) {
       this.responseService.sendInternalError(
         res,
-        'Something Went Wrong',
+        error.message || 'Something Went Wrong',
+        error,
       );
     }
   }

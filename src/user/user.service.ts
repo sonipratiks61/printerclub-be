@@ -152,7 +152,7 @@ export class UserService {
         email: createUserDto.email,
         mobileNumber: createUserDto.mobileNumber,
         acceptTerms: createUserDto.acceptTerms,
-        isActive: false,
+        isActive: createUserDto.isActive || false,
         password: hashedPassword,
         addresses: {
           create: createUserDto.addresses,
@@ -264,6 +264,7 @@ export class UserService {
         mobileNumber: updateUserDto.mobileNumber,
         gstNumber: updateUserDto.gstNumber,
         password: hashedPassword,
+        isActive: updateUserDto.isActive || false,
         roleId: updateUserDto.roleId,
         addresses: {
           update: {

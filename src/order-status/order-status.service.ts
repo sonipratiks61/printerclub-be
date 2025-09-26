@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { ConflictException, Injectable } from "@nestjs/common";
 import { PrismaClient } from "@prisma/client";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateOrderStatusDto, UpdateOrderStatusDto } from "./dto/order-status.dto";
@@ -87,9 +87,43 @@ export class OrderStatusService {
   }
 
   async remove(id: number) {
+    const workflows = await this.prisma.workFlow.findMany({
+      where: {
+        sequence: {
+          array_contains: id,
+        },
+      },
+      select: { id: true, name: true },
+    });
+  
+    if (workflows.length > 0) {
+      throw new ConflictException(
+        `OrderStatus ID ${id} is used in workflow(s): ${workflows
+          .map((w) => w.name)
+          .join(', ')}`
+      );
+    }
+  
+    const roles = await this.prisma.roleAndOrderStatusMapping.findMany({
+      where: { orderStatusId: id },
+      select: {
+        role: { select: { id: true, name: true } },
+      },
+    });
+  
+    if (roles.length > 0) {
+      throw new ConflictException(
+        `OrderStatus ID ${id} is assigned to role(s): ${roles
+          .map((r) => r.role.name)
+          .join(', ')}`
+      );
+    }
+  
     const orderStatus = await this.prisma.orderStatus.delete({
       where: { id },
     });
+  
     return orderStatus;
   }
+  
 }

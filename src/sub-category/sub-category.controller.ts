@@ -3,6 +3,7 @@ import {
   Get,
   NotFoundException,
   Query,
+  Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
@@ -18,11 +19,12 @@ export class SubCategoryController {
   ) { }
   @Get()
   @UseGuards(AuthGuard('jwt'))
-  async findSubCategories(@Query('parentId') parentId: string, @Res() res) {
+  async findSubCategories(@Query('parentId') parentId: string, @Res() res, @Req() req) {
     try {
       const searchParentId = parseInt(parentId, 10);
+      const search = req.query?.search
       const subCategory =
-        await this.categoryService.searchSubCategories(searchParentId);
+        await this.categoryService.searchSubCategories(searchParentId, search);
       return this.responseService.sendSuccess(
         res,
         'Fetch SubCategory Successful',
