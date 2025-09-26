@@ -21,13 +21,13 @@ export class SubCategoryService {
       where: {
         OR: [
           { id: parentId },
-          { subCategories: { some: { parentId: parentId, name: search || undefined } } },
+          { subCategories: { some: { parentId: parentId } } },
         ],
       },
       select: {
         subCategories: {
           where: {
-            name: search ? search : undefined,
+            name: search ? { contains: search }: undefined,
           },
           select: {
             id: true,

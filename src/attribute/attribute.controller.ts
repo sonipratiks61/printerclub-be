@@ -61,9 +61,10 @@ export class AttributeController {
 
   @Get()
   @UseGuards(AuthGuard('jwt'))
-  async findAllAttribute(@Res() res) {
+  async findAllAttribute(@Res() res, @Req() req) {
     try {
-      const data = await this.attributeService.findAllAttribute();
+      const search = req.query?.search
+      const data = await this.attributeService.findAllAttribute(search);
       this.responseService.sendSuccess(
         res,
         'Attribute retrieved successfully',

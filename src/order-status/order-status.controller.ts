@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, UseGuards, Patch, Res, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, UseGuards, Patch, Res, Put, Req } from '@nestjs/common';
 import { OrderStatusService } from './order-status.service';
 import { CreateOrderStatusDto, UpdateOrderStatusDto } from './dto/order-status.dto';
 import { AuthGuard } from '@nestjs/passport';
@@ -25,9 +25,10 @@ export class OrderStatusController {
 
   @Get()
   @UseGuards(AuthGuard('jwt'))
-  async findAll(@Res() res) {
+  async findAll(@Res() res, @Req() req) {
     try {
-      const data=await this.orderStatusService.findAll();
+      const search = req.query?.search
+      const data=await this.orderStatusService.findAll(search);
       this.responseService.sendSuccess(res, 'Fetch All Successfully',data);
     } catch (error) {
       this.responseService.sendInternalError(res, 'Something Went Wrong');
