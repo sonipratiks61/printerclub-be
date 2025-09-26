@@ -72,9 +72,10 @@ export class OrderController {
     @Query('adminViewUserId') adminViewUserId?: number,) {
         try {
             const userId=req.user.id;
+            const search = req.query?.search || ''
             if(adminViewUserId)
             {
-                const data = await this.orderService.fetchAllDataByAdminUser(adminViewUserId);
+                const data = await this.orderService.fetchAllDataByAdminUser(adminViewUserId, search);
                 this.responseService.sendSuccess(
                     res,
                     'Order Fetched Successfully',
@@ -82,7 +83,7 @@ export class OrderController {
                 );
             }
             else{
-                const data = await this.orderService.fetchAll(userId,);
+                const data = await this.orderService.fetchAll(userId, search);
            
                 this.responseService.sendSuccess(
                     res,

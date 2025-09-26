@@ -15,17 +15,20 @@ export class SubCategoryService {
     });
     
   }
-  async searchSubCategories(parentId: number) {
+  async searchSubCategories(parentId: number, search: string) {
    
     const parentCategories = await this.prisma.category.findMany({
       where: {
         OR: [
           { id: parentId },
-          { subCategories: { some: { parentId: parentId } } },
+          { subCategories: { some: { parentId: parentId, name: search || undefined } } },
         ],
       },
       select: {
         subCategories: {
+          where: {
+            name: search ? search : undefined,
+          },
           select: {
             id: true,
             name: true,

@@ -82,6 +82,9 @@ export class CreateUserDto {
   roleId: number;
 
   @IsOptional()
+  isActive: boolean
+
+  @IsOptional()
   @IsInt({ message: 'Attachment Id must be a number' })
   attachmentId:number
   
@@ -134,6 +137,9 @@ export class UpdateUserDto {
   @IsNotEmpty({ message: 'Role Id cannot be empty.' })
   @IsInt({ message: 'Role Id must be a Integer' })
   roleId: number;
+
+  @IsOptional()
+  isActive: boolean
 
   @ApiProperty({
     description: 'The mobile phone number of the user',

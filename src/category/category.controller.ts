@@ -52,9 +52,11 @@ export class CategoryController {
 
   @Get()
   @UseGuards(AuthGuard('jwt')) 
-  async fetchAll(@Res() res, @Query('includeSubCategory') includeSubCategory: boolean) {
+  async fetchAll(@Res() res, @Req() req, @Query('includeSubCategory') includeSubCategory: boolean) {
     try {
-      const categories = await this.categoryService.findAll(includeSubCategory);
+      const search = req.query?.search || ''
+
+      const categories = await this.categoryService.findAll(includeSubCategory, search);
       this.responseService.sendSuccess(
         res,
         'Categories Fetched Successfully',
