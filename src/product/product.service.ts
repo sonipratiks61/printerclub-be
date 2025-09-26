@@ -92,10 +92,11 @@ export class ProductService {
     return createdProduct;
   }
 
-  async findAll() {
+  async findAll(search: string) {
     const products = await this.prisma.product.findMany({
       where: {
         exclude: false,
+        name: search ? { contains: search }: undefined,      
       },
       include: {
         category: {

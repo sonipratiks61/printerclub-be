@@ -24,11 +24,13 @@ export class OrderStatusService {
         return orderStatus;
       }
 
-  async findAll() {
+  async findAll(search: string) {
     const orderStatuses = await this.prisma.orderStatus.findMany({
-      where:{dependOn:null, id: {
-        not: 1,
-      },},
+      where:{
+        dependOn:null, 
+        id: { not: 1 },
+        status: search ? { contains: search } : undefined
+      },
       select:{
         id:true,
         status:true,

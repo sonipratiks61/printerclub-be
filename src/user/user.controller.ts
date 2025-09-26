@@ -66,9 +66,10 @@ export class UserController {
     description: 'Internal Server Error',
   })
   @ApiBearerAuth()
-  async findAllUsers(@Res() res) {
+  async findAllUsers(@Res() res, @Req() req) {
     try {
-      const users = await this.userService.findAllUsersWithAddresses();
+      const search = req.query?.search
+      const users = await this.userService.findAllUsersWithAddresses(search);
       return this.responseService.sendSuccess(
         res,
         'Users retrieved successfully',

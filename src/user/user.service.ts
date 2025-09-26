@@ -17,8 +17,16 @@ export class UserService {
     private attachmentService: AttachmentService,
   ) {}
 
-  async findAllUsersWithAddresses() {
+  async findAllUsersWithAddresses(search: string) {
     const users = await this.prisma.user.findMany({
+      where: search
+        ? {
+            OR: [
+              { name: { contains: search } },
+              { email: { contains: search } },
+            ],
+          }
+        : undefined,
       select: {
         id: true,
         email: true,

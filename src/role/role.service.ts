@@ -50,9 +50,12 @@ export class RoleService {
     return role;
   }
  
-  async findAll() {
+  async findAll(search?: string) {
     const role = await this.prisma.role.findMany(
       {
+        where: {
+          name: search ? { contains: search } : undefined
+        },
         select: {
           id: true,
           name: true,

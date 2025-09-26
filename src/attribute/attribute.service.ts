@@ -36,8 +36,11 @@ else{
     })
   }
 
-  async findAllAttribute() {
+  async findAllAttribute(search: string) {
     return this.prisma.attribute.findMany({
+      where: {
+        name: search ? { contains: search } : undefined
+      },
       select: {
         id: true,
         name: true,

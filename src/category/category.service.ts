@@ -128,10 +128,13 @@ export class CategoryService {
       const data = await this.prisma.category.findMany({
         where: {
           parentId: null,
-          name: search || undefined
+          name: search ? { contains: search }: undefined,
         },
         include: {
           subCategories: {
+            where: {
+              name: search ? { contains: search }: undefined,
+            },
             select: {
               id: true,
               name: true,
@@ -210,7 +213,7 @@ export class CategoryService {
     }
   
     const data = await this.prisma.category.findMany({
-      where: { parentId: null, name: search || undefined },
+      where: { parentId: null, name: search ? { contains: search }: undefined, },
       select: {
         id: true,
         name: true,

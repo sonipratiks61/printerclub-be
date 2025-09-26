@@ -11,6 +11,7 @@ import {
   Delete,
   Patch,
   ConflictException,
+  Req,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiResponse } from '@nestjs/swagger';
@@ -32,9 +33,10 @@ export class RoleController {
   ) {}
 
   @Get()
-  async fetchAll(@Res() res) {
+  async fetchAll(@Res() res, @Req() req) {
     try {
-      const data = await this.roleService.findAll();
+      const search = req.query?.search
+      const data = await this.roleService.findAll(search);
       this.responseService.sendSuccess(res, 'Fetch Successfully!', data);
     } catch (error) {
       this.responseService.sendInternalError(

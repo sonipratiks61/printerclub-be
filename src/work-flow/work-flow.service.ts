@@ -44,8 +44,11 @@ export class WorkFlowService {
 
   }
 
-  async findAll() {
+  async findAll(search: string) {
     const workflows = await this.prisma.workFlow.findMany({
+      where: {
+        name: search ? { contains: search } : undefined
+      },
       select: {
         id: true,
         name: true,

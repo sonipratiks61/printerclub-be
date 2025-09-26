@@ -68,12 +68,13 @@ export class ProductController {
       let data;
       const category = parseInt(categoryId, 10)
       const userId = req.user.id;
+      const search = req.query?.search
 
       if (category) {
         data = await this.productService.findProductByCategoryId(category, userId);
         this.responseService.sendSuccess(res, 'Products fetched successfully by subCategory', data);
       } else {
-        data = await this.productService.findAll();
+        data = await this.productService.findAll(search);
         this.responseService.sendSuccess(res, 'Products fetched successfully', data);
       }
 
